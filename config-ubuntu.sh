@@ -58,7 +58,7 @@ apt-get install openssh-client -y
 apt-get install openssh-server -y
 mkdir ~/.ssh
 # Install SublimeText 3
-# TODO: add licence
+# TODO: add licence https://gist.github.com/J2TeaM/9f24a57d5832e475fc4d
 echo ${green}.................................................................................................${reset}
 echo ${green}.................................... Installing SublimeText 3 ...................................${reset}
 echo ${green}.................................................................................................${reset}
