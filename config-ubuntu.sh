@@ -265,15 +265,3 @@ echo ${green}...................................................................
 if [[ $phpmyadmin_password ]]; then echo "${red}...phpMyAdmin is not installed...${reset}"; else echo "${green}...phpmyadmin_password is set - ${phpmyadmin_password}...${reset}"; fi
 if [[ $mysql_root_password ]]; then echo "${red}...MySQL is not installed...${reset}"; else echo "${green}...mysql_root_user is set - ${mysql_root_user}...${reset}"/n echo "${green}...mysql_root_password is set - ${mysql_root_password}...${reset}"; fi
 if [[ $drupal_version ]]; then echo "${red}...Drupal is not installed...${reset}"; else echo "${green}...Drupal version is - ${drupal_version}...${reset}" /n echo "${green}...Path to Drupal folder - ${drupal_folder}...${reset}" /n echo "${green}...Superadmin username is set - ${drupal_superadmin}...${reset}" /n echo "${green}...Password for Superadmin to Drupal - ${drupal_pass}...${reset}"; fi
-
-
-
-
-
-
-
-
-
-
-
-
