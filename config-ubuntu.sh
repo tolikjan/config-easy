@@ -174,10 +174,10 @@ do
     sed -i "s/${dispHtmlErr}/html_errors = On/g" ${ini}
 done
 # xdebug configuring
-# TODO: fix settings for xdebug
+# TODO: check settings for xdebug
 xdebug=$( cat find / -name 'xdebug.so' 2> /dev/null ) 
-echo zend_extension="${xdebug}" > ${php_config_file}
-cat <<EOF>> /etc/php/apache2/php.ini
+echo "zend_extension="${xdebug}"" >> ${php_config_file}
+cat > /etc/php/apache2/php.ini << EOF
     xdebug.remote_autostart=1
     xdebug.remote_enable=1
     xdebug.remote_connect_back=1
