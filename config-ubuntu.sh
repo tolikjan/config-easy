@@ -16,13 +16,14 @@ phpmyadmin_password="root"
 sleep 5
 # Update & Upgrade
 echo ${green}.................................................................................................${reset}
-echo ${green}..................................Update and Upgrade the system..................................${reset}
+echo ${green}................................. Update and Upgrade the system .................................${reset}
 echo ${green}.................................................................................................${reset}
 sleep 5
 apt-get update && apt-get upgrade -y
 # Install Chrome
+# TODO: delete chrome deb
 echo ${green}.................................................................................................${reset}
-echo ${green}.....................................Installing Google Chrome....................................${reset}
+echo ${green}.................................... Installing Google Chrome ...................................${reset}
 echo ${green}.................................................................................................${reset}
 sleep 5
 wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
@@ -31,7 +32,7 @@ apt-get install -f -y
 apt-get install flashplugin-installer
 # Install Skype
 echo ${green}.................................................................................................${reset}
-echo ${green}........................................Installing Skype.........................................${reset}
+echo ${green}....................................... Installing Skype ........................................${reset}
 echo ${green}.................................................................................................${reset}
 sleep 5
 apt-get install -y sni-qt:i386 libdbusmenu-qt2:i386 libqt4-dbus:i386 libxss1:i386
@@ -42,14 +43,14 @@ apt-get install skype -y
 apt-get install libasound2-plugins:i386 -y
 # Install Tor Browser
 echo ${green}.................................................................................................${reset}
-echo ${green}......................................Installing Tor Browser.....................................${reset}
+echo ${green}..................................... Installing Tor Browser ....................................${reset}
 echo ${green}.................................................................................................${reset}
 sleep 5
 echo -ne '\n' | add-apt-repository ppa:webupd8team/tor-browser
 apt-get install tor-browser
 # Install SSH
 echo ${green}.................................................................................................${reset}
-echo ${green}......................................Installing SSH Server......................................${reset}
+echo ${green}..................................... Installing SSH Server .....................................${reset}
 echo ${green}.................................................................................................${reset}
 sleep 5
 apt-get update
@@ -57,8 +58,9 @@ apt-get install openssh-client -y
 apt-get install openssh-server -y
 mkdir ~/.ssh
 # Install SublimeText 3
+# TODO: add licence
 echo ${green}.................................................................................................${reset}
-echo ${green}.....................................Installing SublimeText 3....................................${reset}
+echo ${green}.................................... Installing SublimeText 3 ...................................${reset}
 echo ${green}.................................................................................................${reset}
 sleep 5
 echo -ne '\n' | add-apt-repository ppa:webupd8team/sublime-text-3
@@ -66,7 +68,7 @@ apt-get update
 apt-get install sublime-text-installer -y
 # Install Git and Composer
 echo ${green}.................................................................................................${reset}
-echo ${green}....................................Installing Git and Composer..................................${reset}
+echo ${green}................................... Installing Git and Composer .................................${reset}
 echo ${green}.................................................................................................${reset}
 sleep 5
 apt-get update
@@ -77,7 +79,7 @@ apt-get install curl php5-cli git -y
 curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 # Install Java
 echo ${green}.................................................................................................${reset}
-echo ${green}.........................................Installing Java.........................................${reset}
+echo ${green}........................................ Installing Java ........................................${reset}
 echo ${green}.................................................................................................${reset}
 sleep 5
 apt-get install default-jre -y
@@ -88,14 +90,14 @@ apt-get install gcj-4.6-jre-headless
 apt-get install openjdk-6-jre-headless -y
 # Install Shutter
 echo ${green}.................................................................................................${reset}
-echo ${green}........................................Installing Shutter.......................................${reset}
+echo ${green}....................................... Installing Shutter ......................................${reset}
 echo ${green}.................................................................................................${reset}
 sleep 5
 echo -ne '\n' | add-apt-repository ppa:shutter/ppa
 apt-get install shutter -y
 # Install Apache2 and configure it
 echo ${green}.................................................................................................${reset}
-echo ${green}................................Installing and Configuring Apache2...............................${reset}
+echo ${green}............................... Installing and Configuring Apache2 ..............................${reset}
 echo ${green}.................................................................................................${reset}
 sleep 5
 apt-get install apache2 libapache2-mod-php5 -y
@@ -113,7 +115,7 @@ a2enmod ssl
 service apache2 restart
 # Install MySQL
 echo ${green}.................................................................................................${reset}
-echo ${green}.....................................Installing MySQL Server.....................................${reset}
+echo ${green}.................................... Installing MySQL Server ....................................${reset}
 echo ${green}.................................................................................................${reset}
 sleep 5
 # Set password for root account
@@ -131,7 +133,7 @@ service mysql stop
 service mysql start
 # Install php5
 echo ${green}.................................................................................................${reset}
-echo ${green}.........................................Installing PHP..........................................${reset}
+echo ${green}........................................ Installing PHP .........................................${reset}
 echo ${green}.................................................................................................${reset}
 sleep 5
 apt-get install php5 php5-common php5-dev php5-cli php5-fpm -y
@@ -142,7 +144,7 @@ apt-get install php5-memcached php5-memcache php5-json -y
 # Enable php5-mcrypt mode
 php5enmod mcrypt
 echo ${green}.................................................................................................${reset}
-echo ${green}......................................Installing PHPMyAdmin......................................${reset}
+echo ${green}..................................... Installing PHPMyAdmin .....................................${reset}
 echo ${green}.................................................................................................${reset}
 sleep 5
 # Install PhpMyAdmin
@@ -194,7 +196,7 @@ service mysql restart
 service apache2 restart
 # Install Virtualbox and Vagrant
 echo ${green}.................................................................................................${reset}
-echo ${green}.................................Installing VirtualBox and Vagrant...............................${reset}
+echo ${green}................................ Installing VirtualBox and Vagrant ..............................${reset}
 echo ${green}.................................................................................................${reset}
 sleep 5
 apt-get install virtualbox -y
@@ -207,7 +209,7 @@ drupal_folder="/var/www/html/${drupal_version}"
 drupal_superadmin="admin"
 drupal_pass="drupaladm1n"
 echo ${green}.................................................................................................${reset}
-echo ${green}...............................Installing and Configuring Drupal 7...............................${reset}
+echo ${green}.............................. Installing and Configuring Drupal 7 ..............................${reset}
 echo ${green}.................................................................................................${reset}
 sleep 5
 # Create DataBase for Drupal
@@ -236,8 +238,9 @@ cp /var/www/html/sites/default/default.settings.php ${drupal_folder}/sites/defau
 chmod 664 ${drupal_folder}/sites/default/settings.php
 chown -R :www-data /var/www/html/*
 # Install PhpStorm 10
+# TODO: solve problems with pop-ups
 echo ${green}.................................................................................................${reset}
-echo ${green}..............................Installing and Configuring PHPStopm 10.............................${reset}
+echo ${green}............................. Installing and Configuring PHPStopm 10 ............................${reset}
 echo ${green}.................................................................................................${reset}
 sleep 5
 wget http://download-cf.jetbrains.com/webide/PhpStorm-10.0.2.tar.gz
@@ -246,7 +249,7 @@ cd PhpStorm-143.1184.87/bin/
 ./phpstorm.sh
 # Install HipChat
 echo ${green}.................................................................................................${reset}
-echo ${green}.......................................Installing HipChat........................................${reset}
+echo ${green}...................................... Installing HipChat .......................................${reset}
 echo ${green}.................................................................................................${reset}
 sleep 5
 echo osboxes.org | sudo su
@@ -256,12 +259,12 @@ apt-get update
 apt-get install hipchat
 #exit
 echo ${green}.................................................................................................${reset}
-echo ${green}...............................................DONE..............................................${reset}
+echo ${green}.............................................. DONE .............................................${reset}
 echo ${green}.................................................................................................${reset}
 
-if [ -z "$phpmyadmin_password" ]; then echo "${red}...phpMyAdmin is not installed...${reset}"; else echo "${green}...phpmyadmin_password is set - ${phpmyadmin_password}...${reset}"; fi
-if [ -z "$mysql_root_password" ]; then echo "${red}...MySQL is not installed...${reset}"; else echo "${green}...mysql_root_user is set - ${mysql_root_user}...${reset}"/n echo "${green}...mysql_root_password is set - ${mysql_root_password}...${reset}"; fi
-if [ -z "$drupal_version" ]; then echo "${red}...Drupal is not installed...${reset}"; else echo "${green}...Drupal version is - ${drupal_version}...${reset}" /n echo "${green}...Path to Drupal folder - ${drupal_folder}...${reset}" /n echo "${green}...Superadmin username is set - ${drupal_superadmin}...${reset}" /n echo "${green}...Password for Superadmin to Drupal - ${drupal_pass}...${reset}"; fi
+if [[ $phpmyadmin_password ]]; then echo "${red}...phpMyAdmin is not installed...${reset}"; else echo "${green}...phpmyadmin_password is set - ${phpmyadmin_password}...${reset}"; fi
+if [[ $mysql_root_password ]]; then echo "${red}...MySQL is not installed...${reset}"; else echo "${green}...mysql_root_user is set - ${mysql_root_user}...${reset}"/n echo "${green}...mysql_root_password is set - ${mysql_root_password}...${reset}"; fi
+if [[ $drupal_version ]]; then echo "${red}...Drupal is not installed...${reset}"; else echo "${green}...Drupal version is - ${drupal_version}...${reset}" /n echo "${green}...Path to Drupal folder - ${drupal_folder}...${reset}" /n echo "${green}...Superadmin username is set - ${drupal_superadmin}...${reset}" /n echo "${green}...Password for Superadmin to Drupal - ${drupal_pass}...${reset}"; fi
 
 
 
