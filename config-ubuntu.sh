@@ -58,7 +58,7 @@ apt-get install openssh-client -y
 apt-get install openssh-server -y
 mkdir ~/.ssh
 # Install SublimeText 3
-# TODO: add licence
+# TODO: add licence https://gist.github.com/J2TeaM/9f24a57d5832e475fc4d
 echo ${green}.................................................................................................${reset}
 echo ${green}.................................... Installing SublimeText 3 ...................................${reset}
 echo ${green}.................................................................................................${reset}
@@ -161,8 +161,8 @@ service apache2 reload
 # PHP Error Reporting Config
 for ini in $(find /etc -name "php.ini")
 do
-    errRep=$(grep "^error_reporting = " "${ini}")osb
-    sed -i "s/${errRep}/error_reporting = E_ALL & ~E_NOTICE" ${ini}
+    errRep=$(grep "^error_reporting = " "${ini}")
+    sed -i "s/${errRep}/error_reporting = E_ALL" ${ini}
 
     dispErr=$(grep "^display_errors = " "${ini}")
     sed -i "s/${dispErr}/display_errors = On/g" ${ini}
@@ -174,9 +174,10 @@ do
     sed -i "s/${dispHtmlErr}/html_errors = On/g" ${ini}
 done
 # xdebug configuring
+# TODO: check settings for xdebug
 xdebug=$( cat find / -name 'xdebug.so' 2> /dev/null ) 
-echo zend_extension="${xdebug}" > ${php_config_file}
-cat <<EOF>> /etc/php/apache2/php.ini
+echo "zend_extension="${xdebug}"" >> ${php_config_file}
+cat > /etc/php/apache2/php.ini << EOF
     xdebug.remote_autostart=1
     xdebug.remote_enable=1
     xdebug.remote_connect_back=1
@@ -237,8 +238,9 @@ drush en globalredirect, admin_menu, views, pathauto, elysia_cron, imce, subpath
 cp /var/www/html/sites/default/default.settings.php ${drupal_folder}/sites/default/settings.php
 chmod 664 ${drupal_folder}/sites/default/settings.php
 chown -R :www-data /var/www/html/*
+# TODO: add /etc/hosts configuration and config files in sites-available (sites enabled) 
 # Install PhpStorm 10
-# TODO: solve problems with pop-ups
+# TODO: solve problems with pop-ups in PHP Storm
 echo ${green}.................................................................................................${reset}
 echo ${green}............................. Installing and Configuring PHPStopm 10 ............................${reset}
 echo ${green}.................................................................................................${reset}
@@ -263,5 +265,6 @@ echo ${green}.............................................. DONE ...............
 echo ${green}.................................................................................................${reset}
 
 if [[ $phpmyadmin_password ]]; then echo "${red}...phpMyAdmin is not installed...${reset}"; else echo "${green}...phpmyadmin_password is set - ${phpmyadmin_password}...${reset}"; fi
-if [[ $mysql_root_password ]]; then echo "${red}...MySQL is not installed...${reset}"; else echo "${green}...mysql_root_user is set - ${mysql_root_user}...${reset}"/n echo "${green}...mysql_root_password is set - ${mysql_root_password}...${reset}"; fi
-if [[ $drupal_version ]]; then echo "${red}...Drupal is not installed...${reset}"; else echo "${green}...Drupal version is - ${drupal_version}...${reset}" /n echo "${green}...Path to Drupal folder - ${drupal_folder}...${reset}" /n echo "${green}...Superadmin username is set - ${drupal_superadmin}...${reset}" /n echo "${green}...Password for Superadmin to Drupal - ${drupal_pass}...${reset}"; fi
+if [[ $mysql_root_password ]]; then echo "${red}...MySQL is not installed...${reset}"; else echo "${green}...mysql_root_user is set - ${mysql_root_user}...${reset}" '\n' "${green}...mysql_root_password is set - ${mysql_root_password}...${reset}"; fi
+if [[ $drupal_version ]]; then echo "${red}...Drupal is not installed...${reset}"; else echo "${green}...Drupal version is - ${drupal_version}...${reset}" '\n' "${green}...Path to Drupal folder - ${drupal_folder}...${reset}" '\n' "${green}...Superadmin username is set - ${drupal_superadmin}...${reset}" '\n' "${green}...Password for Superadmin to Drupal - ${drupal_pass}...${reset}"; fi
+
