@@ -93,12 +93,18 @@ echo ${green}...................................................................
 echo ${green}........................................ Installing Java ........................................${reset}
 echo ${green}.................................................................................................${reset}
 sleep 5
-apt-get install default-jre -y
-apt-get install gcj-4.8-jre-headless -y
 echo -ne '\n' | add-apt-repository ppa:webupd8team/java
-apt-get install openjdk-7-jre-headless
-apt-get install gcj-4.6-jre-headless
-apt-get install openjdk-6-jre-headless -y
+apt-get update
+# To install Oracle JDK:
+apt-get install oracle-java7-installer -y
+# To automatically set up the Java 7 environment variables JAVA_HOME and PATH:
+#apt-get install oracle-java7-set-default -y
+# To install the Java Runtime Environment (JRE):
+apt-get install openjdk-7-jre -y
+# To install OpenJDK 7:
+apt-get install openjdk-7-jdk -y
+# To install Java runtime environment using GIJ/Classpath (headless version):
+apt-get install gcj-4.9-jre-headless -y
 # Install Shutter
 echo ${green}.................................................................................................${reset}
 echo ${green}....................................... Installing Shutter ......................................${reset}
