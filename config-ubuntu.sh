@@ -21,14 +21,19 @@ echo ${green}...................................................................
 sleep 5
 apt-get update && apt-get upgrade -y
 # Install Chrome
-# TODO: delete chrome deb
 echo ${green}.................................................................................................${reset}
 echo ${green}.................................... Installing Google Chrome ...................................${reset}
 echo ${green}.................................................................................................${reset}
 sleep 5
-wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-dpkg -i ./google-chrome*.deb
-apt-get install -f -y
++wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
++sh -c 'echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
++sudo apt-get update
++sudo apt-get install google-chrome-stable
++# Install Flash player for Firefox
++echo ${green}.................................................................................................${reset}
++echo ${green}...............................Installing Flash player for Firefox...............................${reset}
++echo ${green}.................................................................................................${reset}
+sleep 5
 apt-get install flashplugin-installer
 # Install Skype
 echo ${green}.................................................................................................${reset}
@@ -267,3 +272,4 @@ echo ${green}...................................................................
 if [[ $phpmyadmin_password ]]; then echo "${red}...phpMyAdmin is not installed...${reset}"; else echo "${green}...phpmyadmin_password is set - ${phpmyadmin_password}...${reset}"; fi
 if [[ $mysql_root_password ]]; then echo "${red}...MySQL is not installed...${reset}"; else echo "${green}...mysql_root_user is set - ${mysql_root_user}...${reset}" '\n' "${green}...mysql_root_password is set - ${mysql_root_password}...${reset}"; fi
 if [[ $drupal_version ]]; then echo "${red}...Drupal is not installed...${reset}"; else echo "${green}...Drupal version is - ${drupal_version}...${reset}" '\n' "${green}...Path to Drupal folder - ${drupal_folder}...${reset}" '\n' "${green}...Superadmin username is set - ${drupal_superadmin}...${reset}" '\n' "${green}...Password for Superadmin to Drupal - ${drupal_pass}...${reset}"; fi
+
