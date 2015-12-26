@@ -59,6 +59,13 @@ echo ${green}...................................................................
 sleep 5
 echo -ne '\n' | add-apt-repository ppa:webupd8team/tor-browser
 apt-get install tor-browser
+# Install Shutter
+echo ${green}.................................................................................................${reset}
+echo ${green}....................................... Installing Shutter ......................................${reset}
+echo ${green}.................................................................................................${reset}
+sleep 5
+echo -ne '\n' | add-apt-repository ppa:shutter/ppa
+apt-get install shutter -y
 # Install SSH
 echo ${green}.................................................................................................${reset}
 echo ${green}..................................... Installing SSH Server .....................................${reset}
@@ -68,15 +75,6 @@ apt-get update
 apt-get install openssh-client -y
 apt-get install openssh-server -y
 mkdir ~/.ssh
-# Install SublimeText 3
-# Licence code here - https://gist.github.com/J2TeaM/9f24a57d5832e475fc4d
-echo ${green}.................................................................................................${reset}
-echo ${green}.................................... Installing SublimeText 3 ...................................${reset}
-echo ${green}.................................................................................................${reset}
-sleep 5
-echo -ne '\n' | add-apt-repository ppa:webupd8team/sublime-text-3
-apt-get update
-apt-get install sublime-text-installer -y
 # Install Git and Composer
 echo ${green}.................................................................................................${reset}
 echo ${green}................................... Installing Git and Composer .................................${reset}
@@ -105,13 +103,6 @@ apt-get install openjdk-7-jre -y
 apt-get install openjdk-7-jdk -y
 # To install Java runtime environment using GIJ/Classpath (headless version):
 apt-get install gcj-4.9-jre-headless -y
-# Install Shutter
-echo ${green}.................................................................................................${reset}
-echo ${green}....................................... Installing Shutter ......................................${reset}
-echo ${green}.................................................................................................${reset}
-sleep 5
-echo -ne '\n' | add-apt-repository ppa:shutter/ppa
-apt-get install shutter -y
 # Install Apache2 and configure it
 echo ${green}.................................................................................................${reset}
 echo ${green}............................... Installing and Configuring Apache2 ..............................${reset}
@@ -256,7 +247,16 @@ drush en globalredirect, admin_menu, views, pathauto, elysia_cron, imce, subpath
 cp /var/www/html/sites/default/default.settings.php ${drupal_folder}/sites/default/settings.php
 chmod 664 ${drupal_folder}/sites/default/settings.php
 chown -R :www-data /var/www/html/*
-# TODO: add /etc/hosts configuration and config files in sites-available (sites enabled) 
+# TODO: add /etc/hosts configuration and config files in sites-available (sites enabled)
+# Install SublimeText 3
+# Licence code here - https://gist.github.com/J2TeaM/9f24a57d5832e475fc4d
+echo ${green}.................................................................................................${reset}
+echo ${green}.................................... Installing SublimeText 3 ...................................${reset}
+echo ${green}.................................................................................................${reset}
+sleep 5
+echo -ne '\n' | add-apt-repository ppa:webupd8team/sublime-text-3
+apt-get update
+apt-get install sublime-text-installer -y
 # Install PhpStorm 10
 # TODO: solve problems with pop-ups in PHP Storm
 # Licence code here - https://бэкдор.рф/phpstorm-7-8-9-10-product-key/
