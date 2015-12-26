@@ -31,10 +31,16 @@ sudo apt-get update
 sudo apt-get install google-chrome-stable
 # Install Flash player for Firefox
 echo ${green}.................................................................................................${reset}
-echo ${green}...............................Installing Flash player for Firefox...............................${reset}
+echo ${green}.............................. Installing Flash player for Firefox ..............................${reset}
 echo ${green}.................................................................................................${reset}
 sleep 5
 apt-get install flashplugin-installer
+# Install Tweak Tools for Ubuntu additional settings
+echo ${green}.................................................................................................${reset}
+echo ${green}..................................... Installing Tweak Tools ....................................${reset}
+echo ${green}.................................................................................................${reset}
+sleep 5
+apt-get install unity-tweak-tool
 # Install Skype
 echo ${green}.................................................................................................${reset}
 echo ${green}....................................... Installing Skype ........................................${reset}
@@ -63,7 +69,7 @@ apt-get install openssh-client -y
 apt-get install openssh-server -y
 mkdir ~/.ssh
 # Install SublimeText 3
-# TODO: add licence https://gist.github.com/J2TeaM/9f24a57d5832e475fc4d
+# Licence code here - https://gist.github.com/J2TeaM/9f24a57d5832e475fc4d
 echo ${green}.................................................................................................${reset}
 echo ${green}.................................... Installing SublimeText 3 ...................................${reset}
 echo ${green}.................................................................................................${reset}
@@ -229,6 +235,7 @@ a2enmod rewrite
 service apache2 restart
 # Install Drush
 apt-get install drush -y
+# TODO: Fix Drupal problems
 # Install Drupal
 cd /var/www/html
 drush dl ${drupal_version} -y
@@ -246,6 +253,7 @@ chown -R :www-data /var/www/html/*
 # TODO: add /etc/hosts configuration and config files in sites-available (sites enabled) 
 # Install PhpStorm 10
 # TODO: solve problems with pop-ups in PHP Storm
+# Licence code here - https://бэкдор.рф/phpstorm-7-8-9-10-product-key/
 echo ${green}.................................................................................................${reset}
 echo ${green}............................. Installing and Configuring PHPStopm 10 ............................${reset}
 echo ${green}.................................................................................................${reset}
@@ -253,7 +261,7 @@ sleep 5
 wget http://download-cf.jetbrains.com/webide/PhpStorm-10.0.2.tar.gz
 tar -xvf PhpStorm-10.0.2.tar.gz
 cd PhpStorm-143.1184.87/bin/
-./phpstorm.sh
+./phpstorm.sh || TRUE
 # Install HipChat
 echo ${green}.................................................................................................${reset}
 echo ${green}...................................... Installing HipChat .......................................${reset}
@@ -272,4 +280,3 @@ echo ${green}...................................................................
 if [[ $phpmyadmin_password ]]; then echo "${red}...phpMyAdmin is not installed...${reset}"; else echo "${green}...phpmyadmin_password is set - ${phpmyadmin_password}...${reset}"; fi
 if [[ $mysql_root_password ]]; then echo "${red}...MySQL is not installed...${reset}"; else echo "${green}...mysql_root_user is set - ${mysql_root_user}...${reset}" '\n' "${green}...mysql_root_password is set - ${mysql_root_password}...${reset}"; fi
 if [[ $drupal_version ]]; then echo "${red}...Drupal is not installed...${reset}"; else echo "${green}...Drupal version is - ${drupal_version}...${reset}" '\n' "${green}...Path to Drupal folder - ${drupal_folder}...${reset}" '\n' "${green}...Superadmin username is set - ${drupal_superadmin}...${reset}" '\n' "${green}...Password for Superadmin to Drupal - ${drupal_pass}...${reset}"; fi
-
