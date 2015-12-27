@@ -58,10 +58,11 @@ apt-get install unity-tweak-tool
 # Install archive manager with 7z support
 #
 echo ${green}.................................................................................................${reset}
-echo ${green}......................................... Installing 7z .........................................${reset}
+echo ${green}.................................... Installing 7z and Unrar ....................................${reset}
 echo ${green}.................................................................................................${reset}
 sleep 5
 apt-get install p7zip-full -y
+sudo apt-get install unrar -y
 #
 # Install Skype
 #
