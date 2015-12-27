@@ -349,13 +349,14 @@ echo ${green}...................................................................
 sleep 5
 # Before using VirtualBox, make sure that virtualization is enabled in your BIOS settings
 apt-get install virtualbox -y
-apt-get install vagrant -y
 apt-get install virtualbox-dkms -y
-# Install Extension Pack
+# Install Extension Pack for VirtualBox
 # You can check latest extension pack version here - https://www.virtualbox.org/wiki/Downloads
 #ext_pack="Oracle_VM_VirtualBox_Extension_Pack-5.0.12-104815.vbox-extpack"
 #wget http://download.virtualbox.org/virtualbox/5.0.12/${ext_pack}
 #echo ${root_pass} | VBoxManage extpack install ${ext_pack}
+# install Vagrant
+apt-get install vagrant -y
 # Install Drupal 7
 # Drupal variables
 drupal_version="drupal-7.41"
