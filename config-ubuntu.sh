@@ -40,7 +40,7 @@ sleep 5
 wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
 sh -c 'echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
 sudo apt-get update
-sudo apt-get install google-chrome-stable
+sudo apt-get install google-chrome-stable -y
 #
 # Install Flash player for Firefox
 #
@@ -85,7 +85,6 @@ apt-get install libasound2-plugins:i386 -y
 #
 # Install Tor Browser
 #
-# TODO: fix instalation for Tor Browser
 echo ${green}.................................................................................................${reset}
 echo ${green}..................................... Installing Tor Browser ....................................${reset}
 echo ${green}.................................................................................................${reset}
@@ -135,29 +134,29 @@ apt-get install php5-curl -y
 apt-get install curl php5-cli git -y
 curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 #
-# Install Java
+# Install Selenium Server
 #
 echo ${green}.................................................................................................${reset}
-echo ${green}........................................ Installing Java ........................................${reset}
+echo ${green}.................................. Installing Selenium Server ...................................${reset}
 echo ${green}.................................................................................................${reset}
 sleep 5
 echo -ne '\n' | add-apt-repository ppa:webupd8team/java
 apt-get update
-# To install Oracle JDK:
-apt-get install oracle-java7-installer -y
-# To automatically set up the Java 7 environment variables JAVA_HOME and PATH:
-#apt-get install oracle-java7-set-default -y
-# To install the Java Runtime Environment (JRE):
-apt-get install openjdk-7-jre -y
-# To install OpenJDK 7:
-apt-get install openjdk-7-jdk -y
-# To install Java runtime environment using GIJ/Classpath (headless version):
-apt-get install gcj-4.9-jre-headless -y
+# Create folder for Selenium
+sudo mkdir ~/selenium
+cd ~/selenium
+# Get Selenium and install headless Java runtime
+wget http://selenium-release.storage.googleapis.com/2.44/selenium-server-standalone-2.44.0.jar
+apt-get install openjdk-7-jre-headless -y
+# Install headless GUI for firefox. 'Xvfb is a display server that performs graphical operations in memory'
+#apt-get install xvfb -y
+# Starting up Selenium server
+#DISPLAY=:1 xvfb-run java -jar ~/selenium/selenium-server-standalone-2.44.0.jar
 #
 # Install LEMP (nginx + MySQL + PHPMyAdmin) and configure it
 #
 echo ${green}.................................................................................................${reset}
-echo ${green}.............. Installing and Configuring LEMP (Linux + nginx + MySQL + PHPMyAdmin) .............${reset}
+echo ${green}.............. Installing and Configuring LEMP - Linux + nginx + MySQL + PHPMyAdmin .............${reset}
 echo ${green}.................................................................................................${reset}
 # Set Up variables
 php_config_file="/etc/php5/fpm/php.ini"
@@ -358,19 +357,21 @@ apt-get install virtualbox-dkms -y
 #echo ${root_pass} | VBoxManage extpack install ${ext_pack}
 # install Vagrant
 apt-get install vagrant -y
+#
 # Install Drupal 7
+#
+echo ${green}.................................................................................................${reset}
+echo ${green}.............................. Installing and Configuring Drupal 7 ..............................${reset}
+echo ${green}.................................................................................................${reset}
+sleep 5
 # Drupal variables
 drupal_version="drupal-7.41"
 drupal_folder="/var/www/html/${drupal_version}"
 drupal_superadmin="admin"
 drupal_pass="drupaladm1n"
-echo ${green}.................................................................................................${reset}
-echo ${green}.............................. Installing and Configuring Drupal 7 ..............................${reset}
-echo ${green}.................................................................................................${reset}
-sleep 5
 # Create DataBase for Drupal
-mysql -u${mysql_root_user} -p${mysql_root_password} -e "CREATE DATABASE drupal;"
-mysql -u${mysql_root_user} -p${mysql_root_password} -e "CREATE USER drupaluser@localhost IDENTIFIED BY 'root';"
+mysql -u${mysql_root_user} -p${mysql_root_password} -e "CREATE DATABASE ${drupal_version};"
+mysql -u${mysql_root_user} -p${mysql_root_password} -e "CREATE USER drupaluser@localhost IDENTIFIED BY '${mysql_root_password}';"
 mysql -u${mysql_root_user} -p${mysql_root_password} -e "GRANT SELECT,INSERT,UPDATE,DELETE,CREATE,DROP,INDEX,ALTER,CREATE TEMPORARY TABLES,LOCK TABLES ON drupal.* TO drupaluser@localhost;"
 mysql -u${mysql_root_user} -p${mysql_root_password} -e "FLUSH PRIVILEGES;"
 service mysql stop
@@ -388,7 +389,7 @@ mkdir ${drupal_folder}/sites/all/modules/contrib
 mkdir ${drupal_folder}/sites/all/modules/contrib
 mkdir ${drupal_folder}/sites/all/modules/custom
 cd ${drupal_folder}
-drush site-install standard --account-name=${drupal_superadmin} --account-pass=${drupal_pass} --db-url=mysql://${mysql_root_user}:${mysql_root_password}@localhost/drupal -y
+drush site-install standard --account-name=${drupal_superadmin} --account-pass=${drupal_pass} --db-url=mysql://${mysql_root_user}:${mysql_root_password}@localhost/${drupal_version} -y
 cd ${drupal_folder}/sites/all/modules/contrib
 drush en globalredirect, admin_menu, views, pathauto, elysia_cron, imce, subpathauto, transliteration, token, ctools, link, email, menu_block, views_bulk_operations, nodequeue, field_group, devel, auto_nodetitle, date, masquerade, page_title, module_filter -y
 cp /var/www/html/sites/default/default.settings.php ${drupal_folder}/sites/default/settings.php
@@ -415,6 +416,12 @@ echo ${green}...................................................................
 echo ${green}............................. Installing and Configuring PHPStopm 10 ............................${reset}
 echo ${green}.................................................................................................${reset}
 sleep 5
+# Install dependencies
+echo -ne '\n' | add-apt-repository ppa:webupd8team/java
+apt-get update
+apt-get install oracle-java7-installer -y
+apt-get install oracle-java7-set-default -y
+# Install PhpStorm
 wget http://download-cf.jetbrains.com/webide/PhpStorm-10.0.2.tar.gz
 tar -xvf PhpStorm-10.0.2.tar.gz
 cd PhpStorm-143.1184.87/bin/
