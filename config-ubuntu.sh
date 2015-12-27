@@ -12,7 +12,7 @@ green=`tput setaf 2`
 reset=`tput sgr0`
 
 # php variables
-php_config_file="/etc/php5/cli/php.ini"
+#php_config_file="/etc/php5/cli/php.ini"
 directory_config_file="/etc/apache2/mods-enabled/dir.conf"
 
 # mysql variables
@@ -164,11 +164,12 @@ echo ${green}...................................................................
 echo ${green}.............. Installing and Configuring LEMP - Linux + nginx + MySQL + PHPMyAdmin .............${reset}
 echo ${green}.................................................................................................${reset}
 # Set Up variables
+# TODO: add fastcgi conf.
 php_config_file="/etc/php5/fpm/php.ini"
 www_conf="/etc/php5/fpm/pool.d/www.conf"
 nginx_conf="/etc/nginx/sites-available/default"
 server_name="my.localhost.com"
-php_info_path="/usr/share/nginx/html/info.php"
+php_info_path="/var/www/html/info.php"
 # Install nginx
 apt-get update
 apt-get install nginx -y
@@ -183,6 +184,9 @@ mysql_install_db
 # Run secure instalation for MySQL
 #echo "mysql-server mysql-server/root_password password "${mysql_root_password} | debconf-set-selections
 /usr/bin/mysql_secure_installation -y
+
+# TODO: fix problems with this shit below
+
 # Delete package expect when script is done
 # 0 - No; 
 # 1 - Yes.
@@ -247,48 +251,49 @@ if [ "${PURGE_EXPECT_WHEN_DONE}" -eq 1 ]; then
     # Uninstalling expect package
     apt-get purge expect -y
 fi
-# install PHP
-apt-get install php5-cli php5-common php5-mysql php5-suhosin php5-gd php5-fpm php5-cgi php-pear curl libcurl3 libcurl3-dev php5-curl php5-mcrypt -y
+
+
+# install PHP and php-packages
+apt-get install php5 curl php5-curl php5-fpm php5-mysql mysql-server php5-gd php5-mcrypt php5-xdebug php5-memcached php5-memcache php5-json -y
 # Change configuration for better security and convenience
-sed -i "s/error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT/error_reporting = E_ALL" ${php_config_file}
-sed -i "s/html_errors = Off/html_errors = On" ${php_config_file}
-sed -i "s/display_startup_errors = Off/display_startup_errors = On" ${php_config_file}
-sed -i "s/display_errors = Off/display_errors = On" ${php_config_file}
-sed -i "s/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0" ${php_config_file}
-#sed -i "s/listen = 127.0.0.1:9000/listen = /var/run/php5-fpm.sock" ${www_conf}
+sed -i "s/error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT/error_reporting = E_ALL/g" ${php_config_file}
+sed -i "s/html_errors = Off/html_errors = On/g" ${php_config_file}
+sed -i "s/display_startup_errors = Off/display_startup_errors = On/g" ${php_config_file}
+sed -i "s/display_errors = Off/display_errors = On/g" ${php_config_file}
+sed -i "s/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g" ${php_config_file}
 service php5-fpm restart
 # Configure nginx conf. file
 cp ${nginx_conf} ${nginx_conf}.backup
 cat > ${nginx_conf} << EOF
 	server {
-    	listen 80 default_server;
-    	listen [::]:80 default_server ipv6only=on;
-
-    	root /usr/share/nginx/html;
-    	index index.php index.html index.htm;
-
-    	server_name ${server_name};
-
-    	location / {
-        	try_files $uri $uri/ =404;
-    	}
-
-    	error_page 404 /404.html;
-    	error_page 500 502 503 504 /50x.html;
-    	location = /50x.html {
-        	root /usr/share/nginx/html;
-    	}
-
-    	location ~ \.php$ {
-        	try_files $uri =404;
-        	fastcgi_split_path_info ^(.+\.php)(/.+)$;
-        	fastcgi_pass unix:/var/run/php5-fpm.sock;
-        	fastcgi_index index.php;
-        	fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-        	include fastcgi_params;
-    	}
-	}
+        listen 80 default_server;
+        listen [::]:80 default_server ipv6only=on;
+        root /var/www/html;
+        index index.php index.html index.htm;
+        server_name ${server_name};
+        location / {
+            # First attempt to serve request as file, then
+            # as directory, then fall back to displaying a 404.
+            try_files $uri $uri/ =404;
+            # Uncomment to enable naxsi on this location
+            # include /etc/nginx/naxsi.rules
+        }
+        error_page 404 /404.html;
+        error_page 500 502 503 504 /50x.html;
+        location = /50x.html {
+            root /usr/share/nginx/html;
+        }
+        location ~ \.php$ {
+            try_files $uri =404;
+            fastcgi_split_path_info ^(.+\.php)(/.+)$;
+            fastcgi_pass unix:/var/run/php5-fpm.sock;
+            fastcgi_index index.php;
+            include fastcgi.conf;
+        }
+    }
 EOF
+mkdir -p /var/www/html
+cp /usr/share/nginx/html/index.html /var/www/html/
 # Restart nginx and php5-fpm
 service nginx restart
 service php5-fpm restart
@@ -351,9 +356,7 @@ sleep 5
 php_config_file="/etc/php5/fpm/php.ini"
 apt-get install php5 php5-common php5-dev php5-cli php5-fpm -y
 # Install PHP extensions
-apt-get install php5-mysql php5-pgsql -y
-apt-get install curl php5-curl php5-gd php-db php5-mcrypt php5-imagick php5-intl php5-xdebug -y
-apt-get install php5-memcached php5-memcache php5-json -y
+apt-get install php5 curl php5-curl php5-fpm php5-mysql mysql-server php5-gd php5-mcrypt php5-xdebug php5-memcached php5-memcache php5-json -y
 # Enable php5-mcrypt mode
 php5enmod mcrypt
 echo ${green}.................................................................................................${reset}
