@@ -147,7 +147,8 @@ sleep 5
 echo -ne '\n' | add-apt-repository ppa:webupd8team/java
 apt-get update
 # Create folder for Selenium
-sudo mkdir ~/selenium
+mkdir ~/selenium
+chmod 777 -R selenium/
 cd ~/selenium
 # Get Selenium and install headless Java runtime
 wget http://selenium-release.storage.googleapis.com/2.44/selenium-server-standalone-2.44.0.jar
@@ -166,34 +167,97 @@ echo ${green}...................................................................
 php_config_file="/etc/php5/fpm/php.ini"
 www_conf="/etc/php5/fpm/pool.d/www.conf"
 nginx_conf="/etc/nginx/sites-available/default"
-server_name="localhost.com"
+server_name="my.localhost.com"
 php_info_path="/usr/share/nginx/html/info.php"
-# Update
+# Install nginx
 apt-get update
+apt-get install nginx -y
+service nginx start
 # Set password for root account
 echo "mysql-server mysql-server/root_password password "${mysql_root_password} | debconf-set-selections
 echo "mysql-server mysql-server/root_password_again password "${mysql_root_password} | debconf-set-selections
 # Install MySQL-server
-apt-get install mysql-server mysql-client php5-mysql -y
+apt-get install mysql-server -y
 # We should activate MySQL with this command:
 mysql_install_db
 # Run secure instalation for MySQL
-echo "mysql-server mysql-server/root_password password "${mysql_root_password} | debconf-set-selections
+#echo "mysql-server mysql-server/root_password password "${mysql_root_password} | debconf-set-selections
 /usr/bin/mysql_secure_installation -y
-# TODO: should check this step above
-# Install nginx on the VPS
-echo "deb http://ppa.launchpad.net/nginx/stable/ubuntu $(lsb_release -sc) main" | tee /etc/apt/sources.list.d/nginx-stable.list
-echo -ne '\n' | apt-key adv --keyserver keyserver.ubuntu.com --recv-keys C300EE8C
-apt-get update
-apt-get install nginx -y
-service nginx start
-# Install PHP
-apt-get install php5-cli php5-common php5-mysql php5-suhosin php5-gd php5-fpm php5-cgi php5-fpm php-pear curl libcurl3 libcurl3-dev php5-curl php5-mcrypt -y
-# Change configuration for better security
-sed -i "s/;cgi.fix_pathinfo = 1/cgi.fix_pathinfo = 0" ${php_config_file}
-sed -i "s/listen = 127.0.0.1:9000/listen = /var/run/php5-fpm.sock" ${www_conf}
+# Delete package expect when script is done
+# 0 - No; 
+# 1 - Yes.
+PURGE_EXPECT_WHEN_DONE=0
+#
+# Check the bash shell script is being run by root
+#
+if [[ $EUID -ne 0 ]]; then
+   echo "This script must be run as root" 1>&2
+   exit 1
+fi
+#
+# Check input params
+#
+if [ -n "${1}" -a -z "${2}" ]; then
+    # Setup root password
+    CURRENT_MYSQL_PASSWORD=''
+    NEW_MYSQL_PASSWORD="${1}"
+elif [ -n "${1}" -a -n "${2}" ]; then
+    # Change existens root password
+    CURRENT_MYSQL_PASSWORD="${1}"
+    NEW_MYSQL_PASSWORD="${2}"
+else
+    echo "Usage:"
+    echo "  Setup mysql root password: ${0} 'your_new_root_password'"
+    echo "  Change mysql root password: ${0} 'your_old_root_password' 'your_new_root_password'"
+    exit 1
+fi
+#
+# Check is expect package installed
+#
+if [ $(dpkg-query -W -f='${Status}' expect 2>/dev/null | grep -c "ok installed") -eq 0 ]; then
+    echo "Can't find expect. Trying install it..."
+    apt-get install expect -y
+fi
+SECURE_MYSQL=$(expect -c "
+set timeout 3
+spawn mysql_secure_installation
+expect \"Enter current password for root (enter for none):\"
+send \"$CURRENT_MYSQL_PASSWORD\r\"
+expect \"root password?\"
+send \"y\r\"
+expect \"New password:\"
+send \"$NEW_MYSQL_PASSWORD\r\"
+expect \"Re-enter new password:\"
+send \"$NEW_MYSQL_PASSWORD\r\"
+expect \"Remove anonymous users?\"
+send \"y\r\"
+expect \"Disallow root login remotely?\"
+send \"y\r\"
+expect \"Remove test database and access to it?\"
+send \"y\r\"
+expect \"Reload privilege tables now?\"
+send \"y\r\"
+expect eof
+")
+#
+# Execution mysql_secure_installation
+#
+echo "${SECURE_MYSQL}"
+if [ "${PURGE_EXPECT_WHEN_DONE}" -eq 1 ]; then
+    # Uninstalling expect package
+    apt-get purge expect -y
+fi
+# install PHP
+apt-get install php5-cli php5-common php5-mysql php5-suhosin php5-gd php5-fpm php5-cgi php-pear curl libcurl3 libcurl3-dev php5-curl php5-mcrypt -y
+# Change configuration for better security and convenience
+sed -i "s/error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT/error_reporting = E_ALL" ${php_config_file}
+sed -i "s/html_errors = Off/html_errors = On" ${php_config_file}
+sed -i "s/display_startup_errors = Off/display_startup_errors = On" ${php_config_file}
+sed -i "s/display_errors = Off/display_errors = On" ${php_config_file}
+sed -i "s/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0" ${php_config_file}
+#sed -i "s/listen = 127.0.0.1:9000/listen = /var/run/php5-fpm.sock" ${www_conf}
 service php5-fpm restart
-# Configure nginx conf.
+# Configure nginx conf. file
 cp ${nginx_conf} ${nginx_conf}.backup
 cat > ${nginx_conf} << EOF
 	server {
@@ -225,12 +289,9 @@ cat > ${nginx_conf} << EOF
     	}
 	}
 EOF
-# Restart nginx
+# Restart nginx and php5-fpm
 service nginx restart
-# Install Memcached
-apt-get install memcached php5-memcached
 service php5-fpm restart
-service nginx restart
 # Create phpinfo() file
 cat > ${php_info_path} << EOF
 	<?php
@@ -280,11 +341,14 @@ mysql -u${mysql_root_user} -p${mysql_root_password} -e "GRANT ALL PRIVILEGES ON 
 mysql -u${mysql_root_user} -p${mysql_root_password} -e "FLUSH PRIVILEGES;"
 service mysql stop
 service mysql start
+#
 # Install php5
+#
 echo ${green}.................................................................................................${reset}
 echo ${green}........................................ Installing PHP .........................................${reset}
 echo ${green}.................................................................................................${reset}
 sleep 5
+php_config_file="/etc/php5/fpm/php.ini"
 apt-get install php5 php5-common php5-dev php5-cli php5-fpm -y
 # Install PHP extensions
 apt-get install php5-mysql php5-pgsql -y
@@ -308,6 +372,10 @@ apt-get install phpmyadmin -y
 echo "Include /etc/phpmyadmin/apache.conf" >> /etc/apache2/apache2.conf
 service apache2 reload
 # PHP Error Reporting Config
+sed -i "s/error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT/error_reporting = E_ALL" ${php_config_file}
+sed -i "s/html_errors = Off/html_errors = On" ${php_config_file}
+sed -i "s/display_startup_errors = Off/display_startup_errors = On" ${php_config_file}
+
 for ini in $(find /etc -name "php.ini")
 do
     errRep=$(grep "^error_reporting = " "${ini}")
