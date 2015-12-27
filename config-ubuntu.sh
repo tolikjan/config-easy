@@ -91,7 +91,8 @@ echo ${green}..................................... Installing Tor Browser ......
 echo ${green}.................................................................................................${reset}
 sleep 5
 echo -ne '\n' | add-apt-repository ppa:webupd8team/tor-browser
-apt-get install tor-browser
+apt-get update
+apt-get install tor-browser -y
 #
 # Install Shutter
 #
