@@ -169,10 +169,10 @@ php_config_file="/etc/php5/fpm/php.ini"
 www_conf="/etc/php5/fpm/pool.d/www.conf"
 nginx_conf="/etc/nginx/sites-available/default"
 server_name="my.localhost.com"
-php_info_path="/var/www/html/info.php"
+php_info_path="/usr/share/nginx/html/info.php"
 # Install nginx
 apt-get update
-apt-get install nginx -y
+ apt-get install nginx nginx-extras -y
 service nginx start
 # Set password for root account
 echo "mysql-server mysql-server/root_password password "${mysql_root_password} | debconf-set-selections
@@ -182,25 +182,35 @@ apt-get install mysql-server -y
 # We should activate MySQL with this command:
 mysql_install_db
 # Run secure instalation for MySQL
-#echo "mysql-server mysql-server/root_password password "${mysql_root_password} | debconf-set-selections
+echo "mysql-server mysql-server/root_password password "${mysql_root_password} | debconf-set-selections
 echo -e "\ny\ny\n${mysql_root_password}\n${mysql_root_password}\ny\ny\ny\ny" | ./usr/bin/mysql_secure_installation
 # TODO: check this shit above
 # install PHP and php-packages
-apt-get install php5 curl php5-curl php5-fpm php5-mysql mysql-server php5-gd php5-mcrypt php5-xdebug php5-memcached php5-memcache php5-json -y
+apt-get install php5-cli php5-common php5-mysql php5-gd php5-fpm php5-cgi php5-fpm php-pear php5-mcrypt php5-xdebug -y
+# Stop services
+service nginx stop
+service php5-fpm stop
 # Change configuration for better security and convenience
 sed -i "s/error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT/error_reporting = E_ALL/g" ${php_config_file}
 sed -i "s/html_errors = Off/html_errors = On/g" ${php_config_file}
 sed -i "s/display_startup_errors = Off/display_startup_errors = On/g" ${php_config_file}
 sed -i "s/display_errors = Off/display_errors = On/g" ${php_config_file}
 sed -i "s/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g" ${php_config_file}
-service php5-fpm restart
-# Configure nginx conf. file
-cp ${nginx_conf} ${nginx_conf}.backup
-cat > ${nginx_conf} << EOF
+# Change configuration if you planing to load big files
+sed -i "s/post_max_size = 8M/post_max_size = 200M/g" ${php_config_file}
+sed -i "s/upload_max_filesize = 2M/upload_max_filesize = 200M/g" ${php_config_file}
+# Change configuration www.conf
+sed -i "s/;security.limit_extensions = .php .php3 .php4 .php5/security.limit_extensions = .php .php3 .php4 .php5/g" ${www_conf}
+sed -i "s/;listen.mode = 0660/listen.mode = 0660/g" ${www_conf}
+service php5-fpm start
+# Configure nginx conf. file for our site
+cp ${nginx_conf} /etc/nginx/sites-available/${server_name}
+ln -s /etc/nginx/sites-available/${server_name} /etc/nginx/sites-enabled/
+cat > /etc/nginx/sites-available/${server_name} << EOF
 	server {
         listen 80 default_server;
         listen [::]:80 default_server ipv6only=on;
-        root /var/www/html;
+        root /usr/share/nginx/html;
         index index.php index.html index.htm;
         server_name ${server_name};
         location / {
@@ -224,8 +234,6 @@ cat > ${nginx_conf} << EOF
         }
     }
 EOF
-mkdir -p /var/www/html
-cp /usr/share/nginx/html/index.html /var/www/html/
 # Restart nginx and php5-fpm
 service nginx restart
 service php5-fpm restart
@@ -235,7 +243,6 @@ cat > ${php_info_path} << EOF
 	phpinfo();
 	?>
 EOF
-
 
 
 
