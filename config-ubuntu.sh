@@ -167,10 +167,11 @@ echo ${green}...................................................................
 # TODO: add fastcgi conf.
 php_config_file="/etc/php5/fpm/php.ini"
 www_conf="/etc/php5/fpm/pool.d/www.conf"
+fastcgi_conf="/etc/nginx/fastcgi.conf"
 nginx_conf="/etc/nginx/sites-available/default"
 nginx_conf_link="/etc/nginx/sites-enabled/default"
 server_name="my.localhost.com"
-php_info_path="/usr/share/nginx/html/info.php"
+php_info_path="/usr/share/nginx/html/${server_name}/info.php"
 # Install nginx
 apt-get update
  apt-get install nginx nginx-extras -y
@@ -199,8 +200,8 @@ sed -i "s/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g" ${php_config_file}
 sed -i "s/post_max_size = 8M/post_max_size = 200M/g" ${php_config_file}
 sed -i "s/upload_max_filesize = 2M/upload_max_filesize = 200M/g" ${php_config_file}
 # Change configuration www.conf
-#sed -i "s/;security.limit_extensions = .php .php3 .php4 .php5/security.limit_extensions = .php .php3 .php4 .php5/g" ${www_conf}
-#sed -i "s/;listen.mode = 0660/listen.mode = 0660/g" ${www_conf}
+sed -i "s/;security.limit_extensions = .php .php3 .php4 .php5/security.limit_extensions = .php .php3 .php4 .php5/g" ${www_conf}
+sed -i "s/;listen.mode = 0660/listen.mode = 0660/g" ${www_conf}
 service php5-fpm start
 # Configure nginx conf. file for our site
 cp ${nginx_conf} ${nginx_conf}.backup
@@ -210,7 +211,7 @@ cat > /etc/nginx/sites-available/${server_name} << EOF
 	server {
         listen 80 default_server;
         listen [::]:80 default_server ipv6only=on;
-        root /usr/share/nginx/html;
+        root /usr/share/nginx/html/${server_name};
         index index.php index.html index.htm;
         server_name ${server_name};
         location / {
@@ -227,116 +228,42 @@ cat > /etc/nginx/sites-available/${server_name} << EOF
         }
         location ~ \.php$ {
             try_files \$uri =404;
-            fastcgi_split_path_info ^(.+\.php)(/.+)$;
-            fastcgi_pass unix:/var/run/php5-fpm.sock;
-            fastcgi_index index.php;
-            include fastcgi.conf;
+            include ${fastcgi_conf};
+    		fastcgi_pass  127.0.0.1:9000;
         }
     }
 EOF
+# Configure fastcgi conf. file for our site
+cat > ${fastcgi_conf} << EOF
+	#fastcgi.conf
+	fastcgi_param  GATEWAY_INTERFACE  CGI/1.1;
+	fastcgi_param  SERVER_SOFTWARE    nginx;
+	fastcgi_param  QUERY_STRING       $query_string;
+	fastcgi_param  REQUEST_METHOD     $request_method;
+	fastcgi_param  CONTENT_TYPE       $content_type;
+	fastcgi_param  CONTENT_LENGTH     $content_length;
+	fastcgi_param  SCRIPT_FILENAME    $document_root$fastcgi_script_name;
+	fastcgi_param  SCRIPT_NAME        $fastcgi_script_name;
+	fastcgi_param  REQUEST_URI        $request_uri;
+	fastcgi_param  DOCUMENT_URI       $document_uri;
+	fastcgi_param  DOCUMENT_ROOT      $document_root;
+	fastcgi_param  SERVER_PROTOCOL    $server_protocol;
+	fastcgi_param  REMOTE_ADDR        $remote_addr;
+	fastcgi_param  REMOTE_PORT        $remote_port;
+	fastcgi_param  SERVER_ADDR        $server_addr;
+	fastcgi_param  SERVER_PORT        $server_port;
+	fastcgi_param  SERVER_NAME        $server_name;
+EOF
 ln -s /etc/nginx/sites-available/${server_name} /etc/nginx/sites-enabled/
 # Give permissions for log file
-sudo chmod 777 -R /var/log/nginx/error.log
-# Restart nginx and php5-fpm
-service nginx restart
-service php5-fpm restart
+chmod 777 -R /var/log/nginx/error.log
 # Create phpinfo() file
 cat > ${php_info_path} << EOF
 	<?php
 	phpinfo();
 	?>
 EOF
-
-
-
-
-
-
-
-
-# Install Apache2 and configure it
-echo ${green}.................................................................................................${reset}
-echo ${green}............................... Installing and Configuring Apache2 ..............................${reset}
-echo ${green}.................................................................................................${reset}
-sleep 5
-apt-get install apache2 libapache2-mod-php5 -y
-a2enmod rewrite ssl
-# Config servername
-echo "ServerName localhost" > /etc/apache2/conf-available/fqdn.conf
-a2enconf fqdn
-# Setting SSL for default site
-apt-get install ssl-cert -y
-a2ensite default-ssl
-# Enable mod_rewrite
-a2enmod rewrite
-# Enable mod_ssl
-a2enmod ssl
-service apache2 restart
-# Install MySQL
-echo ${green}.................................................................................................${reset}
-echo ${green}.................................... Installing MySQL Server ....................................${reset}
-echo ${green}.................................................................................................${reset}
-sleep 5
-# Set password for root account
-echo "mysql-server mysql-server/root_password password "${mysql_root_password} | debconf-set-selections
-echo "mysql-server mysql-server/root_password_again password "${mysql_root_password} | debconf-set-selections
-# Install mysql-server
-apt-get install mysql-server php5-mysql -y
-# Create informations
-mysql_install_db
-# Allow connections to this server from outside
-sed -i "s/bind-address\s*=\s*127.0.0.1/bind-address = 0.0.0.0/" ${mysql_config_file}
-mysql -u${mysql_root_user} -p${mysql_root_password} -e "GRANT ALL PRIVILEGES ON *.* TO root@'%' IDENTIFIED BY '$mysql_root_password';"
-mysql -u${mysql_root_user} -p${mysql_root_password} -e "FLUSH PRIVILEGES;"
-service mysql stop
-service mysql start
-#
-# Install php5
-#
-echo ${green}.................................................................................................${reset}
-echo ${green}........................................ Installing PHP .........................................${reset}
-echo ${green}.................................................................................................${reset}
-sleep 5
-php_config_file="/etc/php5/fpm/php.ini"
-apt-get install php5 php5-common php5-dev php5-cli php5-fpm -y
-# Install PHP extensions
-apt-get install php5 curl php5-curl php5-fpm php5-mysql mysql-server php5-gd php5-mcrypt php5-xdebug php5-memcached php5-memcache php5-json -y
-# Enable php5-mcrypt mode
-php5enmod mcrypt
-echo ${green}.................................................................................................${reset}
-echo ${green}..................................... Installing PHPMyAdmin .....................................${reset}
-echo ${green}.................................................................................................${reset}
-sleep 5
-# Install PhpMyAdmin
-echo "phpmyadmin phpmyadmin/reconfigure-webserver multiselect apache2" | debconf-set-selections
-echo "phpmyadmin phpmyadmin/dbconfig-install boolean true" | debconf-set-selections
-echo "phpmyadmin phpmyadmin/mysql/admin-user string root" | debconf-set-selections
-echo "phpmyadmin phpmyadmin/mysql/admin-pass password "${mysql_root_password} | debconf-set-selections
-echo "phpmyadmin phpmyadmin/mysql/app-pass password "${phpmyadmin_root_password} |debconf-set-selections
-echo "phpmyadmin phpmyadmin/app-password-confirm password "${phpmyadmin_password} | debconf-set-selections
-apt-get install phpmyadmin -y
-# Disable by default, as this will add to all VirtualHosts; instead, add the following to an Apache VirtualHost:
-echo "Include /etc/phpmyadmin/apache.conf" >> /etc/apache2/apache2.conf
-service apache2 reload
-# PHP Error Reporting Config
-sed -i "s/error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT/error_reporting = E_ALL" ${php_config_file}
-sed -i "s/html_errors = Off/html_errors = On" ${php_config_file}
-sed -i "s/display_startup_errors = Off/display_startup_errors = On" ${php_config_file}
-
-for ini in $(find /etc -name "php.ini")
-do
-    errRep=$(grep "^error_reporting = " "${ini}")
-    sed -i "s/${errRep}/error_reporting = E_ALL" ${ini}
-
-    dispErr=$(grep "^display_errors = " "${ini}")
-    sed -i "s/${dispErr}/display_errors = On/g" ${ini}
-
-    dispStrtErr=$(grep "^display_startup_errors = " "${ini}")
-    sed -i "s/${dispStrtErr}/display_startup_errors = On/g" ${ini}
-
-    dispHtmlErr=$(grep "^html_errors = " "${ini}")
-    sed -i "s/${dispHtmlErr}/html_errors = On/g" ${ini}
-done
+chmod 777 -R ${php_info_path}
 # xdebug configuring
 # TODO: check settings for xdebug
 xdebug="$(cat find / -name 'xdebug.so' 2> /dev/null)" 
@@ -358,7 +285,8 @@ cat > /etc/php/apache2/php.ini << EOF
 EOF
 # Restart services
 service mysql restart
-service apache2 restart
+service nginx restart
+service php5-fpm restart
 #
 # Install Virtualbox and Vagrant
 #
@@ -376,88 +304,6 @@ apt-get install virtualbox-dkms -y
 #echo ${root_pass} | VBoxManage extpack install ${ext_pack}
 # install Vagrant
 apt-get install vagrant -y
-#
-# Install Drupal 7
-#
-echo ${green}.................................................................................................${reset}
-echo ${green}.............................. Installing and Configuring Drupal 7 ..............................${reset}
-echo ${green}.................................................................................................${reset}
-sleep 5
-# Drupal variables
-drupal_version="drupal-7.41"
-drupal_folder="/var/www/html/${drupal_version}"
-drupal_superadmin="admin"
-drupal_pass="drupaladm1n"
-# Create DataBase for Drupal
-mysql -u${mysql_root_user} -p${mysql_root_password} -e "CREATE DATABASE ${drupal_version};"
-mysql -u${mysql_root_user} -p${mysql_root_password} -e "CREATE USER drupaluser@localhost IDENTIFIED BY '${mysql_root_password}';"
-mysql -u${mysql_root_user} -p${mysql_root_password} -e "GRANT SELECT,INSERT,UPDATE,DELETE,CREATE,DROP,INDEX,ALTER,CREATE TEMPORARY TABLES,LOCK TABLES ON drupal.* TO drupaluser@localhost;"
-mysql -u${mysql_root_user} -p${mysql_root_password} -e "FLUSH PRIVILEGES;"
-service mysql stop
-service mysql start
-a2enmod rewrite
-service apache2 restart
-# Install Drush
-apt-get install drush -y
-# TODO: Fix Drupal problems
-# Install Drupal
-cd /var/www/html
-drush dl ${drupal_version} -y
-mkdir ${drupal_folder}/sites/default/files
-mkdir ${drupal_folder}/sites/all/modules/contrib
-mkdir ${drupal_folder}/sites/all/modules/contrib
-mkdir ${drupal_folder}/sites/all/modules/custom
-cd ${drupal_folder}
-drush site-install standard --account-name=${drupal_superadmin} --account-pass=${drupal_pass} --db-url=mysql://${mysql_root_user}:${mysql_root_password}@localhost/${drupal_version} -y
-cd ${drupal_folder}/sites/all/modules/contrib
-drush en globalredirect, admin_menu, views, pathauto, elysia_cron, imce, subpathauto, transliteration, token, ctools, link, email, menu_block, views_bulk_operations, nodequeue, field_group, devel, auto_nodetitle, date, masquerade, page_title, module_filter -y
-cp /var/www/html/sites/default/default.settings.php ${drupal_folder}/sites/default/settings.php
-chmod 664 ${drupal_folder}/sites/default/settings.php
-chown -R :www-data /var/www/html/*
-# TODO: add /etc/hosts configuration and config files in sites-available (sites enabled)
-#
-# Install SublimeText 3
-#
-# Licence code here - https://gist.github.com/J2TeaM/9f24a57d5832e475fc4d
-echo ${green}.................................................................................................${reset}
-echo ${green}.................................... Installing SublimeText 3 ...................................${reset}
-echo ${green}.................................................................................................${reset}
-sleep 5
-echo -ne '\n' | add-apt-repository ppa:webupd8team/sublime-text-3
-apt-get update
-apt-get install sublime-text-installer -y
-#
-# Install PhpStorm 10
-#
-# TODO: solve problems with pop-ups in PHP Storm
-# Licence code here - https://бэкдор.рф/phpstorm-7-8-9-10-product-key/
-echo ${green}.................................................................................................${reset}
-echo ${green}............................. Installing and Configuring PHPStopm 10 ............................${reset}
-echo ${green}.................................................................................................${reset}
-sleep 5
-# Install dependencies
-echo -ne '\n' | add-apt-repository ppa:webupd8team/java
-apt-get update
-apt-get install oracle-java7-installer -y
-apt-get install oracle-java7-set-default -y
-# Install PhpStorm
-wget http://download-cf.jetbrains.com/webide/PhpStorm-10.0.2.tar.gz
-tar -xvf PhpStorm-10.0.2.tar.gz
-cd PhpStorm-143.1184.87/bin/
-./phpstorm.sh || TRUE
-#
-# Install HipChat
-#
-echo ${green}.................................................................................................${reset}
-echo ${green}...................................... Installing HipChat .......................................${reset}
-echo ${green}.................................................................................................${reset}
-sleep 5
-echo osboxes.org | sudo su
-echo "deb http://downloads.hipchat.com/linux/apt stable main" > /etc/apt/sources.list.d/atlassian-hipchat.list
-wget -O - https://www.hipchat.com/keys/hipchat-linux.key | apt-key add -
-apt-get update
-apt-get install hipchat
-#exit
 echo ${green}.................................................................................................${reset}
 echo ${green}.............................................. DONE .............................................${reset}
 echo ${green}.................................................................................................${reset}
