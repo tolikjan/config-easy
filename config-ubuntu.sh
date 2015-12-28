@@ -168,6 +168,7 @@ echo ${green}...................................................................
 php_config_file="/etc/php5/fpm/php.ini"
 www_conf="/etc/php5/fpm/pool.d/www.conf"
 nginx_conf="/etc/nginx/sites-available/default"
+nginx_conf_link="/etc/nginx/sites-enabled/default"
 server_name="my.localhost.com"
 php_info_path="/usr/share/nginx/html/info.php"
 # Install nginx
@@ -200,12 +201,13 @@ sed -i "s/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g" ${php_config_file}
 sed -i "s/post_max_size = 8M/post_max_size = 200M/g" ${php_config_file}
 sed -i "s/upload_max_filesize = 2M/upload_max_filesize = 200M/g" ${php_config_file}
 # Change configuration www.conf
-sed -i "s/;security.limit_extensions = .php .php3 .php4 .php5/security.limit_extensions = .php .php3 .php4 .php5/g" ${www_conf}
-sed -i "s/;listen.mode = 0660/listen.mode = 0660/g" ${www_conf}
+#sed -i "s/;security.limit_extensions = .php .php3 .php4 .php5/security.limit_extensions = .php .php3 .php4 .php5/g" ${www_conf}
+#sed -i "s/;listen.mode = 0660/listen.mode = 0660/g" ${www_conf}
 service php5-fpm start
 # Configure nginx conf. file for our site
-cp ${nginx_conf} /etc/nginx/sites-available/${server_name}
-ln -s /etc/nginx/sites-available/${server_name} /etc/nginx/sites-enabled/
+cp ${nginx_conf} ${nginx_conf}.backup
+rm -rf ${nginx_conf}
+rm -rf ${nginx_conf_link}
 cat > /etc/nginx/sites-available/${server_name} << EOF
 	server {
         listen 80 default_server;
@@ -216,7 +218,7 @@ cat > /etc/nginx/sites-available/${server_name} << EOF
         location / {
             # First attempt to serve request as file, then
             # as directory, then fall back to displaying a 404.
-            try_files $uri $uri/ =404;
+            try_files \$uri \$uri/ =404;
             # Uncomment to enable naxsi on this location
             # include /etc/nginx/naxsi.rules
         }
@@ -226,7 +228,7 @@ cat > /etc/nginx/sites-available/${server_name} << EOF
             root /usr/share/nginx/html;
         }
         location ~ \.php$ {
-            try_files $uri =404;
+            try_files \$uri =404;
             fastcgi_split_path_info ^(.+\.php)(/.+)$;
             fastcgi_pass unix:/var/run/php5-fpm.sock;
             fastcgi_index index.php;
@@ -234,6 +236,9 @@ cat > /etc/nginx/sites-available/${server_name} << EOF
         }
     }
 EOF
+ln -s /etc/nginx/sites-available/${server_name} /etc/nginx/sites-enabled/
+# Give permissions for log file
+sudo chmod 777 -R /var/log/nginx/error.log
 # Restart nginx and php5-fpm
 service nginx restart
 service php5-fpm restart
@@ -342,7 +347,7 @@ cat > /etc/php/apache2/php.ini << EOF
     xdebug.remote_autostart=1
     xdebug.remote_enable=1
     xdebug.remote_connect_back=1
-    xdebug.remote_port=9000
+    xdebug.remote_port=9002
     xdebug.idekey=PHP_STORM
     xdebug.scream=0
     xdebug.cli_color=1
