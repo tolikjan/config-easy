@@ -210,50 +210,84 @@ rm -rf ${nginx_conf}
 rm -rf ${nginx_conf_link}
 cat > /etc/nginx/sites-available/${server_name} << EOF
 	server {
-        listen 80 default_server;
-        listen [::]:80 default_server ipv6only=on;
-        root /usr/share/nginx/html/${server_name};
-        index index.php index.html index.htm;
+        # This will listen on all interfaces, you can instead choose a specific IP
+        # such as listen x.x.x.x:80;  Setting listen 80 default_server; will make
+        # this server block the default one if no other blocks match the request
+        listen 80;
+        # .domain.com will match both domain.com and anything.domain.com
         server_name ${server_name};
-        location / {
-            # First attempt to serve request as file, then
-            # as directory, then fall back to displaying a 404.
-            try_files \$uri \$uri/ =404;
-            # Uncomment to enable naxsi on this location
-            # include /etc/nginx/naxsi.rules
+ 
+        # It is best to place the root of the server block at the server level, and not the location level
+        # any location block path will be relative to this root. 
+        root /usr/share/nginx/html/${server_name};
+ 
+        # It's always good to set logs, note however you cannot turn off the error log
+        # setting error_log off; will simply create a file called 'off'.
+        access_log /var/log/nginx/${server_name}.access.log;
+        error_log /var/log/nginx/${server_name}.error.log;
+ 
+        # This can also go in the http { } level
+        index index.html index.htm index.php;
+ 
+        location / { 
+            # if you're just using wordpress and don't want extra rewrites
+            # then replace the word @rewrites with /index.php
+            try_files $uri $uri/ @rewrites;
         }
-        error_page 404 /404.html;
-        error_page 500 502 503 504 /50x.html;
-        location = /50x.html {
-            root /usr/share/nginx/html;
+ 
+        location @rewrites {
+            # Can put some of your own rewrite rules in here
+            # for example rewrite ^/~(.*)/(.*)/? /users/$1/$2 last;
+            # If nothing matches we'll just send it to /index.php
+            rewrite ^ /index.php last;
         }
-        location ~ \.php$ {
-            try_files \$uri =404;
-            include ${fastcgi_conf};
-    		fastcgi_pass  127.0.0.1:9000;
+ 
+        # This block will catch static file requests, such as images, css, js
+        # The ?: prefix is a 'non-capturing' mark, meaning we do not require
+        # the pattern to be captured into $1 which should help improve performance
+        location ~* \.(?:ico|css|js|gif|jpe?g|png)$ {
+            # Some basic cache-control for static files to be sent to the browser
+            expires max;
+            add_header Pragma public;
+            add_header Cache-Control "public, must-revalidate, proxy-revalidate";
+        }
+ 
+        # remove the robots line if you want to use wordpress' virtual robots.txt
+        location = /robots.txt  { access_log off; log_not_found off; }
+        location = /favicon.ico { access_log off; log_not_found off; }  
+ 
+        # this prevents hidden files (beginning with a period) from being served
+        location ~ /\.          { access_log off; log_not_found off; deny all; }
+ 
+        location ~ \.php {
+            fastcgi_param  QUERY_STRING       \$query_string;
+            fastcgi_param  REQUEST_METHOD     \$request_method;
+            fastcgi_param  CONTENT_TYPE       \$content_type;
+            fastcgi_param  CONTENT_LENGTH     \$content_length;
+ 
+            fastcgi_param  SCRIPT_NAME        \$fastcgi_script_name;
+            fastcgi_param  SCRIPT_FILENAME    \$document_root$fastcgi_script_name;
+            fastcgi_param  REQUEST_URI        \$request_uri;
+            fastcgi_param  DOCUMENT_URI       \$document_uri;
+            fastcgi_param  DOCUMENT_ROOT      \$document_root;
+            fastcgi_param  SERVER_PROTOCOL    \$server_protocol;
+ 
+            fastcgi_param  GATEWAY_INTERFACE  CGI/1.1;
+            fastcgi_param  SERVER_SOFTWARE    nginx;
+ 
+            fastcgi_param  REMOTE_ADDR        \$remote_addr;
+            fastcgi_param  REMOTE_PORT        \$remote_port;
+            fastcgi_param  SERVER_ADDR        \$server_addr;
+            fastcgi_param  SERVER_PORT        \$server_port;
+            fastcgi_param  SERVER_NAME        \$server_name;
+ 
+            # If using a unix socket...
+            # fastcgi_pass unix:/tmp/php5-fpm.sock;
+ 
+            # If using a TCP connection...
+            fastcgi_pass 127.0.0.1:9000;
         }
     }
-EOF
-# Configure fastcgi conf. file for our site
-cat > ${fastcgi_conf} << EOF
-	#fastcgi.conf
-	fastcgi_param  GATEWAY_INTERFACE  CGI/1.1;
-	fastcgi_param  SERVER_SOFTWARE    nginx;
-	fastcgi_param  QUERY_STRING       $query_string;
-	fastcgi_param  REQUEST_METHOD     $request_method;
-	fastcgi_param  CONTENT_TYPE       $content_type;
-	fastcgi_param  CONTENT_LENGTH     $content_length;
-	fastcgi_param  SCRIPT_FILENAME    $document_root$fastcgi_script_name;
-	fastcgi_param  SCRIPT_NAME        $fastcgi_script_name;
-	fastcgi_param  REQUEST_URI        $request_uri;
-	fastcgi_param  DOCUMENT_URI       $document_uri;
-	fastcgi_param  DOCUMENT_ROOT      $document_root;
-	fastcgi_param  SERVER_PROTOCOL    $server_protocol;
-	fastcgi_param  REMOTE_ADDR        $remote_addr;
-	fastcgi_param  REMOTE_PORT        $remote_port;
-	fastcgi_param  SERVER_ADDR        $server_addr;
-	fastcgi_param  SERVER_PORT        $server_port;
-	fastcgi_param  SERVER_NAME        $server_name;
 EOF
 ln -s /etc/nginx/sites-available/${server_name} /etc/nginx/sites-enabled/
 # Give permissions for log file
@@ -268,7 +302,7 @@ chmod 777 -R ${php_info_path}
 # xdebug configuring
 # TODO: check settings for xdebug
 xdebug="$(cat find / -name 'xdebug.so' 2> /dev/null)" 
-echo "zend_extension="${xdebug}"" >> ${php_config_file}
+echo "zend_extension=\"$xdebug\"" >> ${php_config_file}
 cat > /etc/php/apache2/php.ini << EOF
     xdebug.remote_autostart=1
     xdebug.remote_enable=1
