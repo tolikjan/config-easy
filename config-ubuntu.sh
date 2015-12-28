@@ -303,7 +303,7 @@ chmod 777 -R ${php_info_path}
 # TODO: check settings for xdebug
 xdebug="$(cat find / -name 'xdebug.so' 2> /dev/null)" 
 echo "zend_extension=\"$xdebug\"" >> ${php_config_file}
-cat > /etc/php/apache2/php.ini << EOF
+cat > ${php_config_file} << EOF
     xdebug.remote_autostart=1
     xdebug.remote_enable=1
     xdebug.remote_connect_back=1
