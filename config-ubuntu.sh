@@ -184,10 +184,8 @@ apt-get install mysql-server -y
 mysql_install_db
 # Run secure instalation for MySQL
 echo "mysql-server mysql-server/root_password password "${mysql_root_password} | debconf-set-selections
-echo -e "\ny\ny\n${mysql_root_password}\n${mysql_root_password}\ny\ny\ny\ny" | ./usr/bin/mysql_secure_installation
-# TODO: check this shit above
 # install PHP and php-packages
-apt-get install php5-cli php5-common php5-mysql php5-gd php5-fpm php5-cgi php5-fpm php-pear php5-mcrypt php5-xdebug -y
+apt-get install php5 php5-cli php5-common php5-mysql php5-gd php5-fpm php5-cgi php5-fpm php-pear php5-mcrypt php5-xdebug -y
 # Stop services
 service nginx stop
 service php5-fpm stop
@@ -341,7 +339,7 @@ do
 done
 # xdebug configuring
 # TODO: check settings for xdebug
-xdebug=$( cat find / -name 'xdebug.so' 2> /dev/null ) 
+xdebug="$(cat find / -name 'xdebug.so' 2> /dev/null)" 
 echo "zend_extension="${xdebug}"" >> ${php_config_file}
 cat > /etc/php/apache2/php.ini << EOF
     xdebug.remote_autostart=1
