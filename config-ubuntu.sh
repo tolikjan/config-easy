@@ -205,6 +205,7 @@ sed -i "s/;listen.mode = 0660/listen.mode = 0660/g" ${www_conf}
 service php5-fpm start
 # Configure nginx conf. file for our site
 cp ${nginx_conf} ${nginx_conf}.backup
+mkdir /usr/share/nginx/html/${server_name}
 rm -rf ${nginx_conf}
 rm -rf ${nginx_conf_link}
 cat > /etc/nginx/sites-available/${server_name} << EOF
@@ -307,10 +308,4 @@ apt-get install vagrant -y
 echo ${green}.................................................................................................${reset}
 echo ${green}.............................................. DONE .............................................${reset}
 echo ${green}.................................................................................................${reset}
-#
-# Print credentials
-#
-if [[ $phpmyadmin_password ]]; then echo "${red}...phpMyAdmin is not installed...${reset}"; else echo "${green}...phpmyadmin_password is set - ${phpmyadmin_password}...${reset}"; fi
-if [[ $mysql_root_password ]]; then echo "${red}...MySQL is not installed...${reset}"; else echo "${green}...mysql_root_user is set - ${mysql_root_user}...${reset}" '\n' "${green}...mysql_root_password is set - ${mysql_root_password}...${reset}"; fi
-if [[ $drupal_version ]]; then echo "${red}...Drupal is not installed...${reset}"; else echo "${green}...Drupal version is - ${drupal_version}...${reset}" '\n' "${green}...Path to Drupal folder - ${drupal_folder}...${reset}" '\n' "${green}...Superadmin username is set - ${drupal_superadmin}...${reset}" '\n' "${green}...Password for Superadmin to Drupal - ${drupal_pass}...${reset}"; fi
 
