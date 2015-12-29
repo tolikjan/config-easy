@@ -3,17 +3,13 @@
 # This script will be helpful after reinstalling you operating system
 # Tested on Ubuntu 14.04.3 64x
 
-# Password for root user
-root_pass="osboxes.org"
+# Password for root user for ubuntu box http://sourceforge.net/projects/osboxes/files/vms/vbox/Ubuntu/14.04/14.04.3/Ubuntu_14.04.3-64bit.7z/download
+#root_pass="osboxes.org"
 
 # coloured variables
 red=`tput setaf 1`
 green=`tput setaf 2`
 reset=`tput sgr0`
-
-# php variables
-#php_config_file="/etc/php5/cli/php.ini"
-directory_config_file="/etc/apache2/mods-enabled/dir.conf"
 
 # mysql variables
 mysql_config_file="/etc/mysql/my.cnf"
@@ -164,10 +160,11 @@ echo ${green}...................................................................
 echo ${green}.............. Installing and Configuring LEMP - Linux + nginx + MySQL + PHPMyAdmin .............${reset}
 echo ${green}.................................................................................................${reset}
 # Set Up variables
-# TODO: add fastcgi conf.
-php_config_file1="/etc/php5/fpm/php.ini"
-php_config_file2="/etc/php5/cli/php.ini"
-php_config_file3="/etc/php5/cgi/php.ini"
+# TODO: Do something with this fucking web server
+php_config_file_1="/etc/php5/fpm/php.ini"
+php_config_file_2="/etc/php5/cli/php.ini"
+php_config_file_3="/etc/php5/cgi/php.ini"
+
 www_conf="/etc/php5/fpm/pool.d/www.conf"
 fastcgi_conf="/etc/nginx/fastcgi.conf"
 nginx_conf="/etc/nginx/nginx.conf"
