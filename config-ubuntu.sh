@@ -3,13 +3,16 @@
 # This script will be helpful after reinstalling you operating system
 # Tested on Ubuntu 14.04.3 64x
 
+# Password for root user
+root_pass="osboxes.org"
+
 # coloured variables
 red=`tput setaf 1`
 green=`tput setaf 2`
 reset=`tput sgr0`
 
 # php variables
-php_config_file="/etc/php5/cli/php.ini"
+#php_config_file="/etc/php5/cli/php.ini"
 directory_config_file="/etc/apache2/mods-enabled/dir.conf"
 
 # mysql variables
@@ -34,10 +37,14 @@ echo ${green}...................................................................
 echo ${green}.................................... Installing Google Chrome ...................................${reset}
 echo ${green}.................................................................................................${reset}
 sleep 5
-wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
-sh -c 'echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
-sudo apt-get update
-sudo apt-get install google-chrome-stable
+#wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+#sh -c 'echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
+#sudo apt-get update
+#sudo apt-get install google-chrome-stable -y
+wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+dpkg -i ./google-chrome*.deb
+apt-get install -f -y
+rm -rf google-chrome-stable_current_amd64.deb
 #
 # Install Flash player for Firefox
 #
@@ -54,6 +61,15 @@ echo ${green}..................................... Installing Tweak Tools ......
 echo ${green}.................................................................................................${reset}
 sleep 5
 apt-get install unity-tweak-tool
+#
+# Install utilites for archive manager with 7z and rar support
+#
+echo ${green}.................................................................................................${reset}
+echo ${green}.................................... Installing 7z and Unrar ....................................${reset}
+echo ${green}.................................................................................................${reset}
+sleep 5
+apt-get install p7zip-full -y
+sudo apt-get install unrar -y
 #
 # Install Skype
 #
@@ -73,13 +89,13 @@ apt-get install libasound2-plugins:i386 -y
 #
 # Install Tor Browser
 #
-# TODO: fix instalation for Tor Browser
 echo ${green}.................................................................................................${reset}
 echo ${green}..................................... Installing Tor Browser ....................................${reset}
 echo ${green}.................................................................................................${reset}
 sleep 5
 echo -ne '\n' | add-apt-repository ppa:webupd8team/tor-browser
-apt-get install tor-browser
+apt-get update
+apt-get install tor-browser -y
 #
 # Install Shutter
 #
@@ -122,27 +138,177 @@ apt-get install php5-curl -y
 apt-get install curl php5-cli git -y
 curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 #
-# Install Java
+# Install Selenium Server
 #
 echo ${green}.................................................................................................${reset}
-echo ${green}........................................ Installing Java ........................................${reset}
+echo ${green}.................................. Installing Selenium Server ...................................${reset}
 echo ${green}.................................................................................................${reset}
 sleep 5
 echo -ne '\n' | add-apt-repository ppa:webupd8team/java
 apt-get update
-# To install Oracle JDK:
-apt-get install oracle-java7-installer -y
-# To automatically set up the Java 7 environment variables JAVA_HOME and PATH:
-#apt-get install oracle-java7-set-default -y
-# To install the Java Runtime Environment (JRE):
-apt-get install openjdk-7-jre -y
-# To install OpenJDK 7:
-apt-get install openjdk-7-jdk -y
-# To install Java runtime environment using GIJ/Classpath (headless version):
-apt-get install gcj-4.9-jre-headless -y
+# Create folder for Selenium
+mkdir ~/selenium
+chmod 777 -R selenium/
+cd ~/selenium
+# Get Selenium and install headless Java runtime
+wget http://selenium-release.storage.googleapis.com/2.44/selenium-server-standalone-2.44.0.jar
+apt-get install openjdk-7-jre-headless -y
+# Install headless GUI for firefox. 'Xvfb is a display server that performs graphical operations in memory'
+#apt-get install xvfb -y
+# Starting up Selenium server
+#DISPLAY=:1 xvfb-run java -jar ~/selenium/selenium-server-standalone-2.44.0.jar
 #
 # Install LEMP (nginx + MySQL + PHPMyAdmin) and configure it
 #
+echo ${green}.................................................................................................${reset}
+echo ${green}.............. Installing and Configuring LEMP - Linux + nginx + MySQL + PHPMyAdmin .............${reset}
+echo ${green}.................................................................................................${reset}
+# Set Up variables
+# TODO: add fastcgi conf.
+php_config_file="/etc/php5/fpm/php.ini"
+www_conf="/etc/php5/fpm/pool.d/www.conf"
+nginx_conf="/etc/nginx/sites-available/default"
+server_name="my.localhost.com"
+php_info_path="/var/www/html/info.php"
+# Install nginx
+apt-get update
+apt-get install nginx -y
+service nginx start
+# Set password for root account
+echo "mysql-server mysql-server/root_password password "${mysql_root_password} | debconf-set-selections
+echo "mysql-server mysql-server/root_password_again password "${mysql_root_password} | debconf-set-selections
+# Install MySQL-server
+apt-get install mysql-server -y
+# We should activate MySQL with this command:
+mysql_install_db
+# Run secure instalation for MySQL
+#echo "mysql-server mysql-server/root_password password "${mysql_root_password} | debconf-set-selections
+/usr/bin/mysql_secure_installation -y
+
+# TODO: fix problems with this shit below
+
+# Delete package expect when script is done
+# 0 - No; 
+# 1 - Yes.
+PURGE_EXPECT_WHEN_DONE=0
+#
+# Check the bash shell script is being run by root
+#
+if [[ $EUID -ne 0 ]]; then
+   echo "This script must be run as root" 1>&2
+   exit 1
+fi
+#
+# Check input params
+#
+if [ -n "${1}" -a -z "${2}" ]; then
+    # Setup root password
+    CURRENT_MYSQL_PASSWORD=''
+    NEW_MYSQL_PASSWORD="${1}"
+elif [ -n "${1}" -a -n "${2}" ]; then
+    # Change existens root password
+    CURRENT_MYSQL_PASSWORD="${1}"
+    NEW_MYSQL_PASSWORD="${2}"
+else
+    echo "Usage:"
+    echo "  Setup mysql root password: ${0} 'your_new_root_password'"
+    echo "  Change mysql root password: ${0} 'your_old_root_password' 'your_new_root_password'"
+    exit 1
+fi
+#
+# Check is expect package installed
+#
+if [ $(dpkg-query -W -f='${Status}' expect 2>/dev/null | grep -c "ok installed") -eq 0 ]; then
+    echo "Can't find expect. Trying install it..."
+    apt-get install expect -y
+fi
+SECURE_MYSQL=$(expect -c "
+set timeout 3
+spawn mysql_secure_installation
+expect \"Enter current password for root (enter for none):\"
+send \"$CURRENT_MYSQL_PASSWORD\r\"
+expect \"root password?\"
+send \"y\r\"
+expect \"New password:\"
+send \"$NEW_MYSQL_PASSWORD\r\"
+expect \"Re-enter new password:\"
+send \"$NEW_MYSQL_PASSWORD\r\"
+expect \"Remove anonymous users?\"
+send \"y\r\"
+expect \"Disallow root login remotely?\"
+send \"y\r\"
+expect \"Remove test database and access to it?\"
+send \"y\r\"
+expect \"Reload privilege tables now?\"
+send \"y\r\"
+expect eof
+")
+#
+# Execution mysql_secure_installation
+#
+echo "${SECURE_MYSQL}"
+if [ "${PURGE_EXPECT_WHEN_DONE}" -eq 1 ]; then
+    # Uninstalling expect package
+    apt-get purge expect -y
+fi
+
+
+# install PHP and php-packages
+apt-get install php5 curl php5-curl php5-fpm php5-mysql mysql-server php5-gd php5-mcrypt php5-xdebug php5-memcached php5-memcache php5-json -y
+# Change configuration for better security and convenience
+sed -i "s/error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT/error_reporting = E_ALL/g" ${php_config_file}
+sed -i "s/html_errors = Off/html_errors = On/g" ${php_config_file}
+sed -i "s/display_startup_errors = Off/display_startup_errors = On/g" ${php_config_file}
+sed -i "s/display_errors = Off/display_errors = On/g" ${php_config_file}
+sed -i "s/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g" ${php_config_file}
+service php5-fpm restart
+# Configure nginx conf. file
+cp ${nginx_conf} ${nginx_conf}.backup
+cat > ${nginx_conf} << EOF
+	server {
+        listen 80 default_server;
+        listen [::]:80 default_server ipv6only=on;
+        root /var/www/html;
+        index index.php index.html index.htm;
+        server_name ${server_name};
+        location / {
+            # First attempt to serve request as file, then
+            # as directory, then fall back to displaying a 404.
+            try_files $uri $uri/ =404;
+            # Uncomment to enable naxsi on this location
+            # include /etc/nginx/naxsi.rules
+        }
+        error_page 404 /404.html;
+        error_page 500 502 503 504 /50x.html;
+        location = /50x.html {
+            root /usr/share/nginx/html;
+        }
+        location ~ \.php$ {
+            try_files $uri =404;
+            fastcgi_split_path_info ^(.+\.php)(/.+)$;
+            fastcgi_pass unix:/var/run/php5-fpm.sock;
+            fastcgi_index index.php;
+            include fastcgi.conf;
+        }
+    }
+EOF
+mkdir -p /var/www/html
+cp /usr/share/nginx/html/index.html /var/www/html/
+# Restart nginx and php5-fpm
+service nginx restart
+service php5-fpm restart
+# Create phpinfo() file
+cat > ${php_info_path} << EOF
+	<?php
+	phpinfo();
+	?>
+EOF
+
+
+
+
+
+
 
 # Install Apache2 and configure it
 echo ${green}.................................................................................................${reset}
@@ -180,16 +346,17 @@ mysql -u${mysql_root_user} -p${mysql_root_password} -e "GRANT ALL PRIVILEGES ON 
 mysql -u${mysql_root_user} -p${mysql_root_password} -e "FLUSH PRIVILEGES;"
 service mysql stop
 service mysql start
+#
 # Install php5
+#
 echo ${green}.................................................................................................${reset}
 echo ${green}........................................ Installing PHP .........................................${reset}
 echo ${green}.................................................................................................${reset}
 sleep 5
+php_config_file="/etc/php5/fpm/php.ini"
 apt-get install php5 php5-common php5-dev php5-cli php5-fpm -y
 # Install PHP extensions
-apt-get install php5-mysql php5-pgsql -y
-apt-get install curl php5-curl php5-gd php-db php5-mcrypt php5-imagick php5-intl php5-xdebug -y
-apt-get install php5-memcached php5-memcache php5-json -y
+apt-get install php5 curl php5-curl php5-fpm php5-mysql mysql-server php5-gd php5-mcrypt php5-xdebug php5-memcached php5-memcache php5-json -y
 # Enable php5-mcrypt mode
 php5enmod mcrypt
 echo ${green}.................................................................................................${reset}
@@ -208,6 +375,10 @@ apt-get install phpmyadmin -y
 echo "Include /etc/phpmyadmin/apache.conf" >> /etc/apache2/apache2.conf
 service apache2 reload
 # PHP Error Reporting Config
+sed -i "s/error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT/error_reporting = E_ALL" ${php_config_file}
+sed -i "s/html_errors = Off/html_errors = On" ${php_config_file}
+sed -i "s/display_startup_errors = Off/display_startup_errors = On" ${php_config_file}
+
 for ini in $(find /etc -name "php.ini")
 do
     errRep=$(grep "^error_reporting = " "${ini}")
@@ -251,22 +422,31 @@ echo ${green}...................................................................
 echo ${green}................................ Installing VirtualBox and Vagrant ..............................${reset}
 echo ${green}.................................................................................................${reset}
 sleep 5
+# Before using VirtualBox, make sure that virtualization is enabled in your BIOS settings
 apt-get install virtualbox -y
-apt-get install vagrant -y
 apt-get install virtualbox-dkms -y
+# Install Extension Pack for VirtualBox
+# You can check latest extension pack version here - https://www.virtualbox.org/wiki/Downloads
+#ext_pack="Oracle_VM_VirtualBox_Extension_Pack-5.0.12-104815.vbox-extpack"
+#wget http://download.virtualbox.org/virtualbox/5.0.12/${ext_pack}
+#echo ${root_pass} | VBoxManage extpack install ${ext_pack}
+# install Vagrant
+apt-get install vagrant -y
+#
 # Install Drupal 7
+#
+echo ${green}.................................................................................................${reset}
+echo ${green}.............................. Installing and Configuring Drupal 7 ..............................${reset}
+echo ${green}.................................................................................................${reset}
+sleep 5
 # Drupal variables
 drupal_version="drupal-7.41"
 drupal_folder="/var/www/html/${drupal_version}"
 drupal_superadmin="admin"
 drupal_pass="drupaladm1n"
-echo ${green}.................................................................................................${reset}
-echo ${green}.............................. Installing and Configuring Drupal 7 ..............................${reset}
-echo ${green}.................................................................................................${reset}
-sleep 5
 # Create DataBase for Drupal
-mysql -u${mysql_root_user} -p${mysql_root_password} -e "CREATE DATABASE drupal;"
-mysql -u${mysql_root_user} -p${mysql_root_password} -e "CREATE USER drupaluser@localhost IDENTIFIED BY 'root';"
+mysql -u${mysql_root_user} -p${mysql_root_password} -e "CREATE DATABASE ${drupal_version};"
+mysql -u${mysql_root_user} -p${mysql_root_password} -e "CREATE USER drupaluser@localhost IDENTIFIED BY '${mysql_root_password}';"
 mysql -u${mysql_root_user} -p${mysql_root_password} -e "GRANT SELECT,INSERT,UPDATE,DELETE,CREATE,DROP,INDEX,ALTER,CREATE TEMPORARY TABLES,LOCK TABLES ON drupal.* TO drupaluser@localhost;"
 mysql -u${mysql_root_user} -p${mysql_root_password} -e "FLUSH PRIVILEGES;"
 service mysql stop
@@ -284,7 +464,7 @@ mkdir ${drupal_folder}/sites/all/modules/contrib
 mkdir ${drupal_folder}/sites/all/modules/contrib
 mkdir ${drupal_folder}/sites/all/modules/custom
 cd ${drupal_folder}
-drush site-install standard --account-name=${drupal_superadmin} --account-pass=${drupal_pass} --db-url=mysql://${mysql_root_user}:${mysql_root_password}@localhost/drupal -y
+drush site-install standard --account-name=${drupal_superadmin} --account-pass=${drupal_pass} --db-url=mysql://${mysql_root_user}:${mysql_root_password}@localhost/${drupal_version} -y
 cd ${drupal_folder}/sites/all/modules/contrib
 drush en globalredirect, admin_menu, views, pathauto, elysia_cron, imce, subpathauto, transliteration, token, ctools, link, email, menu_block, views_bulk_operations, nodequeue, field_group, devel, auto_nodetitle, date, masquerade, page_title, module_filter -y
 cp /var/www/html/sites/default/default.settings.php ${drupal_folder}/sites/default/settings.php
@@ -311,6 +491,12 @@ echo ${green}...................................................................
 echo ${green}............................. Installing and Configuring PHPStopm 10 ............................${reset}
 echo ${green}.................................................................................................${reset}
 sleep 5
+# Install dependencies
+echo -ne '\n' | add-apt-repository ppa:webupd8team/java
+apt-get update
+apt-get install oracle-java7-installer -y
+apt-get install oracle-java7-set-default -y
+# Install PhpStorm
 wget http://download-cf.jetbrains.com/webide/PhpStorm-10.0.2.tar.gz
 tar -xvf PhpStorm-10.0.2.tar.gz
 cd PhpStorm-143.1184.87/bin/
