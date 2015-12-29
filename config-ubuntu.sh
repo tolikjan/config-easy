@@ -161,164 +161,76 @@ echo ${green}.............. Installing and Configuring LEMP - Linux + nginx + My
 echo ${green}.................................................................................................${reset}
 # Set Up variables
 # TODO: Do something with this fucking web server
+# php.ini path
 php_config_file_1="/etc/php5/fpm/php.ini"
 php_config_file_2="/etc/php5/cli/php.ini"
 php_config_file_3="/etc/php5/cgi/php.ini"
-
+# Server name
+server_name="local.host"
+# Nginx config files
 www_conf="/etc/php5/fpm/pool.d/www.conf"
-fastcgi_conf="/etc/nginx/fastcgi.conf"
 nginx_conf="/etc/nginx/nginx.conf"
-site_conf="/etc/nginx/sites-available/"
-default_site_conf="/etc/nginx/sites-available/default"
-default_site_conf_link="/etc/nginx/sites-enabled/default"
+default_nginx_conf="/etc/nginx/sites-available/default"
+default_nginx_conf_link="/etc/nginx/sites-available/default"
+local_conf="/etc/nginx/sites-available/local.host"
+local_path="/usr/share/nginx/html/local.host"
 mime_types="/etc/nginx/mime.types"
 proxy_conf="/etc/nginx/proxy.conf"
 fastcgi_conf="/etc/nginx/fastcgi.conf"
-fastcgi_server="server1.com"
-proxy_server="server2.com"
-server_name="my.localhost"
-php_info_path="/usr/share/nginx/html/${server_name}/info.php"
+#
 # Install nginx
+#
 apt-get update
-apt-get install nginx nginx-extras -y
+apt-get install nginx -y
 service nginx start
 # Set password for root account
 echo "mysql-server mysql-server/root_password password "${mysql_root_password} | debconf-set-selections
 echo "mysql-server mysql-server/root_password_again password "${mysql_root_password} | debconf-set-selections
 # Install MySQL-server
-apt-get install mysql-server -y
-# We should activate MySQL with this command:
-mysql_install_db
+apt-get install mysql-server php5-mysql -y
 #
-# Install php5
+# Install php5 and related modules
 #
 echo ${green}.................................................................................................${reset}
 echo ${green}........................................ Installing PHP .........................................${reset}
 echo ${green}.................................................................................................${reset}
 sleep 5
 php_config_file="/etc/php5/fpm/php.ini"
-apt-get install php5 php5-common php5-dev php5-cli php5-fpm -y
-# Install PHP extensions
-apt-get install php5 curl php5-curl php5-fpm php5-mysql mysql-server php5-gd php5-mcrypt php5-xdebug php5-memcached php5-memcache php5-json -y
-# Enable php5-mcrypt mode
-php5enmod mcrypt
-# Run secure instalation for MySQL
-echo "mysql-server mysql-server/root_password password "${mysql_root_password} | debconf-set-selections
-# install PHP and php-packages
-apt-get install php5 php5-cli php5-common php5-mysql php5-gd php5-fpm php5-cgi php5-fpm php-pear php5-mcrypt php5-xdebug -y
+apt-get install php5 php5-common php5-cli php5-fpm php5-gd php5-xdebug -y
 # Stop services
 service nginx stop
 service php5-fpm stop
 # Change configuration for better security and convenience
-sed -i "s/error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT/error_reporting = E_ALL/g" ${php_config_file1}
-sed -i "s/html_errors = Off/html_errors = On/g" ${php_config_file1}
-sed -i "s/display_startup_errors = Off/display_startup_errors = On/g" ${php_config_file1}
-sed -i "s/display_errors = Off/display_errors = On/g" ${php_config_file1}
-sed -i "s/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g" ${php_config_file1}
+sed -i "s/error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT/error_reporting = E_ALL/g" ${php_config_file_1}
+sed -i "s/html_errors = Off/html_errors = On/g" ${php_config_file_1}
+sed -i "s/display_startup_errors = Off/display_startup_errors = On/g" ${php_config_file_1}
+sed -i "s/display_errors = Off/display_errors = On/g" ${php_config_file_1}
+sed -i "s/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g" ${php_config_file_1}
 # Change configuration if you planing to load big files
-sed -i "s/post_max_size = 8M/post_max_size = 200M/g" ${php_config_file1}
-sed -i "s/upload_max_filesize = 2M/upload_max_filesize = 200M/g" ${php_config_file1}
+sed -i "s/post_max_size = 8M/post_max_size = 200M/g" ${php_config_file_1}
+sed -i "s/upload_max_filesize = 2M/upload_max_filesize = 200M/g" ${php_config_file_1}
 # Change configuration www.conf
 sed -i "s/;security.limit_extensions = .php .php3 .php4 .php5/security.limit_extensions = .php .php3 .php4 .php5/g" ${www_conf}
 sed -i "s/;listen.mode = 0660/listen.mode = 0660/g" ${www_conf}
 sed -i "s/listen =  127.0.0.1:9000/listen = /var/run/php5-fpm.sock/g" ${www_conf}
+# Start services
+service nginx start
 service php5-fpm start
-# Preparation steps
-cp ${nginx_sites_conf} ${nginx_sites_conf}.backup
-mkdir  /usr/share/nginx/html/${server_name}
-rm -rf ${nginx_sites_conf}
-rm -rf ${nginx_sites_conf_link}
-# Configure nginx conf. file for our site
-cat > ${nginx_conf} << EOF
-user www-data;
-worker_processes  1;
+# Remove default settings for nginx
 
-timer_resolution 100ms;
-worker_rlimit_nofile 8192;
-worker_priority -5;
 
-error_log  /var/log/nginx/error.log;
-pid        /var/run/nginx.pid;
-events {
-    worker_connections  1024;
-}
-http {
-    include       ${mime_types};
-    access_log  /var/log/nginx/access.log;
+cp ${default_nginx_conf} ${default_nginx_conf}.backup
+mkdir ${conf}
+chmod 777 -R ${conf}
+rm -rf ${default_nginx_conf}
+rm -rf ${default_nginx_conf_link}
 
-    sendfile        on;
-    keepalive_timeout  65;
-    tcp_nodelay        on;
-
-    gzip    on;
-    gzip_min_length 1100;
-    #gzip_disable   "msie6";
-    gzip_disable "MSIE [1-6]\.(?!.*SV1)";
-    gzip_proxied    any;
-    gzip_comp_level 4;
-    gzip_types      text/plain text/css application/x-javascript text/xml application/xml application/xml+rss text/javascript;
-    gzip_vary       on;
-
-    include /etc/nginx/conf.d/*.conf;
-    include /etc/nginx/sites-enabled/*;
-EOF
-# Configure nginx mime types. file for our site
-cat > ${mime_types} << EOF
-types {
-    text/html                             html htm shtml;
-    text/css                              css;
-    text/xml                              xml rss;
-    image/gif                             gif;
-    image/jpeg                            jpeg jpg;
-    application/x-javascript              js;
-    text/plain                            txt;
-    text/x-component                      htc;
-    text/mathml                           mml;
-    image/png                             png;
-    image/x-icon                          ico;
-    image/x-jng                           jng;
-    image/vnd.wap.wbmp                    wbmp;
-    application/java-archive              jar war ear;
-    application/mac-binhex40              hqx;
-    application/pdf                       pdf;
-    application/x-cocoa                   cco;
-    application/x-java-archive-diff       jardiff;
-    application/x-java-jnlp-file          jnlp;
-    application/x-makeself                run;
-    application/x-perl                    pl pm;
-    application/x-pilot                   prc pdb;
-    application/x-rar-compressed          rar;
-    application/x-redhat-package-manager  rpm;
-    application/x-sea                     sea;
-    application/x-shockwave-flash         swf;
-    application/x-stuffit                 sit;
-    application/x-tcl                     tcl tk;
-    application/x-x509-ca-cert            der pem crt;
-    application/x-xpinstall               xpi;
-    application/zip                       zip;
-    application/octet-stream              deb;
-    application/octet-stream              bin exe dll;
-    application/octet-stream              dmg;
-    application/octet-stream              eot;
-    application/octet-stream              iso img;
-    application/octet-stream              msi msp msm;
-    audio/mpeg                            mp3;
-    audio/x-realaudio                     ra;
-    video/mpeg                            mpeg mpg;
-    video/quicktime                       mov;
-    video/x-flv                           flv;
-    video/x-msvideo                       avi;
-    video/x-ms-wmv                        wmv;
-    video/x-ms-asf                        asx asf;
-    video/x-mng                           mng;
-}
-EOF
-# Configure fastcgi conf. file for our site
-cat > ${nginx_conf} << EOF
+# Configure nginx for ${server_name}
+cat > ${local_conf} << EOF
 server {
     listen 80 default_server;
     listen [::]:80 default_server ipv6only=on;
-    root /usr/share/nginx/html/${server_name};
+    root ${local_path};
     index index.php index.html index.htm;
     server_name ${server_name};
     location / {
@@ -342,16 +254,16 @@ server {
     }
 }
 EOF
-ln -s /etc/nginx/sites-available/${server_name} /etc/nginx/sites-enabled/
+ln -s ${conf} /etc/nginx/sites-enabled/
 # Give permissions for log file
-chmod 777 -R /var/log/nginx/error.log
+#chmod 777 -R /var/log/nginx/error.log
 # Create phpinfo() file
-cat > ${php_info_path} << EOF
+cat > ${local_path}/info.php << EOF
 	<?php
 	phpinfo();
 	?>
 EOF
-chmod 777 -R ${php_info_path}
+chmod 777 -R ${local_path}
 # xdebug configuring
 # TODO: check settings for xdebug
 xdebug="$(cat find / -name 'xdebug.so' 2> /dev/null)" 
