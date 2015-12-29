@@ -167,6 +167,7 @@ echo ${green}...................................................................
 # TODO: add fastcgi conf.
 php_config_file1="/etc/php5/cgi/php.ini"
 php_config_file2="/etc/php5/cli/php.ini"
+php_config_file3="/etc/php5/fpm/php.ini"
 www_conf="/etc/php5/fpm/pool.d/www.conf"
 fastcgi_conf="/etc/nginx/fastcgi.conf"
 nginx_conf="/etc/nginx/sites-available/default"
@@ -197,14 +198,14 @@ apt-get install php5 php5-cli php5-common php5-mysql php5-gd php5-fpm php5-cgi p
 service nginx stop
 service php5-fpm stop
 # Change configuration for better security and convenience
-sed -i "s/error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT/error_reporting = E_ALL/g" ${php_config_file2}
-sed -i "s/html_errors = Off/html_errors = On/g" ${php_config_file2}
-sed -i "s/display_startup_errors = Off/display_startup_errors = On/g" ${php_config_file2}
-sed -i "s/display_errors = Off/display_errors = On/g" ${php_config_file2}
-sed -i "s/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g" ${php_config_file2}
+sed -i "s/error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT/error_reporting = E_ALL/g" ${php_config_file1}
+sed -i "s/html_errors = Off/html_errors = On/g" ${php_config_file1}
+sed -i "s/display_startup_errors = Off/display_startup_errors = On/g" ${php_config_file1}
+sed -i "s/display_errors = Off/display_errors = On/g" ${php_config_file1}
+sed -i "s/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g" ${php_config_file1}
 # Change configuration if you planing to load big files
-sed -i "s/post_max_size = 8M/post_max_size = 200M/g" ${php_config_file2}
-sed -i "s/upload_max_filesize = 2M/upload_max_filesize = 200M/g" ${php_config_file2}
+sed -i "s/post_max_size = 8M/post_max_size = 200M/g" ${php_config_file1}
+sed -i "s/upload_max_filesize = 2M/upload_max_filesize = 200M/g" ${php_config_file1}
 # Change configuration www.conf
 sed -i "s/;security.limit_extensions = .php .php3 .php4 .php5/security.limit_extensions = .php .php3 .php4 .php5/g" ${www_conf}
 sed -i "s/;listen.mode = 0660/listen.mode = 0660/g" ${www_conf}
@@ -388,8 +389,8 @@ chmod 777 -R ${php_info_path}
 # xdebug configuring
 # TODO: check settings for xdebug
 xdebug="$(cat find / -name 'xdebug.so' 2> /dev/null)" 
-echo "zend_extension=\"$xdebug\"" >> ${php_config_file2}
-cat > ${php_config_file2} << EOF
+echo "zend_extension=\"$xdebug\"" >> ${php_config_file1}
+cat > ${php_config_file1} << EOF
     xdebug.remote_autostart=1
     xdebug.remote_enable=1
     xdebug.remote_connect_back=1
