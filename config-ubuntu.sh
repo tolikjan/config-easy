@@ -153,7 +153,7 @@ cd ~/selenium
 # Get Selenium and install headless Java runtime
 wget http://selenium-release.storage.googleapis.com/2.44/selenium-server-standalone-2.44.0.jar
 apt-get install openjdk-7-jre-headless -y
-# Install headless GUI for firefox. 'Xvfb is a display server that performs graphical operations in memory'
+# Install headless GUI for firefox. Xvfb is a display server that performs graphical operations in memory
 #apt-get install xvfb -y
 # Starting up Selenium server
 #DISPLAY=:1 xvfb-run java -jar ~/selenium/selenium-server-standalone-2.44.0.jar
@@ -165,14 +165,25 @@ echo ${green}.............. Installing and Configuring LEMP - Linux + nginx + My
 echo ${green}.................................................................................................${reset}
 # Set Up variables
 # TODO: add fastcgi conf.
-php_config_file="/etc/php5/fpm/php.ini"
+php_config_file1="/etc/php5/fpm/php.ini"
+php_config_file2="/etc/php5/cli/php.ini"
+php_config_file3="/etc/php5/cgi/php.ini"
 www_conf="/etc/php5/fpm/pool.d/www.conf"
-nginx_conf="/etc/nginx/sites-available/default"
-server_name="my.localhost.com"
-php_info_path="/var/www/html/info.php"
+fastcgi_conf="/etc/nginx/fastcgi.conf"
+nginx_conf="/etc/nginx/nginx.conf"
+site_conf="/etc/nginx/sites-available/"
+default_site_conf="/etc/nginx/sites-available/default"
+default_site_conf_link="/etc/nginx/sites-enabled/default"
+mime_types="/etc/nginx/mime.types"
+proxy_conf="/etc/nginx/proxy.conf"
+fastcgi_conf="/etc/nginx/fastcgi.conf"
+fastcgi_server="server1.com"
+proxy_server="server2.com"
+server_name="my.localhost"
+php_info_path="/usr/share/nginx/html/${server_name}/info.php"
 # Install nginx
 apt-get update
-apt-get install nginx -y
+apt-get install nginx nginx-extras -y
 service nginx start
 # Set password for root account
 echo "mysql-server mysql-server/root_password password "${mysql_root_password} | debconf-set-selections
@@ -181,171 +192,6 @@ echo "mysql-server mysql-server/root_password_again password "${mysql_root_passw
 apt-get install mysql-server -y
 # We should activate MySQL with this command:
 mysql_install_db
-# Run secure instalation for MySQL
-#echo "mysql-server mysql-server/root_password password "${mysql_root_password} | debconf-set-selections
-/usr/bin/mysql_secure_installation -y
-
-# TODO: fix problems with this shit below
-
-# Delete package expect when script is done
-# 0 - No; 
-# 1 - Yes.
-PURGE_EXPECT_WHEN_DONE=0
-#
-# Check the bash shell script is being run by root
-#
-if [[ $EUID -ne 0 ]]; then
-   echo "This script must be run as root" 1>&2
-   exit 1
-fi
-#
-# Check input params
-#
-if [ -n "${1}" -a -z "${2}" ]; then
-    # Setup root password
-    CURRENT_MYSQL_PASSWORD=''
-    NEW_MYSQL_PASSWORD="${1}"
-elif [ -n "${1}" -a -n "${2}" ]; then
-    # Change existens root password
-    CURRENT_MYSQL_PASSWORD="${1}"
-    NEW_MYSQL_PASSWORD="${2}"
-else
-    echo "Usage:"
-    echo "  Setup mysql root password: ${0} 'your_new_root_password'"
-    echo "  Change mysql root password: ${0} 'your_old_root_password' 'your_new_root_password'"
-    exit 1
-fi
-#
-# Check is expect package installed
-#
-if [ $(dpkg-query -W -f='${Status}' expect 2>/dev/null | grep -c "ok installed") -eq 0 ]; then
-    echo "Can't find expect. Trying install it..."
-    apt-get install expect -y
-fi
-SECURE_MYSQL=$(expect -c "
-set timeout 3
-spawn mysql_secure_installation
-expect \"Enter current password for root (enter for none):\"
-send \"$CURRENT_MYSQL_PASSWORD\r\"
-expect \"root password?\"
-send \"y\r\"
-expect \"New password:\"
-send \"$NEW_MYSQL_PASSWORD\r\"
-expect \"Re-enter new password:\"
-send \"$NEW_MYSQL_PASSWORD\r\"
-expect \"Remove anonymous users?\"
-send \"y\r\"
-expect \"Disallow root login remotely?\"
-send \"y\r\"
-expect \"Remove test database and access to it?\"
-send \"y\r\"
-expect \"Reload privilege tables now?\"
-send \"y\r\"
-expect eof
-")
-#
-# Execution mysql_secure_installation
-#
-echo "${SECURE_MYSQL}"
-if [ "${PURGE_EXPECT_WHEN_DONE}" -eq 1 ]; then
-    # Uninstalling expect package
-    apt-get purge expect -y
-fi
-
-
-# install PHP and php-packages
-apt-get install php5 curl php5-curl php5-fpm php5-mysql mysql-server php5-gd php5-mcrypt php5-xdebug php5-memcached php5-memcache php5-json -y
-# Change configuration for better security and convenience
-sed -i "s/error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT/error_reporting = E_ALL/g" ${php_config_file}
-sed -i "s/html_errors = Off/html_errors = On/g" ${php_config_file}
-sed -i "s/display_startup_errors = Off/display_startup_errors = On/g" ${php_config_file}
-sed -i "s/display_errors = Off/display_errors = On/g" ${php_config_file}
-sed -i "s/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g" ${php_config_file}
-service php5-fpm restart
-# Configure nginx conf. file
-cp ${nginx_conf} ${nginx_conf}.backup
-cat > ${nginx_conf} << EOF
-	server {
-        listen 80 default_server;
-        listen [::]:80 default_server ipv6only=on;
-        root /var/www/html;
-        index index.php index.html index.htm;
-        server_name ${server_name};
-        location / {
-            # First attempt to serve request as file, then
-            # as directory, then fall back to displaying a 404.
-            try_files $uri $uri/ =404;
-            # Uncomment to enable naxsi on this location
-            # include /etc/nginx/naxsi.rules
-        }
-        error_page 404 /404.html;
-        error_page 500 502 503 504 /50x.html;
-        location = /50x.html {
-            root /usr/share/nginx/html;
-        }
-        location ~ \.php$ {
-            try_files $uri =404;
-            fastcgi_split_path_info ^(.+\.php)(/.+)$;
-            fastcgi_pass unix:/var/run/php5-fpm.sock;
-            fastcgi_index index.php;
-            include fastcgi.conf;
-        }
-    }
-EOF
-mkdir -p /var/www/html
-cp /usr/share/nginx/html/index.html /var/www/html/
-# Restart nginx and php5-fpm
-service nginx restart
-service php5-fpm restart
-# Create phpinfo() file
-cat > ${php_info_path} << EOF
-	<?php
-	phpinfo();
-	?>
-EOF
-
-
-
-
-
-
-
-# Install Apache2 and configure it
-echo ${green}.................................................................................................${reset}
-echo ${green}............................... Installing and Configuring Apache2 ..............................${reset}
-echo ${green}.................................................................................................${reset}
-sleep 5
-apt-get install apache2 libapache2-mod-php5 -y
-a2enmod rewrite ssl
-# Config servername
-echo "ServerName localhost" > /etc/apache2/conf-available/fqdn.conf
-a2enconf fqdn
-# Setting SSL for default site
-apt-get install ssl-cert -y
-a2ensite default-ssl
-# Enable mod_rewrite
-a2enmod rewrite
-# Enable mod_ssl
-a2enmod ssl
-service apache2 restart
-# Install MySQL
-echo ${green}.................................................................................................${reset}
-echo ${green}.................................... Installing MySQL Server ....................................${reset}
-echo ${green}.................................................................................................${reset}
-sleep 5
-# Set password for root account
-echo "mysql-server mysql-server/root_password password "${mysql_root_password} | debconf-set-selections
-echo "mysql-server mysql-server/root_password_again password "${mysql_root_password} | debconf-set-selections
-# Install mysql-server
-apt-get install mysql-server php5-mysql -y
-# Create informations
-mysql_install_db
-# Allow connections to this server from outside
-sed -i "s/bind-address\s*=\s*127.0.0.1/bind-address = 0.0.0.0/" ${mysql_config_file}
-mysql -u${mysql_root_user} -p${mysql_root_password} -e "GRANT ALL PRIVILEGES ON *.* TO root@'%' IDENTIFIED BY '$mysql_root_password';"
-mysql -u${mysql_root_user} -p${mysql_root_password} -e "FLUSH PRIVILEGES;"
-service mysql stop
-service mysql start
 #
 # Install php5
 #
@@ -359,62 +205,179 @@ apt-get install php5 php5-common php5-dev php5-cli php5-fpm -y
 apt-get install php5 curl php5-curl php5-fpm php5-mysql mysql-server php5-gd php5-mcrypt php5-xdebug php5-memcached php5-memcache php5-json -y
 # Enable php5-mcrypt mode
 php5enmod mcrypt
-echo ${green}.................................................................................................${reset}
-echo ${green}..................................... Installing PHPMyAdmin .....................................${reset}
-echo ${green}.................................................................................................${reset}
-sleep 5
-# Install PhpMyAdmin
-echo "phpmyadmin phpmyadmin/reconfigure-webserver multiselect apache2" | debconf-set-selections
-echo "phpmyadmin phpmyadmin/dbconfig-install boolean true" | debconf-set-selections
-echo "phpmyadmin phpmyadmin/mysql/admin-user string root" | debconf-set-selections
-echo "phpmyadmin phpmyadmin/mysql/admin-pass password "${mysql_root_password} | debconf-set-selections
-echo "phpmyadmin phpmyadmin/mysql/app-pass password "${phpmyadmin_root_password} |debconf-set-selections
-echo "phpmyadmin phpmyadmin/app-password-confirm password "${phpmyadmin_password} | debconf-set-selections
-apt-get install phpmyadmin -y
-# Disable by default, as this will add to all VirtualHosts; instead, add the following to an Apache VirtualHost:
-echo "Include /etc/phpmyadmin/apache.conf" >> /etc/apache2/apache2.conf
-service apache2 reload
-# PHP Error Reporting Config
-sed -i "s/error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT/error_reporting = E_ALL" ${php_config_file}
-sed -i "s/html_errors = Off/html_errors = On" ${php_config_file}
-sed -i "s/display_startup_errors = Off/display_startup_errors = On" ${php_config_file}
+# Run secure instalation for MySQL
+echo "mysql-server mysql-server/root_password password "${mysql_root_password} | debconf-set-selections
+# install PHP and php-packages
+apt-get install php5 php5-cli php5-common php5-mysql php5-gd php5-fpm php5-cgi php5-fpm php-pear php5-mcrypt php5-xdebug -y
+# Stop services
+service nginx stop
+service php5-fpm stop
+# Change configuration for better security and convenience
+sed -i "s/error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT/error_reporting = E_ALL/g" ${php_config_file1}
+sed -i "s/html_errors = Off/html_errors = On/g" ${php_config_file1}
+sed -i "s/display_startup_errors = Off/display_startup_errors = On/g" ${php_config_file1}
+sed -i "s/display_errors = Off/display_errors = On/g" ${php_config_file1}
+sed -i "s/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g" ${php_config_file1}
+# Change configuration if you planing to load big files
+sed -i "s/post_max_size = 8M/post_max_size = 200M/g" ${php_config_file1}
+sed -i "s/upload_max_filesize = 2M/upload_max_filesize = 200M/g" ${php_config_file1}
+# Change configuration www.conf
+sed -i "s/;security.limit_extensions = .php .php3 .php4 .php5/security.limit_extensions = .php .php3 .php4 .php5/g" ${www_conf}
+sed -i "s/;listen.mode = 0660/listen.mode = 0660/g" ${www_conf}
+sed -i "s/listen =  127.0.0.1:9000/listen = /var/run/php5-fpm.sock/g" ${www_conf}
+service php5-fpm start
+# Preparation steps
+cp ${nginx_sites_conf} ${nginx_sites_conf}.backup
+mkdir  /usr/share/nginx/html/${server_name}
+rm -rf ${nginx_sites_conf}
+rm -rf ${nginx_sites_conf_link}
+# Configure nginx conf. file for our site
+cat > ${nginx_conf} << EOF
+user www-data;
+worker_processes  1;
 
-for ini in $(find /etc -name "php.ini")
-do
-    errRep=$(grep "^error_reporting = " "${ini}")
-    sed -i "s/${errRep}/error_reporting = E_ALL" ${ini}
+timer_resolution 100ms;
+worker_rlimit_nofile 8192;
+worker_priority -5;
 
-    dispErr=$(grep "^display_errors = " "${ini}")
-    sed -i "s/${dispErr}/display_errors = On/g" ${ini}
+error_log  /var/log/nginx/error.log;
+pid        /var/run/nginx.pid;
+events {
+    worker_connections  1024;
+}
+http {
+    include       ${mime_types};
+    access_log  /var/log/nginx/access.log;
 
-    dispStrtErr=$(grep "^display_startup_errors = " "${ini}")
-    sed -i "s/${dispStrtErr}/display_startup_errors = On/g" ${ini}
+    sendfile        on;
+    keepalive_timeout  65;
+    tcp_nodelay        on;
 
-    dispHtmlErr=$(grep "^html_errors = " "${ini}")
-    sed -i "s/${dispHtmlErr}/html_errors = On/g" ${ini}
-done
+    gzip    on;
+    gzip_min_length 1100;
+    #gzip_disable   "msie6";
+    gzip_disable "MSIE [1-6]\.(?!.*SV1)";
+    gzip_proxied    any;
+    gzip_comp_level 4;
+    gzip_types      text/plain text/css application/x-javascript text/xml application/xml application/xml+rss text/javascript;
+    gzip_vary       on;
+
+    include /etc/nginx/conf.d/*.conf;
+    include /etc/nginx/sites-enabled/*;
+EOF
+# Configure nginx mime types. file for our site
+cat > ${mime_types} << EOF
+types {
+    text/html                             html htm shtml;
+    text/css                              css;
+    text/xml                              xml rss;
+    image/gif                             gif;
+    image/jpeg                            jpeg jpg;
+    application/x-javascript              js;
+    text/plain                            txt;
+    text/x-component                      htc;
+    text/mathml                           mml;
+    image/png                             png;
+    image/x-icon                          ico;
+    image/x-jng                           jng;
+    image/vnd.wap.wbmp                    wbmp;
+    application/java-archive              jar war ear;
+    application/mac-binhex40              hqx;
+    application/pdf                       pdf;
+    application/x-cocoa                   cco;
+    application/x-java-archive-diff       jardiff;
+    application/x-java-jnlp-file          jnlp;
+    application/x-makeself                run;
+    application/x-perl                    pl pm;
+    application/x-pilot                   prc pdb;
+    application/x-rar-compressed          rar;
+    application/x-redhat-package-manager  rpm;
+    application/x-sea                     sea;
+    application/x-shockwave-flash         swf;
+    application/x-stuffit                 sit;
+    application/x-tcl                     tcl tk;
+    application/x-x509-ca-cert            der pem crt;
+    application/x-xpinstall               xpi;
+    application/zip                       zip;
+    application/octet-stream              deb;
+    application/octet-stream              bin exe dll;
+    application/octet-stream              dmg;
+    application/octet-stream              eot;
+    application/octet-stream              iso img;
+    application/octet-stream              msi msp msm;
+    audio/mpeg                            mp3;
+    audio/x-realaudio                     ra;
+    video/mpeg                            mpeg mpg;
+    video/quicktime                       mov;
+    video/x-flv                           flv;
+    video/x-msvideo                       avi;
+    video/x-ms-wmv                        wmv;
+    video/x-ms-asf                        asx asf;
+    video/x-mng                           mng;
+}
+EOF
+# Configure fastcgi conf. file for our site
+cat > ${nginx_conf} << EOF
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server ipv6only=on;
+    root /usr/share/nginx/html/${server_name};
+    index index.php index.html index.htm;
+    server_name ${server_name};
+    location / {
+        # First attempt to serve request as file, then
+        # as directory, then fall back to displaying a 404.
+        try_files $uri \$uri/ =404;
+        # Uncomment to enable naxsi on this location
+        # include /etc/nginx/naxsi.rules
+    }
+    error_page 404 /404.html;
+    error_page 500 502 503 504 /50x.html;
+    location = /50x.html {
+        root /usr/share/nginx/html;
+    }
+    location ~ \.php\$ {
+        try_files $uri =404;
+        fastcgi_split_path_info ^(.+\.php)(/.+)\$;
+        fastcgi_pass unix:/var/run/php5-fpm.sock;
+        fastcgi_index index.php;
+        include fastcgi.conf;
+    }
+}
+EOF
+ln -s /etc/nginx/sites-available/${server_name} /etc/nginx/sites-enabled/
+# Give permissions for log file
+chmod 777 -R /var/log/nginx/error.log
+# Create phpinfo() file
+cat > ${php_info_path} << EOF
+	<?php
+	phpinfo();
+	?>
+EOF
+chmod 777 -R ${php_info_path}
 # xdebug configuring
 # TODO: check settings for xdebug
-xdebug=$( cat find / -name 'xdebug.so' 2> /dev/null ) 
-echo "zend_extension="${xdebug}"" >> ${php_config_file}
-cat > /etc/php/apache2/php.ini << EOF
-    xdebug.remote_autostart=1
-    xdebug.remote_enable=1
-    xdebug.remote_connect_back=1
-    xdebug.remote_port=9000
-    xdebug.idekey=PHP_STORM
-    xdebug.scream=0
-    xdebug.cli_color=1
-    xdebug.show_local_vars=1
+xdebug="$(cat find / -name 'xdebug.so' 2> /dev/null)" 
+echo "zend_extension=\"$xdebug\"" >> ${php_config_file1}
+cat > ${php_config_file1} << EOF
+xdebug.remote_autostart=1
+xdebug.remote_enable=1
+xdebug.remote_connect_back=1
+xdebug.remote_port=9002
+xdebug.idekey=PHP_STORM
+xdebug.scream=0
+xdebug.cli_color=1
+xdebug.show_local_vars=1
 
-    ;var_dump display
-    xdebug.var_display_max_depth = 5
-    xdebug.var_display_max_children = 256
-    xdebug.var_display_max_data = 1024
+;var_dump display
+xdebug.var_display_max_depth = 5
+xdebug.var_display_max_children = 256
+xdebug.var_display_max_data = 1024
 EOF
 # Restart services
 service mysql restart
-service apache2 restart
+service nginx restart
+service php5-fpm restart
 #
 # Install Virtualbox and Vagrant
 #
@@ -432,95 +395,7 @@ apt-get install virtualbox-dkms -y
 #echo ${root_pass} | VBoxManage extpack install ${ext_pack}
 # install Vagrant
 apt-get install vagrant -y
-#
-# Install Drupal 7
-#
-echo ${green}.................................................................................................${reset}
-echo ${green}.............................. Installing and Configuring Drupal 7 ..............................${reset}
-echo ${green}.................................................................................................${reset}
-sleep 5
-# Drupal variables
-drupal_version="drupal-7.41"
-drupal_folder="/var/www/html/${drupal_version}"
-drupal_superadmin="admin"
-drupal_pass="drupaladm1n"
-# Create DataBase for Drupal
-mysql -u${mysql_root_user} -p${mysql_root_password} -e "CREATE DATABASE ${drupal_version};"
-mysql -u${mysql_root_user} -p${mysql_root_password} -e "CREATE USER drupaluser@localhost IDENTIFIED BY '${mysql_root_password}';"
-mysql -u${mysql_root_user} -p${mysql_root_password} -e "GRANT SELECT,INSERT,UPDATE,DELETE,CREATE,DROP,INDEX,ALTER,CREATE TEMPORARY TABLES,LOCK TABLES ON drupal.* TO drupaluser@localhost;"
-mysql -u${mysql_root_user} -p${mysql_root_password} -e "FLUSH PRIVILEGES;"
-service mysql stop
-service mysql start
-a2enmod rewrite
-service apache2 restart
-# Install Drush
-apt-get install drush -y
-# TODO: Fix Drupal problems
-# Install Drupal
-cd /var/www/html
-drush dl ${drupal_version} -y
-mkdir ${drupal_folder}/sites/default/files
-mkdir ${drupal_folder}/sites/all/modules/contrib
-mkdir ${drupal_folder}/sites/all/modules/contrib
-mkdir ${drupal_folder}/sites/all/modules/custom
-cd ${drupal_folder}
-drush site-install standard --account-name=${drupal_superadmin} --account-pass=${drupal_pass} --db-url=mysql://${mysql_root_user}:${mysql_root_password}@localhost/${drupal_version} -y
-cd ${drupal_folder}/sites/all/modules/contrib
-drush en globalredirect, admin_menu, views, pathauto, elysia_cron, imce, subpathauto, transliteration, token, ctools, link, email, menu_block, views_bulk_operations, nodequeue, field_group, devel, auto_nodetitle, date, masquerade, page_title, module_filter -y
-cp /var/www/html/sites/default/default.settings.php ${drupal_folder}/sites/default/settings.php
-chmod 664 ${drupal_folder}/sites/default/settings.php
-chown -R :www-data /var/www/html/*
-# TODO: add /etc/hosts configuration and config files in sites-available (sites enabled)
-#
-# Install SublimeText 3
-#
-# Licence code here - https://gist.github.com/J2TeaM/9f24a57d5832e475fc4d
-echo ${green}.................................................................................................${reset}
-echo ${green}.................................... Installing SublimeText 3 ...................................${reset}
-echo ${green}.................................................................................................${reset}
-sleep 5
-echo -ne '\n' | add-apt-repository ppa:webupd8team/sublime-text-3
-apt-get update
-apt-get install sublime-text-installer -y
-#
-# Install PhpStorm 10
-#
-# TODO: solve problems with pop-ups in PHP Storm
-# Licence code here - https://бэкдор.рф/phpstorm-7-8-9-10-product-key/
-echo ${green}.................................................................................................${reset}
-echo ${green}............................. Installing and Configuring PHPStopm 10 ............................${reset}
-echo ${green}.................................................................................................${reset}
-sleep 5
-# Install dependencies
-echo -ne '\n' | add-apt-repository ppa:webupd8team/java
-apt-get update
-apt-get install oracle-java7-installer -y
-apt-get install oracle-java7-set-default -y
-# Install PhpStorm
-wget http://download-cf.jetbrains.com/webide/PhpStorm-10.0.2.tar.gz
-tar -xvf PhpStorm-10.0.2.tar.gz
-cd PhpStorm-143.1184.87/bin/
-./phpstorm.sh || TRUE
-#
-# Install HipChat
-#
-echo ${green}.................................................................................................${reset}
-echo ${green}...................................... Installing HipChat .......................................${reset}
-echo ${green}.................................................................................................${reset}
-sleep 5
-echo osboxes.org | sudo su
-echo "deb http://downloads.hipchat.com/linux/apt stable main" > /etc/apt/sources.list.d/atlassian-hipchat.list
-wget -O - https://www.hipchat.com/keys/hipchat-linux.key | apt-key add -
-apt-get update
-apt-get install hipchat
-#exit
 echo ${green}.................................................................................................${reset}
 echo ${green}.............................................. DONE .............................................${reset}
 echo ${green}.................................................................................................${reset}
-#
-# Print credentials
-#
-if [[ $phpmyadmin_password ]]; then echo "${red}...phpMyAdmin is not installed...${reset}"; else echo "${green}...phpmyadmin_password is set - ${phpmyadmin_password}...${reset}"; fi
-if [[ $mysql_root_password ]]; then echo "${red}...MySQL is not installed...${reset}"; else echo "${green}...mysql_root_user is set - ${mysql_root_user}...${reset}" '\n' "${green}...mysql_root_password is set - ${mysql_root_password}...${reset}"; fi
-if [[ $drupal_version ]]; then echo "${red}...Drupal is not installed...${reset}"; else echo "${green}...Drupal version is - ${drupal_version}...${reset}" '\n' "${green}...Path to Drupal folder - ${drupal_folder}...${reset}" '\n' "${green}...Superadmin username is set - ${drupal_superadmin}...${reset}" '\n' "${green}...Password for Superadmin to Drupal - ${drupal_pass}...${reset}"; fi
 
