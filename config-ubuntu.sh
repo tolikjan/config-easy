@@ -165,19 +165,21 @@ echo ${green}.............. Installing and Configuring LEMP - Linux + nginx + My
 echo ${green}.................................................................................................${reset}
 # Set Up variables
 # TODO: add fastcgi conf.
-php_config_file1="/etc/php5/cgi/php.ini"
+php_config_file1="/etc/php5/fpm/php.ini"
 php_config_file2="/etc/php5/cli/php.ini"
-php_config_file3="/etc/php5/fpm/php.ini"
+php_config_file3="/etc/php5/cgi/php.ini"
 www_conf="/etc/php5/fpm/pool.d/www.conf"
 fastcgi_conf="/etc/nginx/fastcgi.conf"
-nginx_conf="/etc/nginx/sites-available/default"
-nginx_conf_link="/etc/nginx/sites-enabled/default"
+nginx_conf="/etc/nginx/nginx.conf"
+site_conf="/etc/nginx/sites-available/"
+default_site_conf="/etc/nginx/sites-available/default"
+default_site_conf_link="/etc/nginx/sites-enabled/default"
 mime_types="/etc/nginx/mime.types"
 proxy_conf="/etc/nginx/proxy.conf"
 fastcgi_conf="/etc/nginx/fastcgi.conf"
 fastcgi_server="server1.com"
 proxy_server="server2.com"
-server_name="my.localhost.com"
+server_name="my.localhost"
 php_info_path="/usr/share/nginx/html/${server_name}/info.php"
 # Install nginx
 apt-get update
@@ -211,82 +213,43 @@ sed -i "s/;security.limit_extensions = .php .php3 .php4 .php5/security.limit_ext
 sed -i "s/;listen.mode = 0660/listen.mode = 0660/g" ${www_conf}
 service php5-fpm start
 # Preparation steps
-cp ${nginx_conf} ${nginx_conf}.backup
-mkdir /usr/share/nginx/html/${server_name}
-rm -rf ${nginx_conf}
-rm -rf ${nginx_conf_link}
+cp ${nginx_sites_conf} ${nginx_sites_conf}.backup
+mkdir  /var/www/html/${server_name}
+rm -rf ${nginx_sites_conf}
+rm -rf ${nginx_sites_conf_link}
 # Configure nginx conf. file for our site
-cat > /etc/nginx/sites-available/${server_name} << EOF
-user       www www;  ## Default: nobody
-worker_processes  5;  ## Default: 1
-error_log  logs/error.log;
-pid        logs/nginx.pid;
+cat > ${nginx_conf} << EOF
+user www-data;
+worker_processes  1;
+
+timer_resolution 100ms;
 worker_rlimit_nofile 8192;
+worker_priority -5;
 
+error_log  /var/log/nginx/error.log;
+pid        /var/run/nginx.pid;
 events {
-    worker_connections  4096;  ## Default: 1024
+    worker_connections  1024;
 }
-
 http {
-    include    ${mime_types};
-    include    ${proxy_conf};
-    include    ${fastcgi_conf};
-    index    index.html index.htm index.php;
+    include       ${mime_types};
+    access_log  /var/log/nginx/access.log;
 
-    default_type application/octet-stream;
-    log_format   main '$remote_addr - $remote_user [$time_local]  $status '
-        '"$request" $body_bytes_sent "$http_referer" '
-        '"$http_user_agent" "$http_x_forwarded_for"';
-    access_log   logs/access.log  main;
-    sendfile     on;
-    tcp_nopush   on;
-    server_names_hash_bucket_size 128; # this seems to be required for some vhosts
+    sendfile        on;
+    keepalive_timeout  65;
+    tcp_nodelay        on;
 
-    server { # php/fastcgi
-        listen       80;
-        server_name  ${fastcgi_server};
-        access_log   logs/${fastcgi_server}.access.log  main;
-        root         html;
+    gzip    on;
+    gzip_min_length 1100;
+    #gzip_disable   "msie6";
+    gzip_disable "MSIE [1-6]\.(?!.*SV1)";
+    gzip_proxied    any;
+    gzip_comp_level 4;
+    gzip_types      text/plain text/css application/x-javascript text/xml application/xml application/xml+rss text/javascript;
+    gzip_vary       on;
 
-        location ~ \.php\$ {
-            fastcgi_pass   127.0.0.1:1025;
-        }
-    }
-
-    server { # simple reverse-proxy
-        listen       80;
-        server_name  ${proxy_server};
-        access_log   logs/${proxy_server}.access.log  main;
-
-        # serve static files
-        location ~ ^/(images|javascript|js|css|flash|media|static)/  {
-            root    /etc/nginx/html/${proxy_server}/htdocs;
-            expires 30d;
-        }
-
-        # pass requests for dynamic content to rails/turbogears/zope, et al
-        location / {
-            proxy_pass      http://127.0.0.1:8080;
-        }
-    }
-
-    upstream ${server_name} {
-        server 127.0.0.3:8000 weight=5;
-        server 127.0.0.3:8001 weight=5;
-        server 192.168.0.1:8000;
-        server 192.168.0.1:8001;
-    }
-
-    server { # simple load balancing
-        listen          80;
-        server_name     ${server_name};
-        access_log      logs/${server_name}.access.log main;
-
-        location / {
-            proxy_pass      http://${server_name};
-        }
-    }
-}
+    include /etc/nginx/conf.d/*.conf;
+    include /etc/nginx/sites-enabled/*;
 EOF
 # Configure nginx mime types. file for our site
 cat > ${mime_types} << EOF
@@ -340,41 +303,64 @@ types {
 }
 EOF
 # Configure fastcgi conf. file for our site
-cat > ${fastcgi_conf} << EOF
-fastcgi_param  SCRIPT_FILENAME    \$document_root$fastcgi_script_name;
-fastcgi_param  QUERY_STRING       \$query_string;
-fastcgi_param  REQUEST_METHOD     \$request_method;
-fastcgi_param  CONTENT_TYPE       \$content_type;
-fastcgi_param  CONTENT_LENGTH     \$content_length;
-fastcgi_param  SCRIPT_NAME        \$fastcgi_script_name;
-fastcgi_param  REQUEST_URI        \$request_uri;
-fastcgi_param  DOCUMENT_URI       \$document_uri;
-fastcgi_param  DOCUMENT_ROOT      \$document_root;
-fastcgi_param  SERVER_PROTOCOL    \$server_protocol;
-fastcgi_param  GATEWAY_INTERFACE  CGI/1.1;
-fastcgi_param  SERVER_SOFTWARE    nginx/$nginx_version;
-fastcgi_param  REMOTE_ADDR        \$remote_addr;
-fastcgi_param  REMOTE_PORT        \$remote_port;
-fastcgi_param  SERVER_ADDR        \$server_addr;
-fastcgi_param  SERVER_PORT        \$server_port;
-fastcgi_param  SERVER_NAME        \$server_name;
+cat > ${site_conf}/${server_name} << EOF
+server {
+    listen  80;
+    server_name  ${server_name};
+    rewrite ^ http://${server_name}\$request_uri\? permanent; #301 redirect
+}
+server {
+    listen  80;
+    server_name  ${server_name}.com; 
+    root   /var/www/html/${server_name};
+    index  index.htm index.html index.php;
 
-fastcgi_index  index.php;
+    location / {
+        try_files \$uri \$uri/ /index.php\?q=\$uri\&\$args;
+    }
+    location ~* ^.+.(js|css|png|jpg|jpeg|gif|ico)$ {
+        access_log        off;
+        expires           max;
+    }
+    location ~ \.php$ {
+        # fastcgi_split_path_info ^(.+\.php)(.*)$;
+        fastcgi_pass   127.0.0.1:9000;
+        fastcgi_index  index.php;
 
-fastcgi_param  REDIRECT_STATUS    200;
-EOF
-# Configure proxy conf. file for our site
-cat > ${proxy_conf} << EOF
-proxy_redirect          off;
-proxy_set_header        Host            \$host;
-proxy_set_header        X-Real-IP       \$remote_addr;
-proxy_set_header        X-Forwarded-For \$proxy_add_x_forwarded_for;
-client_max_body_size    10m;
-client_body_buffer_size 128k;
-proxy_connect_timeout   90;
-proxy_send_timeout      90;
-proxy_read_timeout      90;
-proxy_buffers           32 4k;
+        fastcgi_param  DOCUMENT_ROOT    ${server_name};
+        fastcgi_param  SCRIPT_FILENAME  ${server_name}\$fastcgi_script_name;
+        fastcgi_param  PATH_TRANSLATED  /${server_name}\$fastcgi_script_name;
+
+        include fastcgi_params;
+        fastcgi_param  QUERY_STRING     \$query_string;
+        fastcgi_param  REQUEST_METHOD   \$request_method;
+        fastcgi_param  CONTENT_TYPE     \$content_type;
+        fastcgi_param  CONTENT_LENGTH   \$content_length;
+        fastcgi_intercept_errors        on;
+        fastcgi_ignore_client_abort     off;
+        fastcgi_connect_timeout 60;
+        fastcgi_send_timeout 180;
+        fastcgi_read_timeout 180;
+        fastcgi_buffer_size 128k;
+        fastcgi_buffers 4 256k;
+        fastcgi_busy_buffers_size 256k;
+        fastcgi_temp_file_write_size 256k;
+    }
+    
+    location = /favicon.ico {
+        log_not_found off;
+        access_log off;
+    }
+    location = /robots.txt {
+        allow all;
+        log_not_found off;
+        access_log off;
+    }
+    ## Disable viewing .htaccess & .htpassword 
+    location ~ /\.ht {
+        deny  all;
+    }
+}
 EOF
 ln -s /etc/nginx/sites-available/${server_name} /etc/nginx/sites-enabled/
 # Give permissions for log file
