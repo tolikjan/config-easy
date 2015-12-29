@@ -211,6 +211,7 @@ sed -i "s/upload_max_filesize = 2M/upload_max_filesize = 200M/g" ${php_config_fi
 # Change configuration www.conf
 sed -i "s/;security.limit_extensions = .php .php3 .php4 .php5/security.limit_extensions = .php .php3 .php4 .php5/g" ${www_conf}
 sed -i "s/;listen.mode = 0660/listen.mode = 0660/g" ${www_conf}
+sed -i "s/listen =  127.0.0.1:9000/listen = /var/run/php5-fpm.sock/g" ${www_conf}
 service php5-fpm start
 # Preparation steps
 cp ${nginx_sites_conf} ${nginx_sites_conf}.backup
