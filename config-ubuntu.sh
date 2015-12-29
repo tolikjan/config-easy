@@ -215,7 +215,7 @@ sed -i "s/listen =  127.0.0.1:9000/listen = /var/run/php5-fpm.sock/g" ${www_conf
 service php5-fpm start
 # Preparation steps
 cp ${nginx_sites_conf} ${nginx_sites_conf}.backup
-mkdir  /var/www/html/${server_name}
+mkdir  /usr/share/nginx/html/${server_name}
 rm -rf ${nginx_sites_conf}
 rm -rf ${nginx_sites_conf_link}
 # Configure nginx conf. file for our site
@@ -313,7 +313,7 @@ server {
 server {
     listen  80;
     server_name  ${server_name}.com; 
-    root   /var/www/html/${server_name};
+    root   /usr/share/nginx/html/${server_name};
     index  index.htm index.html index.php;
 
     location / {
