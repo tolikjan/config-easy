@@ -241,7 +241,7 @@ server {
     location / {
         # First attempt to serve request as file, then
         # as directory, then fall back to displaying a 404.
-        try_files $uri \$uri/ =404;
+        try_files \$uri \$uri/ =404;
         # Uncomment to enable naxsi on this location
         # include /etc/nginx/naxsi.rules
     }
@@ -264,9 +264,9 @@ ln -s ${conf} /etc/nginx/sites-enabled/
 #chmod 777 -R /var/log/nginx/error.log
 # Create phpinfo() file
 cat > ${local_path}/info.php << EOF
-	<?php
-	phpinfo();
-	?>
+<?php
+phpinfo();
+?>
 EOF
 chmod 777 -R ${local_path}
 # xdebug configuring
