@@ -165,7 +165,8 @@ php_config_file_1="/etc/php5/fpm/php.ini"
 php_config_file_2="/etc/php5/cli/php.ini"
 php_config_file_3="/etc/php5/cgi/php.ini"
 # site folder path
-site_path="/var/www/html"
+site_path="/usr/share/nginx/html"
+server_name="local.host.com"
 # www config
 www_conf="/etc/php5/fpm/pool.d/www.conf"
 # nginx config
@@ -181,7 +182,6 @@ fastcgi_params="/etc/nginx/fastcgi_params"
 gzip_settings="/etc/nginx/gzip_settings"
 client_settings="/etc/nginx/client_settings"
 mime.types="/etc/nginx/mime.types"
-microcache_zone="/etc/nginx/microcache_zone"
 # phpmyadmin config
 phpmyadmin.conf="/usr/share/phpmyadmin/phpmyadmin.conf"
 phpmyadmin_root_password="root"
@@ -233,14 +233,14 @@ cp ${default_nginx_conf} ${default_nginx_conf}.backup
 # Configure nginx for http://localhost/
 cat > ${default_nginx_conf} << EOF
 server {
-    listen   80 default_server; ## listen for ipv4; 
-    listen   [::]:80 default_server ipv6only=on; ## listen for ipv6
+    listen   127.0.0.1:8080; ## listen for ipv4; 
+    listen   localhost:8080 ipv6only=on; ## listen for ipv6
 
     root ${site_path};
     index index.php index.html index.htm;
 
     # Make site accessible from http://localhost/ to all projects
-    server_name _;
+    server_name ${server_name};
 
     location / {
         # First attempt to serve request as file, then
@@ -370,12 +370,6 @@ http {
     ##
     
     include sites-enabled/*;
-    
-    ##
-    # Include Microcache Zone Settings
-    ##
-    
-    include microcache_zone;
 }
 EOF
 # Configure basic_settings
@@ -484,11 +478,6 @@ cat > ${log_settings} << EOF
 
 access_log /var/log/nginx/access.log;
 error_log /var/log/nginx/error.log;
-EOF
-# Configure microcache_zone
-cat > ${microcache_zone} << EOF
-# Microcache Zone
-fastcgi_cache_path /var/cache/nginx/microcache levels=1:2 keys_zone=microcache:5M max_size=1G inactive=2h loader_threshold=2592000000 loader_sleep=1 loader_files=100000;
 EOF
 # Configure mime.types
 cat > ${mime.types} << EOF
@@ -600,6 +589,10 @@ xdebug.show_local_vars=1
 xdebug.var_display_max_depth = 5
 xdebug.var_display_max_children = 256
 xdebug.var_display_max_data = 1024
+EOF
+# Add site name to /etc/hosts
+cat > /etc/hosts << EOF
+127.0.0.1         ${server_name}
 EOF
 # Restart services
 service mysql restart
