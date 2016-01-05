@@ -161,9 +161,9 @@ echo ${green}...................................................................
 # Set Up variables
 # TODO: Do something with this fucking web server
 # php.ini path
-php_config_file_1="/etc/php5/fpm/php.ini"
-php_config_file_2="/etc/php5/cli/php.ini"
-php_config_file_3="/etc/php5/cgi/php.ini"
+php_config_file1="/etc/php5/fpm/php.ini"
+php_config_file2="/etc/php5/cli/php.ini"
+php_config_file3="/etc/php5/cgi/php.ini"
 # site folder path
 site_path="/usr/share/nginx/html"
 server_name="local.host.com"
@@ -570,7 +570,7 @@ cat > ${site_path}/info.php << EOF
 phpinfo();
 ?>
 EOF
-chmod 777 -R ${local_path}
+chmod 777 -R ${site_path}
 # xdebug configuring
 # TODO: check settings for xdebug
 xdebug="$(cat find / -name 'xdebug.so' 2> /dev/null)" 
