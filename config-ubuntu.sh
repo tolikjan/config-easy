@@ -250,7 +250,7 @@ server {
     location = /50x.html {
         root /usr/share/nginx/html;
     }
-    location ~ \.php\$ {
+    location ~ \.php\\\$ {
         try_files $uri =404;
         fastcgi_split_path_info ^(.+\.php)(/.+)\$;
         fastcgi_pass unix:/var/run/php5-fpm.sock;
