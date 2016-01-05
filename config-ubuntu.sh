@@ -674,6 +674,7 @@ apt-get install dkms virtualbox-5.0 -y
 # You can check latest extension pack version here - https://www.virtualbox.org/wiki/Downloads
 ext_pack="Oracle_VM_VirtualBox_Extension_Pack-5.0.12-104815.vbox-extpack"
 wget http://download.virtualbox.org/virtualbox/5.0.12/${ext_pack}
+rm -rf ${ext_pack}
 echo ${root_pass} | VBoxManage extpack install ${ext_pack}
 # install Vagrant
 # Get deb,unpack it and remove after installing
