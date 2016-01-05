@@ -563,6 +563,7 @@ types {
 }
 EOF
 # Give permissions for log file
+chmod 777 -R /var/log/nginx/access.log
 chmod 777 -R /var/log/nginx/error.log
 # Create phpinfo() file
 cat > ${site_path}/info.php << EOF
@@ -571,11 +572,30 @@ phpinfo();
 ?>
 EOF
 chmod 777 -R ${site_path}
-# xdebug configuring
+# xdebug configuring in php.ini file
 # TODO: check settings for xdebug
 xdebug="$(cat find / -name 'xdebug.so' 2> /dev/null)" 
 echo "zend_extension=\"$xdebug\"" >> ${php_config_file1}
 cat > ${php_config_file1} << EOF
+xdebug.remote_autostart=1
+xdebug.remote_enable=1
+xdebug.remote_connect_back=1
+xdebug.remote_port=9002
+xdebug.idekey=PHP_STORM
+xdebug.scream=0
+xdebug.cli_color=1
+xdebug.show_local_vars=1
+
+;var_dump display
+xdebug.var_display_max_depth = 5
+xdebug.var_display_max_children = 256
+xdebug.var_display_max_data = 1024
+EOF
+# xdebug configuring in php.ini file
+# TODO: check settings for xdebug
+xdebug="$(cat find / -name 'xdebug.so' 2> /dev/null)" 
+echo "zend_extension=\"$xdebug\"" >> ${php_config_file2}
+cat > ${php_config_file2} << EOF
 xdebug.remote_autostart=1
 xdebug.remote_enable=1
 xdebug.remote_connect_back=1
