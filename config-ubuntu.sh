@@ -37,14 +37,19 @@ echo ${green}...................................................................
 echo ${green}.................................... Installing Google Chrome ...................................${reset}
 echo ${green}.................................................................................................${reset}
 sleep 5
+# Another way which occur errors after Updating System
+# TODO: Need check whether chrome driver works with selenium
+# 
 #wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
 #sh -c 'echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
 #sudo apt-get update
 #sudo apt-get install google-chrome-stable -y
+#
+# Get deb,unpack it and remove after installing
 wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
 dpkg -i ./google-chrome*.deb
 apt-get install -f -y
-rm -rf google-chrome-stable_current_amd64.deb
+rm -rf google-chrome*.deb
 #
 # Install Flash player for Firefox
 #
@@ -403,16 +408,28 @@ echo ${green}...................................................................
 echo ${green}................................ Installing VirtualBox and Vagrant ..............................${reset}
 echo ${green}.................................................................................................${reset}
 sleep 5
-# Before using VirtualBox, make sure that virtualization is enabled in your BIOS settings
-apt-get install virtualbox -y
-apt-get install virtualbox-dkms -y
+# IMPORTANT! Before using VirtualBox, make sure that virtualization is enabled in your BIOS settings
+# Add deb
+cat > /etc/apt/sources.list << EOF
+deb http://download.virtualbox.org/virtualbox/debian trusty contrib
+EOF
+# Now install PGP key
+wget -q http://download.virtualbox.org/virtualbox/debian/oracle_vbox.asc -O- | sudo apt-key add --
+# Update and install virtualbox
+apt-get update
+apt-get install virtualbox-5.0 -y
 # Install Extension Pack for VirtualBox
 # You can check latest extension pack version here - https://www.virtualbox.org/wiki/Downloads
 #ext_pack="Oracle_VM_VirtualBox_Extension_Pack-5.0.12-104815.vbox-extpack"
 #wget http://download.virtualbox.org/virtualbox/5.0.12/${ext_pack}
 #echo ${root_pass} | VBoxManage extpack install ${ext_pack}
 # install Vagrant
+# Get deb,unpack it and remove after installing
+wget https://releases.hashicorp.com/vagrant/1.8.1/vagrant_1.8.1_x86_64.deb
+dpkg -i vagrant*.deb
 apt-get install vagrant -y
+apt-get install -f -y
+rm -rf vagrant*.deb
 echo ${green}.................................................................................................${reset}
 echo ${green}.............................................. DONE .............................................${reset}
 echo ${green}.................................................................................................${reset}
