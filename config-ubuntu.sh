@@ -668,7 +668,7 @@ apt-get autoremove -y | apt-get autoclean - y | apt-get clean -y
 cat > /etc/apt/sources.list.d/oracle-vbox.list << EOL
 deb http://download.virtualbox.org/virtualbox/debian trusty contrib  
 # deb-src http://download.virtualbox.org/virtualbox/debian trusty contrib
-EOF
+EOL
 # Now, download and register the ORACLE public key
 wget -q -O - https://www.virtualbox.org/download/oracle_vbox.asc | sudo apt-key add -  
 # Update and install virtualbox
