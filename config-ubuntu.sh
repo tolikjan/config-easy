@@ -183,7 +183,7 @@ gzip_settings="/etc/nginx/gzip_settings"
 client_settings="/etc/nginx/client_settings"
 mime.types="/etc/nginx/mime.types"
 # phpmyadmin config
-phpmyadmin.conf="/usr/share/phpmyadmin/phpmyadmin.conf"
+phpmyadmin.conf="/etc/nginx/phpmyadmin.conf"
 phpmyadmin_root_password="root"
 # mysql variables
 mysql_config_file="/etc/mysql/my.cnf"
@@ -576,7 +576,7 @@ chmod 777 -R ${site_path}
 # TODO: check settings for xdebug
 xdebug="$(cat find / -name 'xdebug.so' 2> /dev/null)" 
 echo "zend_extension=\"$xdebug\"" >> ${php_config_file1}
-cat > ${php_config_file1} << EOF
+cat > ${php_config_file1} << EOL
 xdebug.remote_autostart=1
 xdebug.remote_enable=1
 xdebug.remote_connect_back=1
@@ -590,12 +590,12 @@ xdebug.show_local_vars=1
 xdebug.var_display_max_depth = 5
 xdebug.var_display_max_children = 256
 xdebug.var_display_max_data = 1024
-EOF
+EOL
 # xdebug configuring in php.ini file
 # TODO: check settings for xdebug
 xdebug="$(cat find / -name 'xdebug.so' 2> /dev/null)" 
 echo "zend_extension=\"$xdebug\"" >> ${php_config_file2}
-cat > ${php_config_file2} << EOF
+cat > ${php_config_file2} << EOL
 xdebug.remote_autostart=1
 xdebug.remote_enable=1
 xdebug.remote_connect_back=1
@@ -609,11 +609,11 @@ xdebug.show_local_vars=1
 xdebug.var_display_max_depth = 5
 xdebug.var_display_max_children = 256
 xdebug.var_display_max_data = 1024
-EOF
+EOL
 # Add site name to /etc/hosts
-cat > /etc/hosts << EOF
+cat > /etc/hosts << EOL
 127.0.0.1         ${server_name}
-EOF
+EOL
 # Restart services
 service mysql restart
 service nginx restart
