@@ -173,7 +173,7 @@ www_conf="/etc/php5/fpm/pool.d/www.conf"
 nginx_conf="/etc/nginx/nginx.conf"
 # default nginx config
 default_nginx_conf="/etc/nginx/sites-available/default"
-default_nginx_conf_link="/etc/nginx/sites-available/default"
+default_nginx_conf_link="/etc/nginx/sites-enabled/default"
 # additional config
 basic_settings="/etc/nginx/basic_settings"
 client_settings="/etc/nginx/client_settings"
@@ -634,7 +634,7 @@ location /phpmyadmin {
        root /usr/share/;
        index index.php index.html index.htm;
        location ~ ^/phpmyadmin/(.+\\.php)\$ {
-               #try_files $uri =404;
+               try_files \$uri =404;
                root /usr/share/;
                #fastcgi_pass 127.0.0.1:9000;
               fastcgi_pass unix:/tmp/php5-fpm.sock;
