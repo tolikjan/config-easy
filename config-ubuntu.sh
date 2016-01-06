@@ -574,46 +574,38 @@ EOF
 chmod 777 -R ${site_path}
 # xdebug configuring in php.ini file
 # TODO: check settings for xdebug
-xdebug="$(cat find / -name 'xdebug.so' 2> /dev/null)" 
-echo "zend_extension=\"$xdebug\"" >> ${php_config_file1}
-cat > ${php_config_file1} << EOL
-xdebug.remote_autostart=1
-xdebug.remote_enable=1
-xdebug.remote_connect_back=1
-xdebug.remote_port=9002
-xdebug.idekey=PHP_STORM
-xdebug.scream=0
-xdebug.cli_color=1
-xdebug.show_local_vars=1
-
-;var_dump display
-xdebug.var_display_max_depth = 5
-xdebug.var_display_max_children = 256
-xdebug.var_display_max_data = 1024
-EOL
+xdebug=$(find / -name 'xdebug.so' 2> /dev/null)
+echo "zend_extension=\"${xdebug}\"" >> ${php_config_file1}
+echo "xdebug.remote_autostart=1" >> ${php_config_file1}
+echo "xdebug.remote_enable=1" >> ${php_config_file1}
+echo "xdebug.remote_connect_back=1" >> ${php_config_file1}
+echo "xdebug.remote_port=9002" >> ${php_config_file1}
+echo "xdebug.idekey=PHP_STORM" >> ${php_config_file1}
+echo "xdebug.scream=0" >> ${php_config_file1}
+echo "xdebug.cli_color=1" >> ${php_config_file1}
+echo "xdebug.show_local_vars=1" >> ${php_config_file1}
+echo ";var_dump display" >> ${php_config_file1}
+echo "xdebug.var_display_max_depth = 5" >> ${php_config_file1}
+echo "xdebug.var_display_max_children = 256" >> ${php_config_file1}
+echo "xdebug.var_display_max_data = 1024" >> ${php_config_file1}
 # xdebug configuring in php.ini file
 # TODO: check settings for xdebug
-xdebug="$(cat find / -name 'xdebug.so' 2> /dev/null)" 
-echo "zend_extension=\"$xdebug\"" >> ${php_config_file2}
-cat > ${php_config_file2} << EOL
-xdebug.remote_autostart=1
-xdebug.remote_enable=1
-xdebug.remote_connect_back=1
-xdebug.remote_port=9002
-xdebug.idekey=PHP_STORM
-xdebug.scream=0
-xdebug.cli_color=1
-xdebug.show_local_vars=1
-
-;var_dump display
-xdebug.var_display_max_depth = 5
-xdebug.var_display_max_children = 256
-xdebug.var_display_max_data = 1024
-EOL
+xdebug=$(find / -name 'xdebug.so' 2> /dev/null)
+echo "zend_extension=\"${xdebug}\"" >> ${php_config_file2}
+echo "xdebug.remote_autostart=1" >> ${php_config_file2}
+echo "xdebug.remote_enable=1" >> ${php_config_file2}
+echo "xdebug.remote_connect_back=1" >> ${php_config_file2}
+echo "xdebug.remote_port=9002" >> ${php_config_file2}
+echo "xdebug.idekey=PHP_STORM" >> ${php_config_file2}
+echo "xdebug.scream=0" >> ${php_config_file2}
+echo "xdebug.cli_color=1" >> ${php_config_file2}
+echo "xdebug.show_local_vars=1" >> ${php_config_file2}
+echo ";var_dump display" >> ${php_config_file2}
+echo "xdebug.var_display_max_depth = 5" >> ${php_config_file2}
+echo "xdebug.var_display_max_children = 256" >> ${php_config_file2}
+echo "xdebug.var_display_max_data = 1024" >> ${php_config_file2}
 # Add site name to /etc/hosts
-cat > /etc/hosts << EOL
-127.0.0.1         ${server_name}
-EOL
+echo "127.0.0.1         ${server_name}" >> /etc/hosts
 # Restart services
 service mysql restart
 service nginx restart
@@ -627,29 +619,29 @@ echo "phpmyadmin phpmyadmin/mysql/app-pass password "${phpmyadmin_root_password}
 echo "phpmyadmin phpmyadmin/app-password-confirm password "${phpmyadmin_root_password} | debconf-set-selections
 apt-get install phpmyadmin -y
 # Configure nginx.conf
-cat > ${phpmyadmin.conf} << EOF
+#cat > ${phpmyadmin.conf} << EOF
 # PhpMyAdmin configuration
 
-location /phpmyadmin {
-       root /usr/share/;
-       index index.php index.html index.htm;
-       location ~ ^/phpmyadmin/(.+\\.php)\$ {
-               try_files \$uri =404;
-               root /usr/share/;
-               #fastcgi_pass 127.0.0.1:9000;
-              fastcgi_pass unix:/tmp/php5-fpm.sock;
-               fastcgi_index index.php;
-               fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
-               include fastcgi_params;
-       }
-       location ~* ^/phpmyadmin/(.+\\.(jpg|jpeg|gif|css|png|js|ico|html|xml|txt))\$ {
-               root /usr/share/;
-       }
-}
-location /phpMyAdmin {
-       rewrite ^/* /phpmyadmin last;
-}
-EOF
+#location /phpmyadmin {
+#       root /usr/share/;
+#       index index.php index.html index.htm;
+#       location ~ ^/phpmyadmin/(.+\\.php)\$ {
+#               #try_files \$uri =404;
+#               root /usr/share/;
+#               #fastcgi_pass 127.0.0.1:9000;
+#               fastcgi_pass unix:/tmp/php5-fpm.sock;
+#               fastcgi_index index.php;
+#               fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
+#               include fastcgi_params;
+#       }
+#       location ~* ^/phpmyadmin/(.+\\.(jpg|jpeg|gif|css|png|js|ico|html|xml|txt))\$ {
+#               root /usr/share/;
+#       }
+#}
+#location /phpMyAdmin {
+#       rewrite ^/* /phpmyadmin last;
+#}
+#EOF
 # Create a symbolic link between phpMyAdmin and website root directory
 ln -s /usr/share/phpmyadmin/ ${site_path}
 # Disable by default, as this will add to all VirtualHosts; instead, add the following to an Apache VirtualHost:
@@ -673,7 +665,7 @@ apt-get update
 # Clean up
 apt-get autoremove -y | apt-get autoclean - y | apt-get clean -y
 # Add deb
-cat > /etc/apt/sources.list.d/oracle-vbox.list << EOF
+cat > /etc/apt/sources.list.d/oracle-vbox.list << EOL
 deb http://download.virtualbox.org/virtualbox/debian trusty contrib  
 # deb-src http://download.virtualbox.org/virtualbox/debian trusty contrib
 EOF
