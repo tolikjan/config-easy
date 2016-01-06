@@ -145,13 +145,15 @@ apt-get update
 mkdir ~/selenium
 chmod 777 -R selenium/
 cd ~/selenium
+# Install xvfb - display server wich implementing the X11 display server protocol
+apt-get install xvfb -y
 # Get Selenium and install headless Java runtime
-wget http://selenium-release.storage.googleapis.com/2.44/selenium-server-standalone-2.44.0.jar
+wget http://selenium-release.storage.googleapis.com/2.48/selenium-server-standalone-2.48.2.jar
 apt-get install openjdk-7-jre-headless -y
 # Install headless GUI for firefox. Xvfb is a display server that performs graphical operations in memory
 #apt-get install xvfb -y
 # Starting up Selenium server
-#DISPLAY=:1 xvfb-run java -jar ~/selenium/selenium-server-standalone-2.44.0.jar
+#DISPLAY=:1 xvfb-run java -jar ~/selenium/selenium-server-standalone-2.48.2.jar
 #
 # Install LEMP (nginx + MySQL + PHPMyAdmin) and configure it
 #
@@ -605,7 +607,7 @@ echo "xdebug.var_display_max_depth = 5" >> ${php_config_file2}
 echo "xdebug.var_display_max_children = 256" >> ${php_config_file2}
 echo "xdebug.var_display_max_data = 1024" >> ${php_config_file2}
 # Add site name to /etc/hosts
-echo "127.0.0.1         ${server_name}" >> /etc/hosts
+echo "127.0.0.1       ${server_name}" >> /etc/hosts
 # Restart services
 service mysql restart
 service nginx restart
@@ -619,33 +621,32 @@ echo "phpmyadmin phpmyadmin/mysql/app-pass password "${phpmyadmin_root_password}
 echo "phpmyadmin phpmyadmin/app-password-confirm password "${phpmyadmin_root_password} | debconf-set-selections
 apt-get install phpmyadmin -y
 # Configure nginx.conf
-#cat > ${phpmyadmin.conf} << EOF
+cat > ${phpmyadmin.conf} << EOF
 # PhpMyAdmin configuration
 
-#location /phpmyadmin {
-#       root /usr/share/;
-#       index index.php index.html index.htm;
-#       location ~ ^/phpmyadmin/(.+\\.php)\$ {
-#               #try_files \$uri =404;
-#               root /usr/share/;
-#               #fastcgi_pass 127.0.0.1:9000;
-#               fastcgi_pass unix:/tmp/php5-fpm.sock;
-#               fastcgi_index index.php;
-#               fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
-#               include fastcgi_params;
-#       }
-#       location ~* ^/phpmyadmin/(.+\\.(jpg|jpeg|gif|css|png|js|ico|html|xml|txt))\$ {
-#               root /usr/share/;
-#       }
-#}
-#location /phpMyAdmin {
-#       rewrite ^/* /phpmyadmin last;
-#}
-#EOF
+location /phpmyadmin {
+       root /usr/share/;
+       index index.php index.html index.htm;
+       location ~ ^/phpmyadmin/(.+\\.php)\$ {
+               try_files \$uri =404;
+               root /usr/share/;
+               #fastcgi_pass 127.0.0.1:9000;
+               fastcgi_pass unix:/tmp/php5-fpm.sock;
+               fastcgi_index index.php;
+               fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
+               include fastcgi_params;
+       }
+       location ~* ^/phpmyadmin/(.+\\.(jpg|jpeg|gif|css|png|js|ico|html|xml|txt))\$ {
+               root /usr/share/;
+       }
+}
+location /phpMyAdmin {
+       rewrite ^/* /phpmyadmin last;
+}
+EOF
 # Create a symbolic link between phpMyAdmin and website root directory
 ln -s /usr/share/phpmyadmin/ ${site_path}
-# Disable by default, as this will add to all VirtualHosts; instead, add the following to an Apache VirtualHost:
-#echo "Include /etc/phpmyadmin/apache.conf" >> /etc/apache2/apache2.conf
+chmod 777 -R ${site_path}/phpmyadmin
 # Restart services
 service mysql restart
 service nginx restart
