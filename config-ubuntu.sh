@@ -209,7 +209,6 @@ echo ${green}...................................................................
 echo ${green}........................................ Installing PHP .........................................${reset}
 echo ${green}.................................................................................................${reset}
 sleep 5
-php_config_file="/etc/php5/fpm/php.ini"
 apt-get install php5 php5-common php5-cli php5-fpm php5-gd php5-xdebug -y
 # Stop services
 service nginx stop
@@ -223,6 +222,17 @@ sed -i 's/^;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g' ${php_config_file1}
 # Change configuration if you planing to load big files
 sed -i 's/^post_max_size = 8M/post_max_size = 200M/g' ${php_config_file1}
 sed -i 's/^upload_max_filesize = 2M/upload_max_filesize = 200M/g' ${php_config_file1}
+# Change configuration for better security and convenience
+sed -i 's/^error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT/error_reporting = E_ALL/g' ${php_config_file2}
+sed -i 's/^html_errors = Off/html_errors = On/g' ${php_config_file2}
+sed -i 's/^display_startup_errors = Off/display_startup_errors = On/g'
+${php_config_file2}
+sed -i 's/^display_errors = Off/display_errors = On/g' ${php_config_file2}
+sed -i 's/^;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g' ${php_config_file2}
+# Change configuration if you planing to load big files
+sed -i 's/^post_max_size = 8M/post_max_size = 200M/g' ${php_config_file2}
+sed -i 's/^upload_max_filesize = 2M/upload_max_filesize = 200M/g'
+${php_config_file2}
 # Change configuration www.conf
 sed -i 's/^;security.limit_extensions = .php .php3 .php4 .php5/security.limit_extensions = .php .php3 .php4 .php5/g' ${www_conf}
 sed -i 's/^;listen.mode = 0660/listen.mode = 0660/g' ${www_conf}
@@ -300,7 +310,7 @@ server {
     #   # With php5-fpm:
         fastcgi_pass unix:/tmp/php5-fpm.sock;
         fastcgi_index index.php;
-        fastcgi_param  SCRIPT_FILENAME  $document_root\$fastcgi_script_name;
+        fastcgi_param  SCRIPT_FILENAME  \$document_root\$fastcgi_script_name;
         include fastcgi_params;
         include fastcgi_caches;
     }
@@ -323,7 +333,7 @@ server {
     }
 
     ## Any other attempt to access PHP files returns a 404.
-    location ~* ^.+\\.php$ {
+    location ~* ^.+\\.php\$ {
         return 404;
     }
 
