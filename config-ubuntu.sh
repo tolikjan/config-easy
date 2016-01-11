@@ -311,9 +311,9 @@ echo ${green}...................................................................
 echo ${green}............................. Installing and Configuring PHPStopm 10 ............................${reset}
 echo ${green}.................................................................................................${reset}
 sleep 5
-wget http://download-cf.jetbrains.com/webide/PhpStorm-10.0.2.tar.gz
-tar -xvf PhpStorm-10.0.2.tar.gz
-cd PhpStorm-143.1184.87/bin/
+wget http://download-cf.jetbrains.com/webide/PhpStorm-10.0.3.tar.gz
+tar -xvf PhpStorm-10.0.3.tar.gz
+cd PhpStorm-*/bin/
 ./phpstorm.sh || TRUE
 #
 # Install HipChat
