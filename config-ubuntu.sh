@@ -234,8 +234,7 @@ sed -i 's/^display_errors = Off/display_errors = On/g' ${php_config_file2}
 sed -i 's/^;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g' ${php_config_file2}
 # Change configuration if you planing to load big files
 sed -i 's/^post_max_size = 8M/post_max_size = 200M/g' ${php_config_file2}
-sed -i 's/^upload_max_filesize = 2M/upload_max_filesize = 200M/g'
-${php_config_file2}
+sed -i 's/^upload_max_filesize = 2M/upload_max_filesize = 200M/g' ${php_config_file2}
 # Change configuration www.conf
 sed -i 's/^;security.limit_extensions = .php .php3 .php4 .php5/security.limit_extensions = .php .php3 .php4 .php5/g' ${www_conf}
 sed -i 's/^;listen.mode = 0660/listen.mode = 0660/g' ${www_conf}
@@ -246,66 +245,34 @@ service php5-fpm start
 # Remove default settings for nginx
 cp ${default_nginx_conf} ${default_nginx_conf}.backup
 # Configure nginx for http://localhost/
-sed -i 's/^index index.html index.htm;/index index.php index.html index.htm;/g' ${default_nginx_conf}
-sed -i 's/^server_name localhost;/server_name ${server_name};/g' ${default_nginx_conf}
-sed -i 's/^location \/ {
-        try_files $uri $uri\/ =404;
-    }\/location \/ {
-        try_files $uri $uri/ =404;
+cat > ${default_nginx_conf} << EOF
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server ipv6only=on;
+
+    root /usr/share/nginx/html;
+    index index.php index.html index.htm;
+
+    server_name server_domain_name_or_IP;
+
+    location / {
+        try_files \$uri \$uri/ =404;
     }
 
-    error_page 404 \/404.html;
-    error_page 500 502 503 504 \/50x.html;
-    location = \/50x.html {
-        root \/usr\/share\/nginx\/html;
+    error_page 404 /404.html;
+    error_page 500 502 503 504 /50x.html;
+    location = /50x.html {
+        root /usr/share/nginx/html;
     }
 
     location ~ \.php\$ {
         try_files $uri =404;
-        fastcgi_split_path_info \^(.+\.php)(\/.+)\$;
-        fastcgi_pass unix:\/var\/run\/php5-fpm.sock;
+        fastcgi_split_path_info ^(.+\\.php)(/.+)\$;
+        fastcgi_pass unix:/var/run/php5-fpm.sock;
         fastcgi_index index.php;
-        fastcgi_param SCRIPT_FILENAME $document_root\$fastcgi_script_name;
+        fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
         include fastcgi_params;
-    }/g' ${default_nginx_conf}
-
-cat > ${default_nginx_conf_1} << EOF
-server {
-    listen   127.0.0.1:8080; ## listen for ipv4; 
-    listen   localhost:8080 ipv6only=on; ## listen for ipv6
-
-    root ${site_path};
-    index index.php index.html index.htm;
-
-    # Make site accessible from http://localhost/ to all projects
-    server_name ${server_name};
-
-    location / {
-        # First attempt to serve request as file, then
-        # as directory, then fall back to displaying a 404.
-        try_files \$uri \$uri/ /index.html;
-        expires max;
-        autoindex on;
     }
-
-     location ~* ^.+\\.(cur|js|jpe?g|ico|gif|png|svg|css|mp3|ogg|mpe?g|avi|zip|gz|bz2?|rar|swf)\$ {
-                expires 7d;
-                access_log off;
-                tcp_nodelay off;
-                open_file_cache max=3000 inactive=120s;
-                open_file_cache_valid 45s;
-                open_file_cache_min_uses 2;
-                open_file_cache_errors off;
-        }
-
-    # ImageCache
-    location ~ ^/imagecache/ {
-        try_files \$uri @rewrite;
-    }
-    
-    location @rewrite {
-                rewrite ^/(.*)\$ /index.php?q=\$1;
-        }
     
     ## Include phpmyadmin location here
     include phpmyadmin.conf;
@@ -315,52 +282,6 @@ server {
         allow 127.0.0.1;
         allow ::1;
         deny all;
-    }
-
-    # redirect server error pages to the static page /50x.html
-    #
-    error_page 500 502 503 504 /50x.html;
-    location = /50x.html {
-        root errors/;
-    }
-
-    # pass the PHP scripts to FastCGI server
-    #
-    location ~ \\.php\$ {
-    
-    #   # For Micro Caching
-    #   include microcache.conf;
-
-    #   # With php5-cgi alone:
-    #   fastcgi_pass 127.0.0.1:9000;
-    #   # With php5-fpm:
-        fastcgi_pass unix:/tmp/php5-fpm.sock;
-        fastcgi_index index.php;
-        fastcgi_param  SCRIPT_FILENAME  \$document_root\$fastcgi_script_name;
-        include fastcgi_params;
-        include fastcgi_caches;
-    }
-    
-    ## Disallow access to .git directory: return 404 as not to disclose information.
-    location ^~ /.git {
-        return 404;
-    }
-    
-    ## Support for favicon. Return an 1x1 transparent GIF if it doesn't exist.
-    location = /favicon.ico {
-        expires 30d;
-        try_files /favicon.ico @empty;
-    }
-
-    ## Return an in memory 1x1 transparent GIF.
-    location @empty {
-        expires 30d;
-        empty_gif;
-    }
-
-    ## Any other attempt to access PHP files returns a 404.
-    location ~* ^.+\\.php\$ {
-        return 404;
     }
 
 }
