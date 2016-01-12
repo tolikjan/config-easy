@@ -699,23 +699,28 @@ dpkg -i vagrant*.deb
 apt-get install vagrant -y
 apt-get install -f -y
 rm -rf vagrant*.deb
-
-
+#
+# Install Gimp, Vine and PlayOnLinux
+#
+echo ${green}.................................................................................................${reset}
+echo ${green}................................ Installing VirtualBox and Vagrant ..............................${reset}
+echo ${green}.................................................................................................${reset}
+sleep 5
 # install latest version of Gimp editor
-echo -ne '\n' | add-apt-repository ppa:otto-kesselgulasch/gimp
-apt-get update && sudo apt-get install gimp -y
+#echo -ne '\n' | add-apt-repository ppa:otto-kesselgulasch/gimp
+#apt-get update && sudo apt-get install gimp -y
 
 # TODO: fix two screens
-echo -ne '\n' | add-apt-repository ppa:ubuntu-wine/ppa
-apt-get update
-apt-get install wine1.7 -y
+#echo -ne '\n' | add-apt-repository ppa:ubuntu-wine/ppa
+#apt-get update
+#apt-get install wine1.7 -y
 
-wget -q "http://deb.playonlinux.com/public.gpg" -O- | sudo apt-key add -
-wget http://deb.playonlinux.com/playonlinux_trusty.list -O /etc/apt/sources.list.d/playonlinux.list
-apt-get update
-apt-get install playonlinux -y
+#wget -q "http://deb.playonlinux.com/public.gpg" -O- | sudo apt-key add -
+#wget http://deb.playonlinux.com/playonlinux_trusty.list -O /etc/apt/sources.list.d/playonlinux.list
+#apt-get update
+#apt-get install playonlinux -y
 
-http://www.bendangelo.me/install/2014/10/29/installing-photoshop-cs6-on-ubuntu.html
+#http://www.bendangelo.me/install/2014/10/29/installing-photoshop-cs6-on-ubuntu.html
 
 echo ${green}.................................................................................................${reset}
 echo ${green}.............................................. DONE .............................................${reset}
