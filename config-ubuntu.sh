@@ -160,7 +160,9 @@ apt-get install openjdk-7-jre-headless -y
 echo ${green}.................................................................................................${reset}
 echo ${green}.............. Installing and Configuring LEMP - Linux + nginx + MySQL + PHPMyAdmin .............${reset}
 echo ${green}.................................................................................................${reset}
+###
 # Set Up variables
+###
 # TODO: Do something with this fucking web server
 # php.ini path
 php_config_file1="/etc/php5/fpm/php.ini"
@@ -193,67 +195,116 @@ phpmyadmin_root_password="root"
 mysql_config_file="/etc/mysql/my.cnf"
 mysql_root_user="root"
 mysql_root_password="root"
-#
+###
 # Install nginx
-#
+###
 apt-get update
 apt-get install nginx -y
 service nginx start
-# Set password for root account
-echo "mysql-server mysql-server/root_password password "${mysql_root_password} | debconf-set-selections
-echo "mysql-server mysql-server/root_password_again password "${mysql_root_password} | debconf-set-selections
-# Install MySQL-server
-apt-get install mysql-server php5-mysql -y
+# Backup default settings for nginx.conf
+cp ${nginx_conf} ${nginx_conf}.backup
+# Configure nginx.conf
+cat > ${nginx_conf} << EOF
+user www-data;
+ 
+# As a thumb rule: One per CPU. If you are serving a large amount
+# of static files, which requires blocking disk reads, you may want
+# to increase this from the number of cpu_cores available on your
+# system.
 #
-# Install php5 and related modules
-#
-echo ${green}.................................................................................................${reset}
-echo ${green}........................................ Installing PHP .........................................${reset}
-echo ${green}.................................................................................................${reset}
-sleep 5
-apt-get install php5 php5-common php5-cli php5-fpm php5-gd php5-xdebug -y
-# Stop services
-service nginx stop
-service php5-fpm stop
-# Configuration for /etc/php5/fpm/php.ini
-# Change configuration for better security and convenience
-sed -i 's/^error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT/error_reporting = E_ALL/g' ${php_config_file1}
-sed -i 's/^html_errors = Off/html_errors = On/g' ${php_config_file1}
-sed -i 's/^display_startup_errors = Off/display_startup_errors = On/g' ${php_config_file1}
-sed -i 's/^display_errors = Off/display_errors = On/g' ${php_config_file1}
-sed -i 's/^;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g' ${php_config_file1}
-# Change configuration if you planing to load big files
-sed -i 's/^post_max_size = 8M/post_max_size = 200M/g' ${php_config_file1}
-sed -i 's/^upload_max_filesize = 2M/upload_max_filesize = 200M/g' ${php_config_file1}
-# Configuration for /etc/php5/cli/php.ini
-# Change configuration for better security and convenience
-sed -i 's/^error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT/error_reporting = E_ALL/g' ${php_config_file2}
-sed -i 's/^html_errors = Off/html_errors = On/g' ${php_config_file2}
-sed -i 's/^display_startup_errors = Off/display_startup_errors = On/g' ${php_config_file2}
-sed -i 's/^display_errors = Off/display_errors = On/g' ${php_config_file2}
-sed -i 's/^;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g' ${php_config_file2}
-# Change configuration if you planing to load big files
-sed -i 's/^post_max_size = 8M/post_max_size = 200M/g' ${php_config_file2}
-sed -i 's/^upload_max_filesize = 2M/upload_max_filesize = 200M/g' ${php_config_file2}
-# Change configuration www.conf
-sed -i 's/^;security.limit_extensions = .php .php3 .php4 .php5/security.limit_extensions = .php .php3 .php4 .php5/g' ${www_conf}
-sed -i 's/^;listen.mode = 0660/listen.mode = 0660/g' ${www_conf}
-sed -i 's/^listen =  127.0.0.1:9000/listen = /var/run/php5-fpm.sock/g' ${www_conf}
-# Start services
-service nginx start
-service php5-fpm start
-# Remove default settings for nginx
+# The maximum number of connections for Nginx is calculated by:
+# max_clients = worker_processes * worker_connections
+worker_processes 1;
+ 
+# Maximum file descriptors that can be opened per process
+# This should be > worker_connections
+worker_rlimit_nofile 8192;
+ 
+events {
+    # When you need > 8000 * cpu_cores connections, you start optimizing
+    # your OS, and this is probably the point at where you hire people
+    # who are smarter than you, this is *a lot* of requests.
+    worker_connections 8000;
+}
+ 
+error_log /var/log/nginx/error.log;
+ 
+pid /var/run/nginx.pid;
+ 
+http {
+    charset utf-8;
+ 
+    # Set the mime-types via the mime.types external file
+    include mime.types;
+ 
+    # And the fallback mime-type
+    default_type application/octet-stream;
+ 
+    # Click tracking!
+    access_log /var/log/nginx/access.log;
+ 
+    # Hide nginx version
+    server_tokens off;
+ 
+    # ~2 seconds is often enough for HTML/CSS, but connections in
+    # Nginx are cheap, so generally it's safe to increase it
+    keepalive_timeout 20;
+ 
+    # You usually want to serve static files with Nginx
+    sendfile on;
+ 
+    tcp_nopush on; # off may be better for Comet/long-poll stuff
+    tcp_nodelay off; # on may be better for Comet/long-poll stuff
+ 
+    server_name_in_redirect off;
+    types_hash_max_size 2048;
+ 
+    gzip on;
+    gzip_http_version 1.0;
+    gzip_comp_level 5;
+    gzip_min_length 512;
+    gzip_buffers 4 8k;
+    gzip_proxied any;
+    gzip_types
+        # text/html is always compressed by HttpGzipModule
+        text/css
+        text/plain
+        text/x-component
+        application/javascript
+        application/json
+        application/xml
+        application/xhtml+xml
+        application/x-font-ttf
+        application/x-font-opentype
+        application/vnd.ms-fontobject
+        image/svg+xml
+        image/x-icon;
+ 
+    # This should be turned on if you are going to have pre-compressed copies (.gz) of
+    # static files available. If not it should be left off as it will cause extra I/O
+    # for the check. It would be better to enable this in a location {} block for
+    # a specific directory:
+    # gzip_static on;
+ 
+    gzip_disable "msie6";
+    gzip_vary on;
+ 
+    include /etc/nginx/conf.d/*.conf;
+    include /etc/nginx/sites-enabled/*;
+}
+EOF
+# Backup default settings for nginx
 cp ${default_nginx_conf} ${default_nginx_conf}.backup
 # Configure nginx for http://localhost/
 cat > ${default_nginx_conf} << EOF
 server {
-    listen 80 default_server;
-    listen [::]:80 default_server ipv6only=on;
+    listen 80 default; ## listen for ipv4; this line is default and implied
+    listen [::]:80 default ipv6only=on; ## listen for ipv6
 
     root /usr/share/nginx/html;
     index index.php index.html index.htm;
 
-    server_name server_domain_name_or_IP;
+    server_name ${server_name};
 
     location / {
         try_files \$uri \$uri/ =404;
@@ -286,242 +337,64 @@ server {
 
 }
 EOF
-# Configure nginx.conf
-cat > ${nginx_conf} << EOF
-user www-data;
-master_process on;
-worker_processes 4;
-pid /var/run/nginx.pid;
-
-events {
-    worker_connections  1024;
-     multi_accept on;
-}
-
-http {
-    
-    ##
-    # Include Nginx Basic Settings
-    ##
-    
-    include basic_settings;
-    
-    ##
-    # Include Client Settings and Timeouts
-    ##
-    
-    include client_settings;
-
-    ##
-    # Include Nginx Logging Settings
-    ##
-
-    include log_settings;
-
-    ##
-    # Include Nginx Gzip Settings
-    ##
-
-    include gzip_settings;
-
-    ##
-    # Virtual Host Configs
-    ##
-    
-    include sites-enabled/*;
-}
-EOF
-# Configure basic_settings
-cat > ${basic_settings} << EOF
-##
-# Nginx Basic Settings
-##
-
-sendfile on;
-tcp_nopush on;
-tcp_nodelay on;
-keepalive_timeout 10;
-types_hash_max_size 2048;
-# server_tokens on;
-server_tokens on;
-
-# server_names_hash_bucket_size 64;
-server_names_hash_bucket_size 64;
-
-# Mime types
-include mime.types;
-default_type application/octet-stream;
-EOF
-# Configure client_settings
-cat > ${client_settings} << EOF
-## Timeouts.
-client_body_timeout                 60;
-client_header_timeout               60;
-keepalive_timeout                10 10;
-send_timeout                        60;
-
-## Body Size
-client_max_body_size              128M;
-
-## Reset lingering timed out connections. Deflect DDoS.
-reset_timedout_connection           on;
-
-## Buffer Size
-client_header_buffer_size           1k;
-large_client_header_buffers       4 4k;
-EOF
-# Configure fastcgi_caches
-cat > ${fastcgi_caches} << EOF
-# Bypass cache if flag is set
-        fastcgi_no_cache            \$no_cache;
-        fastcgi_cache_bypass        \$no_cache;
-        fastcgi_cache               microcache;
-        fastcgi_cache_key           \$server_name|\$request_uri;
-        fastcgi_cache_valid         404 30m;
-        fastcgi_cache_valid         200 10s;
-        fastcgi_max_temp_file_size  1M;
-        fastcgi_cache_use_stale     updating;
-        fastcgi_pass_header         Set-Cookie;
-        fastcgi_pass_header         Cookie;
-        fastcgi_ignore_headers      Cache-Control Expires Set-Cookie;
-EOF
-# Configure fastcgi_params
-cat > ${fastcgi_params} << EOF
-fastcgi_param   QUERY_STRING        \$query_string;
-fastcgi_param   REQUEST_METHOD      \$request_method;
-fastcgi_param   CONTENT_TYPE        \$content_type;
-fastcgi_param   CONTENT_LENGTH      \$content_length;
-
-fastcgi_param   SCRIPT_FILENAME     \$request_filename;
-fastcgi_param   SCRIPT_NAME         \$fastcgi_script_name;
-fastcgi_param   REQUEST_URI         \$request_uri;
-fastcgi_param   DOCUMENT_URI        \$document_uri;
-fastcgi_param   DOCUMENT_ROOT       \$document_root;
-fastcgi_param   SERVER_PROTOCOL     \$server_protocol;
-
-fastcgi_param   GATEWAY_INTERFACE   CGI/1.1;
-fastcgi_param   SERVER_SOFTWARE     nginx/\$nginx_version;
-
-fastcgi_param   REMOTE_ADDR         \$remote_addr;
-fastcgi_param   REMOTE_PORT         \$remote_port;
-fastcgi_param   SERVER_ADDR         \$server_addr;
-fastcgi_param   SERVER_PORT         \$server_port;
-fastcgi_param   SERVER_NAME         \$server_name;
-
-fastcgi_param   HTTPS               \$https;
-
-# PHP only, required if PHP was built with --enable-force-cgi-redirect
-fastcgi_param   REDIRECT_STATUS     200;
-EOF
-# Configure gzip_settings
-cat > ${gzip_settings} << EOF
-##
-# Gzip Settings
-##
-gzip  on;
-gzip_buffers 16 8k;
-gzip_comp_level 5;
-gzip_http_version 1.1;
-gzip_min_length 10;
-gzip_types text/plain text/css image/png image/gif image/jpeg application/x-javascript text/xml application/xml application/xml+rss text/javascript image/x-icon;
-gzip_vary on;
-gzip_static on;
-gzip_proxied any;
-gzip_disable "MSIE [1-6]\.";
-EOF
-# Configure log_settings
-#cat > ${log_settings} << EOF
-##
-# Nginx Logging Settings
-##
-
-#access_log /var/log/nginx/access.log;
-#error_log /var/log/nginx/error.log;
-#EOF
-# Configure mime.types
-#cat > ${mime.types} << EOF
-# Mime Types
-#types {
-#    text/html                               html htm shtml;
-#    text/css                                css;
-#    text/xml                                xml rss;
-#    image/gif                               gif;
-#    image/jpeg                              jpeg jpg;
-#    application/x-javascript                js;
-#    application/atom+xml                    atom;
+# Restart nginx
+service nginx restart
+###
+# Install mysql-server
+###
+# Set password for root account
+echo "mysql-server mysql-server/root_password password "${mysql_root_password} | debconf-set-selections
+echo "mysql-server mysql-server/root_password_again password "${mysql_root_password} | debconf-set-selections
+###
+# Install MySQL-server
+###
+apt-get install mysql-server php5-mysql -y
 #
-#    text/mathml                             mml;
-#    text/plain                              txt;
-#    text/vnd.sun.j2me.app-descriptor        jad;
-#    text/vnd.wap.wml                        wml;
-#    text/x-component                        htc;
-
-#    image/png                               png;
-#    image/tiff                              tif tiff;
-#    image/vnd.wap.wbmp                      wbmp;
-#    image/x-icon                            ico;
-#    image/x-jng                             jng;
-#    image/x-ms-bmp                          bmp;
-#    image/svg+xml                           svg svgz;
-
-#    application/java-archive                jar war ear;
-#    application/json                        json;
-#    application/mac-binhex40                hqx;
-#    application/msword                      doc;
-#    application/pdf                         pdf;
-#    application/postscript                  ps eps ai;
-#    application/rtf                         rtf;
-#    application/vnd.ms-excel                xls;
-#    application/vnd.ms-powerpoint           ppt;
-#    application/vnd.wap.wmlc                wmlc;
-#    application/vnd.google-earth.kml+xml    kml;
-#    application/vnd.google-earth.kmz        kmz;
-#    application/x-7z-compressed             7z;
-#    application/x-cocoa                     cco;
-#    application/x-java-archive-diff         jardiff;
-#    application/x-java-jnlp-file            jnlp;
-#    application/x-makeself                  run;
-#    application/x-perl                      pl pm;
-#    application/x-pilot                     prc pdb;
-#    application/x-rar-compressed            rar;
-#    application/x-redhat-package-manager    rpm;
-#    application/x-sea                       sea;
-#    application/x-shockwave-flash           swf;
-#    application/x-stuffit                   sit;
-#    application/x-tcl                       tcl tk;
-#    application/x-x509-ca-cert              der pem crt;
-#    application/x-xpinstall                 xpi;
-#    application/xhtml+xml                   xhtml;
-#    application/zip                         zip;
-
-#    application/octet-stream                bin exe dll;
-#    application/octet-stream                deb;
-#    application/octet-stream                dmg;
-#    application/octet-stream                eot;
-#    application/octet-stream                iso img;
-#    application/octet-stream                msi msp msm;
-#    application/ogg                         ogx;
-
-#    audio/midi                              mid midi kar;
-#    audio/mpeg                              mpga mpega mp2 mp3 m4a;
-#    audio/ogg                               oga ogg spx;
-#    audio/x-realaudio                       ra;
-#    audio/webm                              weba;
-
-#    video/3gpp                              3gpp 3gp;
-#    video/mp4                               mp4;
-#    video/mpeg                              mpeg mpg mpe;
-#    video/ogg                               ogv;
-#    video/quicktime                         mov;
-#    video/webm                              webm;
-#    video/x-flv                             flv;
-#    video/x-mng                             mng;
-#    video/x-ms-asf                          asx asf;
-#    video/x-ms-wmv                          wmv;
-#    video/x-msvideo                         avi;
-#}
-#EOF
+echo ${green}.................................................................................................${reset}
+echo ${green}........................................ Installing PHP .........................................${reset}
+echo ${green}.................................................................................................${reset}
+sleep 5
+apt-get install php5 php5-common php5-cli php5-fpm php5-gd php5-xdebug -y
+# Backup default php.ini files
+cp ${php_config_file1} ${php_config_file1}.backup
+cp ${php_config_file2} ${php_config_file2}.backup
+cp ${php_config_file3} ${php_config_file3}.backup
+# Stop services
+service nginx stop
+service php5-fpm stop
+###
+# Configuration for /etc/php5/fpm/php.ini
+###
+# Change configuration for better security and convenience
+sed -i 's/^error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT/error_reporting = E_ALL/g' ${php_config_file1}
+sed -i 's/^html_errors = Off/html_errors = On/g' ${php_config_file1}
+sed -i 's/^display_startup_errors = Off/display_startup_errors = On/g' ${php_config_file1}
+sed -i 's/^display_errors = Off/display_errors = On/g' ${php_config_file1}
+sed -i 's/^;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g' ${php_config_file1}
+# Change configuration if you planing to load big files
+sed -i 's/^post_max_size = 8M/post_max_size = 200M/g' ${php_config_file1}
+sed -i 's/^upload_max_filesize = 2M/upload_max_filesize = 200M/g' ${php_config_file1}
+###
+# Configuration for /etc/php5/cli/php.ini
+###
+# Change configuration for better security and convenience
+sed -i 's/^error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT/error_reporting = E_ALL/g' ${php_config_file2}
+sed -i 's/^html_errors = Off/html_errors = On/g' ${php_config_file2}
+sed -i 's/^display_startup_errors = Off/display_startup_errors = On/g' ${php_config_file2}
+sed -i 's/^display_errors = Off/display_errors = On/g' ${php_config_file2}
+sed -i 's/^;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g' ${php_config_file2}
+# Change configuration if you planing to load big files
+sed -i 's/^post_max_size = 8M/post_max_size = 200M/g' ${php_config_file2}
+sed -i 's/^upload_max_filesize = 2M/upload_max_filesize = 200M/g' ${php_config_file2}
+###
+# Change configuration www.conf
+###
+sed -i 's/^;security.limit_extensions = .php .php3 .php4 .php5/security.limit_extensions = .php .php3 .php4 .php5/g' ${www_conf}
+sed -i 's/^;listen.mode = 0660/listen.mode = 0660/g' ${www_conf}
+sed -i 's/^listen =  127.0.0.1:9000/listen = /var/run/php5-fpm.sock/g' ${www_conf}
+###
 # Give permissions for log file
+###
 chmod 777 -R /var/log/nginx/access.log
 chmod 777 -R /var/log/nginx/error.log
 # Create phpinfo() file
@@ -531,7 +404,9 @@ phpinfo();
 ?>
 EOF
 chmod 777 -R ${site_path}
+###
 # xdebug configuring in php.ini file
+###
 # TODO: check settings for xdebug
 xdebug=$(find / -name 'xdebug.so' 2> /dev/null)
 echo "zend_extension=\"${xdebug}\"" >> ${php_config_file1}
@@ -547,7 +422,9 @@ echo ";var_dump display" >> ${php_config_file1}
 echo "xdebug.var_display_max_depth = 5" >> ${php_config_file1}
 echo "xdebug.var_display_max_children = 256" >> ${php_config_file1}
 echo "xdebug.var_display_max_data = 1024" >> ${php_config_file1}
+###
 # xdebug configuring in php.ini file
+###
 # TODO: check settings for xdebug
 xdebug=$(find / -name 'xdebug.so' 2> /dev/null)
 echo "zend_extension=\"${xdebug}\"" >> ${php_config_file2}
@@ -569,7 +446,9 @@ echo "127.0.0.1       ${server_name}" >> /etc/hosts
 service mysql restart
 service nginx restart
 service php5-fpm restart
+###
 # Install PhpMyAdmin
+###
 echo "phpmyadmin phpmyadmin/reconfigure-webserver multiselect boolean true" | debconf-set-selections
 echo "phpmyadmin phpmyadmin/dbconfig-install boolean true" | debconf-set-selections
 echo "phpmyadmin phpmyadmin/mysql/admin-user string root" | debconf-set-selections
@@ -580,7 +459,6 @@ apt-get install phpmyadmin -y
 # Configure nginx.conf
 cat > ${phpmyadmin.conf} << EOF
 # PhpMyAdmin configuration
-
 location /phpmyadmin {
        root /usr/share/;
        index index.php index.html index.htm;
@@ -602,15 +480,16 @@ location /phpMyAdmin {
 }
 EOF
 # Create a symbolic link between phpMyAdmin and website root directory
-ln -s /usr/share/phpmyadmin/ ${site_path}
+cd ${site_path}
+ln -s /usr/share/phpmyadmin/
 chmod 777 -R ${site_path}/phpmyadmin
 # Restart services
 service mysql restart
 service nginx restart
 service php5-fpm restart
-#
+###
 # Install Virtualbox and Vagrant
-#
+###
 echo ${green}.................................................................................................${reset}
 echo ${green}................................ Installing VirtualBox and Vagrant ..............................${reset}
 echo ${green}.................................................................................................${reset}
@@ -646,11 +525,11 @@ dpkg -i vagrant*.deb
 apt-get install vagrant -y
 apt-get install -f -y
 rm -rf vagrant*.deb
-#
+###
 # Install Gimp, Vine and PlayOnLinux
-#
+###
 echo ${green}.................................................................................................${reset}
-echo ${green}................................ Installing VirtualBox and Vagrant ..............................${reset}
+echo ${green}................................ Installing Gimp and PlatOnLinux ................................${reset}
 echo ${green}.................................................................................................${reset}
 sleep 5
 # install latest version of Gimp editor
