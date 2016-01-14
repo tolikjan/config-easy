@@ -167,7 +167,6 @@ echo ${green}...................................................................
 # php.ini path
 php_config_file1="/etc/php5/fpm/php.ini"
 php_config_file2="/etc/php5/cli/php.ini"
-php_config_file3="/etc/php5/cgi/php.ini"
 # site folder path
 site_path="/usr/share/nginx/html"
 server_name="local.host.com"
@@ -356,7 +355,6 @@ apt-get install php5 php5-common php5-cli php5-fpm php5-gd php5-xdebug -y
 # Backup default php.ini files
 cp ${php_config_file1} ${php_config_file1}.backup
 cp ${php_config_file2} ${php_config_file2}.backup
-cp ${php_config_file3} ${php_config_file3}.backup
 # Stop services
 service nginx stop
 service php5-fpm stop
