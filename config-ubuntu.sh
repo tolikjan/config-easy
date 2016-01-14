@@ -174,10 +174,8 @@ server_name="local.host.com"
 # www config
 www_conf="/etc/php5/fpm/pool.d/www.conf"
 # nginx config
-nginx_conf="/etc/nginx/nginx.conf"
+nginx_conf="/etc/nginx/conf.d/nginx.conf"
 # default nginx config
-default_nginx_conf_1="/etc/nginx/sites-available/def"
-#
 default_nginx_conf="/etc/nginx/sites-available/default"
 default_nginx_conf_link="/etc/nginx/sites-enabled/default"
 # additional config
