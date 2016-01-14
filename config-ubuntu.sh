@@ -185,9 +185,8 @@ fastcgi_params="/etc/nginx/fastcgi_params"
 gzip_settings="/etc/nginx/gzip_settings"
 client_settings="/etc/nginx/client_settings"
 mime.types="/etc/nginx/mime.types"
-# phpmyadmin config
+# phpmyadmin config path
 phpmyadmin.conf="/etc/nginx/phpmyadmin.conf"
-phpmyadmin_root_password="root"
 # mysql variables
 mysql_config_file="/etc/mysql/my.cnf"
 mysql_root_user="root"
@@ -340,18 +339,18 @@ server {
 
 }
 EOF
-# Reloading nginx
-service nginx reload
 ###
-# Install mysql-server
+# Install mysql-server and phpmyadmin
 ###
 # Set password for root account
-echo "mysql-server mysql-server/root_password password "${mysql_root_password} | debconf-set-selections
-echo "mysql-server mysql-server/root_password_again password "${mysql_root_password} | debconf-set-selections
-###
-# Install MySQL-server
-###
-apt-get install mysql-server php5-mysql -y
+echo "mysql-server mysql-server/root_password password ${mysql_root_password}" | debconf-set-selections
+echo "mysql-server mysql-server/root_password_again password ${mysql_root_password}" | debconf-set-selections
+echo "phpmyadmin phpmyadmin/dbconfig-install boolean true" | debconf-set-selections
+echo "phpmyadmin phpmyadmin/app-password-confirm password ${mysql_root_password}" |debconf-set-selections
+echo "phpmyadmin phpmyadmin/mysql/admin-pass password ${mysql_root_password}" | debconf-set-selections
+echo "phpmyadmin phpmyadmin/mysql/app-pass password ${mysql_root_password}" | debconf-set-selections
+echo "phpmyadmin phpmyadmin/reconfigure-webserver multiselect none" | debconf-set-selections
+apt-get install mysql-server php5-mysql phpmyadmin -y
 #
 echo ${green}.................................................................................................${reset}
 echo ${green}........................................ Installing PHP .........................................${reset}
@@ -369,7 +368,7 @@ sed -i 's/^error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT/error_reporting =
 sed -i 's/^html_errors = Off/html_errors = On/g' ${php_config_file1}
 sed -i 's/^display_startup_errors = Off/display_startup_errors = On/g' ${php_config_file1}
 sed -i 's/^display_errors = Off/display_errors = On/g' ${php_config_file1}
-sed -i 's/^;cgi.fix_pathinfo=1/cgi.fix_pathinfo = 0;/g' ${php_config_file1}
+sed -i 's/^;cgi.fix_pathinfo=1/cgi.fix_pathinfo = 0/g' ${php_config_file1}
 # Change configuration if you planing to load big files
 sed -i 's/^post_max_size = 8M/post_max_size = 200M/g' ${php_config_file1}
 sed -i 's/^upload_max_filesize = 2M/upload_max_filesize = 200M/g' ${php_config_file1}
@@ -377,20 +376,20 @@ sed -i 's/^upload_max_filesize = 2M/upload_max_filesize = 200M/g' ${php_config_f
 # Configuration for /etc/php5/cli/php.ini
 ###
 # Change configuration for better security and convenience
-sed -i 's/^error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT/error_reporting = E_ALL/g' ${php_config_file2}
-sed -i 's/^html_errors = Off/html_errors = On/g' ${php_config_file2}
-sed -i 's/^display_startup_errors = Off/display_startup_errors = On/g' ${php_config_file2}
-sed -i 's/^display_errors = Off/display_errors = On/g' ${php_config_file2}
-sed -i 's/^;cgi.fix_pathinfo=1/cgi.fix_pathinfo= 0 /g' ${php_config_file2}
+#sed -i 's/^error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT/error_reporting = E_ALL/g' ${php_config_file2}
+#sed -i 's/^html_errors = Off/html_errors = On/g' ${php_config_file2}
+#sed -i 's/^display_startup_errors = Off/display_startup_errors = On/g' ${php_config_file2}
+#sed -i 's/^display_errors = Off/display_errors = On/g' ${php_config_file2}
+#sed -i 's/^;cgi.fix_pathinfo=1/cgi.fix_pathinfo= 0/g' ${php_config_file2}
 # Change configuration if you planing to load big files
-sed -i 's/^post_max_size = 8M/post_max_size = 200M/g' ${php_config_file2}
-sed -i 's/^upload_max_filesize = 2M/upload_max_filesize = 200M/g' ${php_config_file2}
+#sed -i 's/^post_max_size = 8M/post_max_size = 200M/g' ${php_config_file2}
+#sed -i 's/^upload_max_filesize = 2M/upload_max_filesize = 200M/g' ${php_config_file2}
 ###
 # Change configuration www.conf
 ###
 #sed -i 's/^;security.limit_extensions = .php .php3 .php4 .php5/security.limit_extensions = .php .php3 .php4 .php5/g' ${www_conf}
 #sed -i 's/^;listen.mode = 0660/listen.mode = 0660/g' ${www_conf}
-sed -i 's/^listen =  127.0.0.1:9000/listen = /var/run/php5-fpm.sock/g' ${www_conf}
+#sed -i 's/^listen =  127.0.0.1:9000/listen = /var/run/php5-fpm.sock/g' ${www_conf}
 ###
 # Give permissions for log file
 ###
@@ -441,20 +440,6 @@ echo "xdebug.var_display_max_children = 256" >> ${php_config_file2}
 echo "xdebug.var_display_max_data = 1024" >> ${php_config_file2}
 # Add site name to /etc/hosts
 echo "127.0.0.1       ${server_name}" >> /etc/hosts
-# Restart services
-service mysql restart
-service nginx restart
-service php5-fpm restart
-###
-# Install PhpMyAdmin
-###
-echo "phpmyadmin phpmyadmin/reconfigure-webserver multiselect boolean true" | debconf-set-selections
-echo "phpmyadmin phpmyadmin/dbconfig-install boolean true" | debconf-set-selections
-echo "phpmyadmin phpmyadmin/mysql/admin-user string root" | debconf-set-selections
-echo "phpmyadmin phpmyadmin/mysql/admin-pass password "${mysql_root_password} | debconf-set-selections
-echo "phpmyadmin phpmyadmin/mysql/app-pass password "${phpmyadmin_root_password} |debconf-set-selections
-echo "phpmyadmin phpmyadmin/app-password-confirm password "${phpmyadmin_root_password} | debconf-set-selections
-apt-get install phpmyadmin -y
 # Configure nginx.conf
 cat > ${phpmyadmin.conf} << EOF
 # PhpMyAdmin configuration
@@ -464,8 +449,8 @@ location /phpmyadmin {
        location ~ ^/phpmyadmin/(.+\\.php)\$ {
                try_files \$uri =404;
                root /usr/share/;
-               #fastcgi_pass 127.0.0.1:9000;
-               fastcgi_pass unix:/tmp/php5-fpm.sock;
+               fastcgi_pass 127.0.0.1:9000;
+               #fastcgi_pass unix:/tmp/php5-fpm.sock;
                fastcgi_index index.php;
                fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
                include fastcgi_params;
