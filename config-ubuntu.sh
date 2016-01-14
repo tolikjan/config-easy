@@ -200,7 +200,7 @@ apt-get update
 apt-get install nginx -y
 service nginx start
 # Backup default settings for nginx.conf
-cp ${nginx_conf} ${nginx_conf}.backup
+#cp ${nginx_conf} ${nginx_conf}.backup
 # Configure nginx.conf
 cat > ${nginx_conf} << EOF
 user www-data;
