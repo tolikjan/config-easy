@@ -334,8 +334,8 @@ server {
 
 }
 EOF
-# Restart nginx
-service nginx restart
+# Reloading nginx
+service nginx reload
 ###
 # Install mysql-server
 ###
@@ -355,9 +355,6 @@ apt-get install php5 php5-common php5-cli php5-fpm php5-gd php5-xdebug -y
 # Backup default php.ini files
 cp ${php_config_file1} ${php_config_file1}.backup
 cp ${php_config_file2} ${php_config_file2}.backup
-# Stop services
-service nginx stop
-service php5-fpm stop
 ###
 # Configuration for /etc/php5/fpm/php.ini
 ###
