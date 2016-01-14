@@ -295,8 +295,8 @@ cp ${default_nginx_conf} ${default_nginx_conf}.backup
 # Configure nginx for http://localhost/
 cat > ${default_nginx_conf} << EOF
 server {
-    listen 80 default; ## listen for ipv4; this line is default and implied
-    listen [::]:80 default ipv6only=on; ## listen for ipv6
+    listen   80; ## listen for ipv4; this line is default and implied
+    listen   [::]:80 default_server ipv6only=on; ## listen for ipv6
 
     root /usr/share/nginx/html;
     index index.php index.html index.htm;
@@ -313,12 +313,18 @@ server {
         root /usr/share/nginx/html;
     }
 
+    # pass the PHP scripts to FastCGI server listening on (...)
+    #
     location ~ \.php\$ {
-        try_files $uri =404;
+        try_files \$uri =404;
         fastcgi_split_path_info ^(.+\\.php)(/.+)\$;
+        # NOTE: You should have "cgi.fix_pathinfo = 0;" in php.ini
+
+        # With php5-cgi alone:
+        #fastcgi_pass 127.0.0.1:9000;
+        # With php5-fpm:
         fastcgi_pass unix:/var/run/php5-fpm.sock;
         fastcgi_index index.php;
-        fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
         include fastcgi_params;
     }
     
@@ -363,7 +369,7 @@ sed -i 's/^error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT/error_reporting =
 sed -i 's/^html_errors = Off/html_errors = On/g' ${php_config_file1}
 sed -i 's/^display_startup_errors = Off/display_startup_errors = On/g' ${php_config_file1}
 sed -i 's/^display_errors = Off/display_errors = On/g' ${php_config_file1}
-sed -i 's/^;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g' ${php_config_file1}
+sed -i 's/^;cgi.fix_pathinfo=1/cgi.fix_pathinfo = 0;/g' ${php_config_file1}
 # Change configuration if you planing to load big files
 sed -i 's/^post_max_size = 8M/post_max_size = 200M/g' ${php_config_file1}
 sed -i 's/^upload_max_filesize = 2M/upload_max_filesize = 200M/g' ${php_config_file1}
@@ -375,7 +381,7 @@ sed -i 's/^error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT/error_reporting =
 sed -i 's/^html_errors = Off/html_errors = On/g' ${php_config_file2}
 sed -i 's/^display_startup_errors = Off/display_startup_errors = On/g' ${php_config_file2}
 sed -i 's/^display_errors = Off/display_errors = On/g' ${php_config_file2}
-sed -i 's/^;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g' ${php_config_file2}
+sed -i 's/^;cgi.fix_pathinfo=1/cgi.fix_pathinfo= 0 /g' ${php_config_file2}
 # Change configuration if you planing to load big files
 sed -i 's/^post_max_size = 8M/post_max_size = 200M/g' ${php_config_file2}
 sed -i 's/^upload_max_filesize = 2M/upload_max_filesize = 200M/g' ${php_config_file2}
