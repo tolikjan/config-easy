@@ -303,7 +303,7 @@ server {
     server_name ${server_name};
 
     location / {
-        try_files \$uri \$uri/ =404;
+        try_files \$uri \$uri/ /index.php =404;
     }
 
     error_page 404 /404.html;
@@ -320,9 +320,9 @@ server {
         # NOTE: You should have "cgi.fix_pathinfo = 0;" in php.ini
 
         # With php5-cgi alone:
-        fastcgi_pass 127.0.0.1:9000;
+        #fastcgi_pass 127.0.0.1:9000;
         # With php5-fpm:
-        #fastcgi_pass unix:/var/run/php5-fpm.sock;
+        fastcgi_pass unix:/var/run/php5-fpm.sock;
         fastcgi_index index.php;
         include fastcgi_params;
     }
@@ -360,8 +360,8 @@ location /phpmyadmin {
        location ~ ^/phpmyadmin/(.+\\.php)\$ {
                try_files \$uri =404;
                root /usr/share/;
-               fastcgi_pass 127.0.0.1:9000;
-               #fastcgi_pass unix:/tmp/php5-fpm.sock;
+               #fastcgi_pass 127.0.0.1:9000;
+               fastcgi_pass unix:/tmp/php5-fpm.sock;
                fastcgi_index index.php;
                fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
                include fastcgi_params;
@@ -418,7 +418,7 @@ sed -i 's/^upload_max_filesize = 2M/upload_max_filesize = 200M/g' ${php_config_f
 ###
 #sed -i 's/^;security.limit_extensions = .php .php3 .php4 .php5/security.limit_extensions = .php .php3 .php4 .php5/g' ${www_conf}
 #sed -i 's/^;listen.mode = 0660/listen.mode = 0660/g' ${www_conf}
-#sed -i 's/^listen =  127.0.0.1:9000/listen = /var/run/php5-fpm.sock/g' ${www_conf}
+sed -i 's/^listen =  127.0.0.1:9000/listen = /var/run/php5-fpm.sock/g' ${www_conf}
 ###
 # Give permissions for log file
 ###
