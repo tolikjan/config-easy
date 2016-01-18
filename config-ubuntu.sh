@@ -92,6 +92,16 @@ echo -ne '\n' | add-apt-repository ppa:webupd8team/tor-browser
 apt-get update
 apt-get install tor-browser -y
 #
+# Install Tox
+#
+echo ${green}.................................................................................................${reset}
+echo ${green}......................................... Installing Tox ........................................${reset}
+echo ${green}.................................................................................................${reset}
+sleep 5
+echo -ne '\n' | add-apt-repository ppa:v-2e/tox
+apt-get update
+apt-get install utox -y
+#
 # Install Shutter
 #
 echo ${green}.................................................................................................${reset}
@@ -132,6 +142,10 @@ apt-get update
 apt-get install php5-curl -y
 apt-get install curl php5-cli git -y
 curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+# Install codesnifer for phpStorm
+#composer global require drupal/coder
+#export PATH="$PATH:$HOME/.composer/vendor/bin"
+#phpcs --config-set installed_paths ~/.composer/vendor/drupal/coder/coder_sniffer
 #
 # Install Selenium Server
 #
@@ -301,7 +315,7 @@ server {
     index index.php index.html index.htm;
 
     server_name ${server_name};
-
+    
     location / {
         try_files \$uri \$uri/ /index.php =404;
     }
