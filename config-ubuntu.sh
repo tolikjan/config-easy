@@ -92,7 +92,7 @@ echo -ne '\n' | add-apt-repository ppa:webupd8team/tor-browser
 apt-get update
 apt-get install tor-browser -y
 #
-# Install Tox
+# Install Tox http://utox.org/
 #
 echo ${green}.................................................................................................${reset}
 echo ${green}......................................... Installing Tox ........................................${reset}
@@ -211,98 +211,104 @@ mysql_root_password="root"
 apt-get update
 apt-get install nginx -y
 service nginx start
+
+
 # Backup default settings for nginx.conf
 #cp ${nginx_conf} ${nginx_conf}.backup
+
+
 # Configure nginx.conf
-cat > ${nginx_conf} << EOF
-user www-data;
- 
-# As a thumb rule: One per CPU. If you are serving a large amount
-# of static files, which requires blocking disk reads, you may want
-# to increase this from the number of cpu_cores available on your
-# system.
-#
-# The maximum number of connections for Nginx is calculated by:
-# max_clients = worker_processes * worker_connections
-worker_processes 1;
- 
-# Maximum file descriptors that can be opened per process
-# This should be > worker_connections
-worker_rlimit_nofile 8192;
- 
-events {
-    # When you need > 8000 * cpu_cores connections, you start optimizing
-    # your OS, and this is probably the point at where you hire people
-    # who are smarter than you, this is *a lot* of requests.
-    worker_connections 8000;
-}
- 
-error_log /var/log/nginx/error.log;
- 
-pid /var/run/nginx.pid;
- 
-http {
-    charset utf-8;
- 
-    # Set the mime-types via the mime.types external file
-    include mime.types;
- 
-    # And the fallback mime-type
-    default_type application/octet-stream;
- 
-    # Click tracking!
-    access_log /var/log/nginx/access.log;
- 
-    # Hide nginx version
-    server_tokens off;
- 
-    # ~2 seconds is often enough for HTML/CSS, but connections in
-    # Nginx are cheap, so generally it's safe to increase it
-    keepalive_timeout 20;
- 
-    # You usually want to serve static files with Nginx
-    sendfile on;
- 
-    tcp_nopush on; # off may be better for Comet/long-poll stuff
-    tcp_nodelay off; # on may be better for Comet/long-poll stuff
- 
-    server_name_in_redirect off;
-    types_hash_max_size 2048;
- 
-    gzip on;
-    gzip_http_version 1.0;
-    gzip_comp_level 5;
-    gzip_min_length 512;
-    gzip_buffers 4 8k;
-    gzip_proxied any;
-    gzip_types
-        # text/html is always compressed by HttpGzipModule
-        text/css
-        text/plain
-        text/x-component
-        application/javascript
-        application/json
-        application/xml
-        application/xhtml+xml
-        application/x-font-ttf
-        application/x-font-opentype
-        application/vnd.ms-fontobject
-        image/svg+xml
-        image/x-icon;
- 
-    # This should be turned on if you are going to have pre-compressed copies (.gz) of
-    # static files available. If not it should be left off as it will cause extra I/O
-    # for the check. It would be better to enable this in a location {} block for
-    # a specific directory:
-    # gzip_static on;
- 
-    gzip_disable "msie6";
-    gzip_vary on;
- 
-    include /etc/nginx/conf.d/*.conf;
-    include /etc/nginx/sites-enabled/*;
-}
-EOF
+#cat > ${nginx_conf} << EOF
+#user www-data;
+# 
+## As a thumb rule: One per CPU. If you are serving a large amount
+## of static files, which requires blocking disk reads, you may want
+## to increase this from the number of cpu_cores available on your
+## system.
+##
+## The maximum number of connections for Nginx is calculated by:
+## max_clients = worker_processes * worker_connections
+#worker_processes 1;
+# 
+## Maximum file descriptors that can be opened per process
+## This should be > worker_connections
+#worker_rlimit_nofile 8192;
+# 
+#events {
+#    # When you need > 8000 * cpu_cores connections, you start optimizing
+#    # your OS, and this is probably the point at where you hire people
+#    # who are smarter than you, this is *a lot* of requests.
+#    worker_connections 8000;
+#}
+# 
+#error_log /var/log/nginx/error.log;
+# 
+#pid /var/run/nginx.pid;
+# 
+#http {
+#    charset utf-8;
+# 
+#    # Set the mime-types via the mime.types external file
+#    include mime.types;
+# 
+#    # And the fallback mime-type
+#    default_type application/octet-stream;
+# 
+#    # Click tracking!
+#    access_log /var/log/nginx/access.log;
+# 
+#    # Hide nginx version
+#    server_tokens off;
+# 
+#    # ~2 seconds is often enough for HTML/CSS, but connections in
+#    # Nginx are cheap, so generally it's safe to increase it
+#    keepalive_timeout 20;
+# 
+#    # You usually want to serve static files with Nginx
+#    sendfile on;
+# 
+#    tcp_nopush on; # off may be better for Comet/long-poll stuff
+#    tcp_nodelay off; # on may be better for Comet/long-poll stuff
+# 
+#    server_name_in_redirect off;
+#    types_hash_max_size 2048;
+# 
+#    gzip on;
+#    gzip_http_version 1.0;
+#    gzip_comp_level 5;
+#    gzip_min_length 512;
+#    gzip_buffers 4 8k;
+#    gzip_proxied any;
+#    gzip_types
+#        # text/html is always compressed by HttpGzipModule
+#        text/css
+#        text/plain
+#        text/x-component
+#        application/javascript
+#        application/json
+#        application/xml
+#        application/xhtml+xml
+#        application/x-font-ttf
+#        application/x-font-opentype
+#        application/vnd.ms-fontobject
+#        image/svg+xml
+#        image/x-icon;
+# 
+#    # This should be turned on if you are going to have pre-compressed copies (.gz) of
+#    # static files available. If not it should be left off as it will cause extra I/O
+#    # for the check. It would be better to enable this in a location {} block for
+#    # a specific directory:
+#    # gzip_static on;
+# 
+#    gzip_disable "msie6";
+#    gzip_vary on;
+# 
+#    include /etc/nginx/conf.d/*.conf;
+#    include /etc/nginx/sites-enabled/*;
+#}
+#EOF
+
+
 # Backup default settings for nginx
 cp ${default_nginx_conf} ${default_nginx_conf}.backup
 # Configure nginx for http://localhost/
@@ -317,7 +323,7 @@ server {
     server_name ${server_name};
     
     location / {
-        try_files \$uri \$uri/ /index.php =404;
+        try_files \$uri \$uri/index.php \$uri.php =404;
     }
 
     error_page 404 /404.html;
@@ -467,20 +473,20 @@ echo "xdebug.var_display_max_data = 1024" >> ${php_config_file1}
 # xdebug configuring in php.ini file
 ###
 # TODO: check settings for xdebug
-xdebug=$(find / -name 'xdebug.so' 2> /dev/null)
-echo "zend_extension=\"${xdebug}\"" >> ${php_config_file2}
-echo "xdebug.remote_autostart=1" >> ${php_config_file2}
-echo "xdebug.remote_enable=1" >> ${php_config_file2}
-echo "xdebug.remote_connect_back=1" >> ${php_config_file2}
-echo "xdebug.remote_port=9002" >> ${php_config_file2}
-echo "xdebug.idekey=PHP_STORM" >> ${php_config_file2}
-echo "xdebug.scream=0" >> ${php_config_file2}
-echo "xdebug.cli_color=1" >> ${php_config_file2}
-echo "xdebug.show_local_vars=1" >> ${php_config_file2}
-echo ";var_dump display" >> ${php_config_file2}
-echo "xdebug.var_display_max_depth = 5" >> ${php_config_file2}
-echo "xdebug.var_display_max_children = 256" >> ${php_config_file2}
-echo "xdebug.var_display_max_data = 1024" >> ${php_config_file2}
+#xdebug=$(find / -name 'xdebug.so' 2> /dev/null)
+#echo "zend_extension=\"${xdebug}\"" >> ${php_config_file2}
+#echo "xdebug.remote_autostart=1" >> ${php_config_file2}
+#echo "xdebug.remote_enable=1" >> ${php_config_file2}
+#echo "xdebug.remote_connect_back=1" >> ${php_config_file2}
+#echo "xdebug.remote_port=9002" >> ${php_config_file2}
+#echo "xdebug.idekey=PHP_STORM" >> ${php_config_file2}
+#echo "xdebug.scream=0" >> ${php_config_file2}
+#echo "xdebug.cli_color=1" >> ${php_config_file2}
+#echo "xdebug.show_local_vars=1" >> ${php_config_file2}
+#echo ";var_dump display" >> ${php_config_file2}
+#echo "xdebug.var_display_max_depth = 5" >> ${php_config_file2}
+#echo "xdebug.var_display_max_children = 256" >> ${php_config_file2}
+#echo "xdebug.var_display_max_data = 1024" >> ${php_config_file2}
 # Add site name to /etc/hosts
 echo "127.0.0.1       ${server_name}" >> /etc/hosts
 # Restart services
@@ -551,4 +557,3 @@ sleep 5
 echo ${green}.................................................................................................${reset}
 echo ${green}.............................................. DONE .............................................${reset}
 echo ${green}.................................................................................................${reset}
-
