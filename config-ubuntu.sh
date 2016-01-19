@@ -309,7 +309,7 @@ echo "xdebug.var_display_max_data = 1024" >> ${php_config_file1}
 # Set password for root account
 echo "mysql-server mysql-server/root_password password $mysql_root_password" | debconf-set-selections
 echo "mysql-server mysql-server/root_password_again password $mysql_root_password" | debconf-set-selections
-apt-get install mysql-server php5-mysql-y
+apt-get install mysql-server php5-mysql -y
 ###
 # Install phpmyadmin
 ###
