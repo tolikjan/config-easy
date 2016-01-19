@@ -265,8 +265,6 @@ EOF
 # Change configuration www.conf
 ###
 sed -i 's/^listen =  127.0.0.1:9000/listen = /var/run/php5-fpm.sock/' ${www_conf}
-# Restart Nginx
-service nginx restart
 ###
 # Install PHP
 ###
