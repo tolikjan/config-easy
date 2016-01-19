@@ -187,7 +187,7 @@ server_name="local.host.com"
 # www config
 www_conf="/etc/php5/fpm/pool.d/www.conf"
 # nginx config
-nginx_conf="/etc/nginx/conf.d/nginx.conf"
+nginx_conf="/etc/nginx/nginx.conf"
 # default nginx config
 default_nginx_conf="/etc/nginx/sites-available/default"
 default_nginx_conf_link="/etc/nginx/sites-enabled/default"
@@ -208,107 +208,101 @@ mysql_root_password="root"
 ###
 # Install nginx
 ###
-apt-get update
+apt-get update -y
 apt-get install nginx -y
-service nginx start
-
-
+service nginx stop
 # Backup default settings for nginx.conf
-#cp ${nginx_conf} ${nginx_conf}.backup
-
-
+cp ${nginx_conf} ${nginx_conf}.backup
 # Configure nginx.conf
-#cat > ${nginx_conf} << EOF
-#user www-data;
-# 
-## As a thumb rule: One per CPU. If you are serving a large amount
-## of static files, which requires blocking disk reads, you may want
-## to increase this from the number of cpu_cores available on your
-## system.
-##
-## The maximum number of connections for Nginx is calculated by:
-## max_clients = worker_processes * worker_connections
-#worker_processes 1;
-# 
-## Maximum file descriptors that can be opened per process
-## This should be > worker_connections
-#worker_rlimit_nofile 8192;
-# 
-#events {
-#    # When you need > 8000 * cpu_cores connections, you start optimizing
-#    # your OS, and this is probably the point at where you hire people
-#    # who are smarter than you, this is *a lot* of requests.
-#    worker_connections 8000;
-#}
-# 
-#error_log /var/log/nginx/error.log;
-# 
-#pid /var/run/nginx.pid;
-# 
-#http {
-#    charset utf-8;
-# 
-#    # Set the mime-types via the mime.types external file
-#    include mime.types;
-# 
-#    # And the fallback mime-type
-#    default_type application/octet-stream;
-# 
-#    # Click tracking!
-#    access_log /var/log/nginx/access.log;
-# 
-#    # Hide nginx version
-#    server_tokens off;
-# 
-#    # ~2 seconds is often enough for HTML/CSS, but connections in
-#    # Nginx are cheap, so generally it's safe to increase it
-#    keepalive_timeout 20;
-# 
-#    # You usually want to serve static files with Nginx
-#    sendfile on;
-# 
-#    tcp_nopush on; # off may be better for Comet/long-poll stuff
-#    tcp_nodelay off; # on may be better for Comet/long-poll stuff
-# 
-#    server_name_in_redirect off;
-#    types_hash_max_size 2048;
-# 
-#    gzip on;
-#    gzip_http_version 1.0;
-#    gzip_comp_level 5;
-#    gzip_min_length 512;
-#    gzip_buffers 4 8k;
-#    gzip_proxied any;
-#    gzip_types
-#        # text/html is always compressed by HttpGzipModule
-#        text/css
-#        text/plain
-#        text/x-component
-#        application/javascript
-#        application/json
-#        application/xml
-#        application/xhtml+xml
-#        application/x-font-ttf
-#        application/x-font-opentype
-#        application/vnd.ms-fontobject
-#        image/svg+xml
-#        image/x-icon;
-# 
-#    # This should be turned on if you are going to have pre-compressed copies (.gz) of
-#    # static files available. If not it should be left off as it will cause extra I/O
-#    # for the check. It would be better to enable this in a location {} block for
-#    # a specific directory:
-#    # gzip_static on;
-# 
-#    gzip_disable "msie6";
-#    gzip_vary on;
-# 
-#    include /etc/nginx/conf.d/*.conf;
-#    include /etc/nginx/sites-enabled/*;
-#}
-#EOF
-
-
+cat > ${nginx_conf} << EOF
+user www-data;
+ 
+# As a thumb rule: One per CPU. If you are serving a large amount
+# of static files, which requires blocking disk reads, you may want
+# to increase this from the number of cpu_cores available on your
+# system.
+#
+# The maximum number of connections for Nginx is calculated by:
+# max_clients = worker_processes * worker_connections
+worker_processes 1;
+ 
+# Maximum file descriptors that can be opened per process
+# This should be > worker_connections
+worker_rlimit_nofile 8192;
+ 
+events {
+    # When you need > 8000 * cpu_cores connections, you start optimizing
+    # your OS, and this is probably the point at where you hire people
+    # who are smarter than you, this is *a lot* of requests.
+    worker_connections 8000;
+}
+ 
+error_log /var/log/nginx/error.log;
+ 
+pid /var/run/nginx.pid;
+ 
+http {
+    charset utf-8;
+ 
+    # Set the mime-types via the mime.types external file
+    include mime.types;
+ 
+    # And the fallback mime-type
+    default_type application/octet-stream;
+ 
+    # Click tracking!
+    access_log /var/log/nginx/access.log;
+ 
+    # Hide nginx version
+    server_tokens off;
+ 
+    # ~2 seconds is often enough for HTML/CSS, but connections in
+    # Nginx are cheap, so generally it's safe to increase it
+    keepalive_timeout 20;
+ 
+    # You usually want to serve static files with Nginx
+    sendfile on;
+ 
+    tcp_nopush on; # off may be better for Comet/long-poll stuff
+    tcp_nodelay off; # on may be better for Comet/long-poll stuff
+ 
+    server_name_in_redirect off;
+    types_hash_max_size 2048;
+ 
+    gzip on;
+    gzip_http_version 1.0;
+    gzip_comp_level 5;
+    gzip_min_length 512;
+    gzip_buffers 4 8k;
+    gzip_proxied any;
+    gzip_types
+        # text/html is always compressed by HttpGzipModule
+        text/css
+        text/plain
+        text/x-component
+        application/javascript
+        application/json
+        application/xml
+        application/xhtml+xml
+        application/x-font-ttf
+        application/x-font-opentype
+        application/vnd.ms-fontobject
+        image/svg+xml
+        image/x-icon;
+ 
+    # This should be turned on if you are going to have pre-compressed copies (.gz) of
+    # static files available. If not it should be left off as it will cause extra I/O
+    # for the check. It would be better to enable this in a location {} block for
+    # a specific directory:
+    # gzip_static on;
+ 
+    gzip_disable "msie6";
+    gzip_vary on;
+ 
+    include /etc/nginx/conf.d/*.conf;
+    include /etc/nginx/sites-enabled/*;
+}
+EOF
 # Backup default settings for nginx
 cp ${default_nginx_conf} ${default_nginx_conf}.backup
 # Configure nginx for http://localhost/
@@ -360,55 +354,17 @@ server {
 }
 EOF
 ###
-# Install mysql-server and phpmyadmin
+# Change configuration www.conf
 ###
-# Set password for root account
-echo "mysql-server mysql-server/root_password password ${mysql_root_password}" | debconf-set-selections
-echo "mysql-server mysql-server/root_password_again password ${mysql_root_password}" | debconf-set-selections
-echo "phpmyadmin phpmyadmin/dbconfig-install boolean true" | debconf-set-selections
-echo "phpmyadmin phpmyadmin/app-password-confirm password ${mysql_root_password}" |debconf-set-selections
-echo "phpmyadmin phpmyadmin/mysql/admin-pass password ${mysql_root_password}" | debconf-set-selections
-echo "phpmyadmin phpmyadmin/mysql/app-pass password ${mysql_root_password}" | debconf-set-selections
-echo "phpmyadmin phpmyadmin/reconfigure-webserver multiselect none" | debconf-set-selections
-apt-get install mysql-server php5-mysql phpmyadmin -y
-# Configure PhpMyAdmin
-cat > ${phpmyadmin.conf} << EOF
-# PhpMyAdmin configuration
-location /phpmyadmin {
-       root /usr/share/;
-       index index.php index.html index.htm;
-       location ~ ^/phpmyadmin/(.+\\.php)\$ {
-               try_files \$uri =404;
-               root /usr/share/;
-               #fastcgi_pass 127.0.0.1:9000;
-               fastcgi_pass unix:/tmp/php5-fpm.sock;
-               fastcgi_index index.php;
-               fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
-               include fastcgi_params;
-       }
-       location ~* ^/phpmyadmin/(.+\\.(jpg|jpeg|gif|css|png|js|ico|html|xml|txt))\$ {
-               root /usr/share/;
-       }
-}
-location /phpMyAdmin {
-       rewrite ^/* /phpmyadmin last;
-}
-EOF
-# Create a symbolic link between phpMyAdmin and website root directory
-cd ${site_path}
-ln -s /usr/share/phpmyadmin/
-chmod 777 -R ${site_path}/phpmyadmin
+sed -i 's/^listen =  127.0.0.1:9000/listen = /var/run/php5-fpm.sock/g' ${www_conf}
+# Restart Nginx
+service nginx restart
 ###
 # Install PHP
 ###
-echo ${green}.................................................................................................${reset}
-echo ${green}........................................ Installing PHP .........................................${reset}
-echo ${green}.................................................................................................${reset}
-sleep 5
-apt-get install php5 php5-common php5-cli php5-fpm php5-gd php5-xdebug -y
+apt-get install php5 php5-fpm php5-mysql php5-curl php5-gd php5-xdebug -y
 # Backup default php.ini files
 cp ${php_config_file1} ${php_config_file1}.backup
-cp ${php_config_file2} ${php_config_file2}.backup
 ###
 # Configuration for /etc/php5/fpm/php.ini
 ###
@@ -421,36 +377,6 @@ sed -i 's/^;cgi.fix_pathinfo=1/cgi.fix_pathinfo = 0/g' ${php_config_file1}
 # Change configuration if you planing to load big files
 sed -i 's/^post_max_size = 8M/post_max_size = 200M/g' ${php_config_file1}
 sed -i 's/^upload_max_filesize = 2M/upload_max_filesize = 200M/g' ${php_config_file1}
-###
-# Configuration for /etc/php5/cli/php.ini
-###
-# Change configuration for better security and convenience
-#sed -i 's/^error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT/error_reporting = E_ALL/g' ${php_config_file2}
-#sed -i 's/^html_errors = Off/html_errors = On/g' ${php_config_file2}
-#sed -i 's/^display_startup_errors = Off/display_startup_errors = On/g' ${php_config_file2}
-#sed -i 's/^display_errors = Off/display_errors = On/g' ${php_config_file2}
-#sed -i 's/^;cgi.fix_pathinfo=1/cgi.fix_pathinfo= 0/g' ${php_config_file2}
-# Change configuration if you planing to load big files
-#sed -i 's/^post_max_size = 8M/post_max_size = 200M/g' ${php_config_file2}
-#sed -i 's/^upload_max_filesize = 2M/upload_max_filesize = 200M/g' ${php_config_file2}
-###
-# Change configuration www.conf
-###
-#sed -i 's/^;security.limit_extensions = .php .php3 .php4 .php5/security.limit_extensions = .php .php3 .php4 .php5/g' ${www_conf}
-#sed -i 's/^;listen.mode = 0660/listen.mode = 0660/g' ${www_conf}
-sed -i 's/^listen =  127.0.0.1:9000/listen = /var/run/php5-fpm.sock/g' ${www_conf}
-###
-# Give permissions for log file
-###
-chmod 777 -R /var/log/nginx/access.log
-chmod 777 -R /var/log/nginx/error.log
-# Create phpinfo() file
-cat > ${site_path}/info.php << EOF
-<?php
-phpinfo();
-?>
-EOF
-chmod 777 -R ${site_path}
 ###
 # xdebug configuring in php.ini file
 ###
@@ -470,23 +396,60 @@ echo "xdebug.var_display_max_depth = 5" >> ${php_config_file1}
 echo "xdebug.var_display_max_children = 256" >> ${php_config_file1}
 echo "xdebug.var_display_max_data = 1024" >> ${php_config_file1}
 ###
-# xdebug configuring in php.ini file
+# Install mysql-server
 ###
-# TODO: check settings for xdebug
-#xdebug=$(find / -name 'xdebug.so' 2> /dev/null)
-#echo "zend_extension=\"${xdebug}\"" >> ${php_config_file2}
-#echo "xdebug.remote_autostart=1" >> ${php_config_file2}
-#echo "xdebug.remote_enable=1" >> ${php_config_file2}
-#echo "xdebug.remote_connect_back=1" >> ${php_config_file2}
-#echo "xdebug.remote_port=9002" >> ${php_config_file2}
-#echo "xdebug.idekey=PHP_STORM" >> ${php_config_file2}
-#echo "xdebug.scream=0" >> ${php_config_file2}
-#echo "xdebug.cli_color=1" >> ${php_config_file2}
-#echo "xdebug.show_local_vars=1" >> ${php_config_file2}
-#echo ";var_dump display" >> ${php_config_file2}
-#echo "xdebug.var_display_max_depth = 5" >> ${php_config_file2}
-#echo "xdebug.var_display_max_children = 256" >> ${php_config_file2}
-#echo "xdebug.var_display_max_data = 1024" >> ${php_config_file2}
+# Set password for root account
+echo "mysql-server mysql-server/root_password password ${mysql_root_password}" | debconf-set-selections
+echo "mysql-server mysql-server/root_password_again password ${mysql_root_password}" | debconf-set-selections
+apt-get install mysql-server php5-mysql-y
+###
+# Install phpmyadmin
+###
+# Pass interactive windows
+#echo -ne '\n' | "phpmyadmin phpmyadmin/reconfigure-webserver multiselect " | debconf-set-selections
+echo "phpmyadmin phpmyadmin/reconfigure-webserver multiselect " | debconf-set-selections
+echo "phpmyadmin phpmyadmin/dbconfig-install boolean true" | debconf-set-selections
+echo "phpmyadmin phpmyadmin/mysql/admin-user string ${mysql_root_password}" | debconf-set-selections
+echo "phpmyadmin phpmyadmin/mysql/admin-pass password ${mysql_root_password}" | debconf-set-selections
+echo "phpmyadmin phpmyadmin/mysql/app-pass password $AUTOGENERATED_PASS" | debconf-set-selections
+echo "phpmyadmin phpmyadmin/app-password-confirm password $AUTOGENERATED_PASS" | debconf-set-selections
+sudo apt-get install phpmyadmin -y
+# Configure PhpMyAdmin
+cat > ${phpmyadmin.conf} << EOF
+# PhpMyAdmin configuration
+location /phpmyadmin {
+       root /usr/share/;
+       index index.php index.html index.htm;
+       location ~ ^/phpmyadmin/(.+\\.php)\$ {
+               try_files \$uri =404;
+               root /usr/share/;
+               #fastcgi_pass 127.0.0.1:9000;
+               fastcgi_pass unix:/var/run/php5-fpm.sock;
+               fastcgi_index index.php;
+               fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
+               include /etc/nginx/fastcgi_params;
+       }
+       location ~* ^/phpmyadmin/(.+\\.(jpg|jpeg|gif|css|png|js|ico|html|xml|txt))\$ {
+               root /usr/share/;
+       }
+}
+EOF
+# Create a symbolic link between phpMyAdmin and website root directory
+cd ${site_path}
+ln -s /usr/share/phpmyadmin/
+chmod 777 -R ${site_path}/phpmyadmin
+###
+# Give permissions for log file
+###
+chmod 777 -R /var/log/nginx/access.log
+chmod 777 -R /var/log/nginx/error.log
+# Create phpinfo() file
+cat > ${site_path}/info.php << EOF
+<?php
+phpinfo();
+?>
+EOF
+chmod 777 -R ${site_path}
 # Add site name to /etc/hosts
 echo "127.0.0.1       ${server_name}" >> /etc/hosts
 # Restart services
@@ -531,29 +494,6 @@ dpkg -i vagrant*.deb
 apt-get install vagrant -y
 apt-get install -f -y
 rm -rf vagrant*.deb
-###
-# Install Gimp, Vine and PlayOnLinux
-###
-echo ${green}.................................................................................................${reset}
-echo ${green}................................ Installing Gimp and PlatOnLinux ................................${reset}
-echo ${green}.................................................................................................${reset}
-sleep 5
-# install latest version of Gimp editor
-#echo -ne '\n' | add-apt-repository ppa:otto-kesselgulasch/gimp
-#apt-get update && sudo apt-get install gimp -y
-
-# TODO: fix two screens
-#echo -ne '\n' | add-apt-repository ppa:ubuntu-wine/ppa
-#apt-get update
-#apt-get install wine1.7 -y
-
-#wget -q "http://deb.playonlinux.com/public.gpg" -O- | sudo apt-key add -
-#wget http://deb.playonlinux.com/playonlinux_trusty.list -O /etc/apt/sources.list.d/playonlinux.list
-#apt-get update
-#apt-get install playonlinux -y
-
-#http://www.bendangelo.me/install/2014/10/29/installing-photoshop-cs6-on-ubuntu.html
-
 echo ${green}.................................................................................................${reset}
 echo ${green}.............................................. DONE .............................................${reset}
 echo ${green}.................................................................................................${reset}
