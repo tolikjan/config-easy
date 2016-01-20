@@ -244,9 +244,6 @@ server {
             fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
             include fastcgi_params;        
     }
-    
-    ## Include phpmyadmin location here
-    include ${phpmyadmin.conf};
 
 }
 EOF
@@ -297,51 +294,16 @@ echo "xdebug.var_display_max_data = 1024" >> ${php_config_file1}
 echo "mysql-server mysql-server/root_password password $mysql_root_password" | debconf-set-selections
 echo "mysql-server mysql-server/root_password_again password $mysql_root_password" | debconf-set-selections
 apt-get install mysql-server php5-mysql -y
-###
-# Install phpmyadmin
-###
-# Pass interactive windows
-echo "phpmyadmin phpmyadmin/dbconfig-install boolean true" | debconf-set-selections
-echo "phpmyadmin phpmyadmin/app-password-confirm password $mysql_root_password" | debconf-set-selections
-echo "phpmyadmin phpmyadmin/mysql/admin-pass password $mysql_root_password" | debconf-set-selections
-echo "phpmyadmin phpmyadmin/mysql/app-pass password $mysql_root_password" | debconf-set-selections
-echo "phpmyadmin phpmyadmin/reconfigure-webserver multiselect none" | debconf-set-selections
-sudo apt-get install phpmyadmin -y
-# Configure PhpMyAdmin
-cat > ${phpmyadmin.conf} << EOF
-# PhpMyAdmin configuration
-location /phpmyadmin {
-       root /usr/share/;
-       index index.php index.html index.htm;
-       location ~ ^/phpmyadmin/(.+\\.php)\$ {
-               try_files \$uri =404;
-               root /usr/share/;
-               # Choose only one from the two lines below
-               #fastcgi_pass 127.0.0.1:9000;
-               fastcgi_pass unix:/var/run/php5-fpm.sock;
-               fastcgi_index index.php;
-               fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
-               include /etc/nginx/fastcgi_params;
-       }
-       location ~* ^/phpmyadmin/(.+\\.(jpg|jpeg|gif|css|png|js|ico|html|xml|txt))\$ {
-               root /usr/share/;
-       }
-}
-EOF
-# Create a symbolic link between phpMyAdmin and website root directory
-chmod 777 -R /usr/share/phpmyadmin
-chmod 777 -R /usr/share/nginx/html
-ln -s /usr/share/phpmyadmin/ /usr/share/nginx/html
-###
-# Give permissions for log file
-###
-chmod 777 -R /var/log/nginx/access.log
-chmod 777 -R /var/log/nginx/error.log
 # Create phpinfo() file
 cat > ${site_path}/info.php << EOF
 <?php
 echo phpinfo();
 EOF
+###
+# Give permissions for log files and for site folder
+###
+chmod 777 -R /var/log/nginx/access.log
+chmod 777 -R /var/log/nginx/error.log
 chmod 777 -R ${site_path}
 # Add site name to /etc/hosts
 echo "127.0.0.1       ${server_name}" >> /etc/hosts
