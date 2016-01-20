@@ -16,7 +16,7 @@ sleep 5
 # Update & Upgrade
 #
 echo ${green}.................................................................................................${reset}
-echo ${green}................................. Update and Upgrade the system .................................${reset}
+echo ${green}................................ Update and Upgrade the system ..................................${reset}
 echo ${green}.................................................................................................${reset}
 sleep 5
 apt-get update && apt-get upgrade -y
@@ -24,7 +24,7 @@ apt-get update && apt-get upgrade -y
 # Install Chrome
 #
 echo ${green}.................................................................................................${reset}
-echo ${green}.................................... Installing Google Chrome ...................................${reset}
+echo ${green}................................... Installing Google Chrome ....................................${reset}
 echo ${green}.................................................................................................${reset}
 sleep 5
 # Another way which occur errors after Updating System
@@ -52,7 +52,7 @@ apt-get install flashplugin-installer
 # Install Tweak Tools for Ubuntu additional settings
 #
 echo ${green}.................................................................................................${reset}
-echo ${green}..................................... Installing Tweak Tools ....................................${reset}
+echo ${green}................................... Installing Tweak Tools ......................................${reset}
 echo ${green}.................................................................................................${reset}
 sleep 5
 apt-get install unity-tweak-tool
@@ -60,7 +60,7 @@ apt-get install unity-tweak-tool
 # Install utilites for archive manager with 7z and rar support
 #
 echo ${green}.................................................................................................${reset}
-echo ${green}.................................... Installing 7z and Unrar ....................................${reset}
+echo ${green}.................................. Installing 7z and Unrar ......................................${reset}
 echo ${green}.................................................................................................${reset}
 sleep 5
 apt-get install p7zip-full -y
@@ -69,7 +69,7 @@ sudo apt-get install unrar -y
 # Install Skype
 #
 echo ${green}.................................................................................................${reset}
-echo ${green}....................................... Installing Skype ........................................${reset}
+echo ${green}..................................... Installing Skype ..........................................${reset}
 echo ${green}.................................................................................................${reset}
 sleep 5
 # Install dependencies for Skype
@@ -85,7 +85,7 @@ apt-get install libasound2-plugins:i386 -y
 # Install Tor Browser
 #
 echo ${green}.................................................................................................${reset}
-echo ${green}..................................... Installing Tor Browser ....................................${reset}
+echo ${green}................................... Installing Tor Browser ......................................${reset}
 echo ${green}.................................................................................................${reset}
 sleep 5
 echo -ne '\n' | add-apt-repository ppa:webupd8team/tor-browser
@@ -95,7 +95,7 @@ apt-get install tor-browser -y
 # Install Tox http://utox.org/
 #
 echo ${green}.................................................................................................${reset}
-echo ${green}......................................... Installing Tox ........................................${reset}
+echo ${green}...................................... Installing uTox ..........................................${reset}
 echo ${green}.................................................................................................${reset}
 sleep 5
 echo -ne '\n' | add-apt-repository ppa:v-2e/tox
@@ -105,7 +105,7 @@ apt-get install utox -y
 # Install Shutter
 #
 echo ${green}.................................................................................................${reset}
-echo ${green}....................................... Installing Shutter ......................................${reset}
+echo ${green}..................................... Installing Shutter ........................................${reset}
 echo ${green}.................................................................................................${reset}
 sleep 5
 echo -ne '\n' | add-apt-repository ppa:shutter/ppa
@@ -196,7 +196,6 @@ phpmyadmin.conf="/etc/nginx/phpmyadmin.conf"
 mysql_config_file="/etc/mysql/my.cnf"
 mysql_root_user="root"
 mysql_root_password="root"
-
 ###
 # Install nginx
 ###
@@ -365,7 +364,7 @@ apt-get update
 # Clean up
 apt-get autoremove -y | apt-get autoclean - y | apt-get clean -y
 # Add deb
-cat > /etc/apt/sources.list.d/oracle-vbox.list << EOL
+cat > /etc/apt/sources.list.d/oracle-vbox.list << EOF
 deb http://download.virtualbox.org/virtualbox/debian trusty contrib  
 # deb-src http://download.virtualbox.org/virtualbox/debian trusty contrib
 EOL
