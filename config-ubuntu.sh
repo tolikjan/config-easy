@@ -174,6 +174,11 @@ apt-get install openjdk-7-jre-headless -y
 echo ${green}.................................................................................................${reset}
 echo ${green}.................... Installing and Configuring LEMP - Linux + nginx + MySQL ....................${reset}
 echo ${green}.................................................................................................${reset}
+# Uninstall/Clear possible extra programs
+apt-get purge -y apache2* php5* mysql*
+dpkg -l | grep apache*
+dpkg -l | grep php5*
+dpkg -l | grep mysql*
 ###
 # Set Up variables
 ###
@@ -199,11 +204,9 @@ mysql_root_password="root"
 ###
 # Install nginx
 ###
+echo -ne '\n' | add-apt-repository ppa:nginx/stable
 apt-get update
 apt-get upgrade -y
-# If you need to remove apache2
-#apt-get remove apache2* -y
-#apt-get autoremove -y
 apt-get install nginx -y
 service nginx stop
 # Backup default settings for nginx.conf
@@ -224,7 +227,7 @@ server {
     server_name ${server_name};
     
     location / {
-        try_files \$uri \$uri/ /index.html;
+        try_files \$uri \$uri/ /index.php;
     }
 
     error_page 404 /404.html;
@@ -235,31 +238,37 @@ server {
 
     # pass the PHP scripts to FastCGI server listening on the php-fpm socket
     location ~ \.php\$ {
-            try_files $uri =404;
-            # With php5-cgi alone:
-            #fastcgi_pass 127.0.0.1:9000;
-            # With php5-fpm:
-            fastcgi_pass unix:/var/run/php5-fpm.sock;
-            fastcgi_index index.php;
-            fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
-            include fastcgi_params;        
+        fastcgi_split_path_info ^(.+\\.php)(/.+)\$;
+        try_files \$uri =404;
+        fastcgi_pass 127.0.0.1:9000;
+        fastcgi_index index.php;
+        fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
+        fastcgi_index index.php;
+        include fastcgi_params;        
     }
 
 }
 EOF
+# Add site name to /etc/hosts
+echo "127.0.0.1       ${server_name}" >> /etc/hosts
+# Restart nginx service
+service nginx restart
 ###
-# Change configuration www.conf
+# Install mysql-server
 ###
-sed -i 's/^listen =  127.0.0.1:9000/listen = /var/run/php5-fpm.sock/' ${www_conf}
+# Set password for root account
+echo "mysql-server mysql-server/root_password password $mysql_root_password" | debconf-set-selections
+echo "mysql-server mysql-server/root_password_again password $mysql_root_password" | debconf-set-selections
+apt-get install mysql-server php5-mysql -y
 ###
 # Install PHP
 ###
-apt-get install php5 php5-fpm php5-mysql php5-curl php5-gd php5-xdebug -y
-# Backup default php.ini files
-cp ${php_config_file1} ${php_config_file1}.backup
+apt-get install php5 php5-fpm php5-mysql php5-cli php5-curl php5-gd php5-mcrypt php5-xdebug -y
 ###
 # Configuration for /etc/php5/fpm/php.ini
 ###
+# Backup default php.ini files
+cp ${php_config_file1} ${php_config_file1}.backup
 # Change configuration for better security and convenience
 sed -i 's/^error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT/error_reporting = E_ALL/' ${php_config_file1}
 sed -i 's/^html_errors = Off/html_errors = On/' ${php_config_file1}
@@ -288,25 +297,14 @@ echo "xdebug.var_display_max_depth = 5" >> ${php_config_file1}
 echo "xdebug.var_display_max_children = 256" >> ${php_config_file1}
 echo "xdebug.var_display_max_data = 1024" >> ${php_config_file1}
 ###
-# Install mysql-server
+# Change configuration www.conf
 ###
-# Set password for root account
-echo "mysql-server mysql-server/root_password password $mysql_root_password" | debconf-set-selections
-echo "mysql-server mysql-server/root_password_again password $mysql_root_password" | debconf-set-selections
-apt-get install mysql-server php5-mysql -y
+#sed -i 's/^listen =  127.0.0.1:9000/listen = /var/run/php5-fpm.sock/' ${www_conf}
 # Create phpinfo() file
 cat > ${site_path}/info.php << EOF
 <?php
 echo phpinfo();
 EOF
-###
-# Give permissions for log files and for site folder
-###
-chmod 777 -R /var/log/nginx/access.log
-chmod 777 -R /var/log/nginx/error.log
-chmod 777 -R ${site_path}
-# Add site name to /etc/hosts
-echo "127.0.0.1       ${server_name}" >> /etc/hosts
 # Restart services
 service mysql restart
 service nginx restart
