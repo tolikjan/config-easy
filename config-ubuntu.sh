@@ -172,7 +172,7 @@ apt-get install openjdk-7-jre-headless -y
 # Install LEMP (nginx + MySQL + PHPMyAdmin) and configure it
 ###
 echo ${green}.................................................................................................${reset}
-echo ${green}.............. Installing and Configuring LEMP - Linux + nginx + MySQL + PHPMyAdmin .............${reset}
+echo ${green}.................... Installing and Configuring LEMP - Linux + nginx + MySQL ....................${reset}
 echo ${green}.................................................................................................${reset}
 ###
 # Set Up variables
