@@ -225,7 +225,7 @@ server {
     server_name ${server_name};
     
     location / {
-        try_files \$uri \$uri/index.php \$uri.php =404;
+        try_files \$uri \$uri/ /index.html;
     }
 
     error_page 404 /404.html;
@@ -234,37 +234,27 @@ server {
         root /usr/share/nginx/html;
     }
 
-    # pass the PHP scripts to FastCGI server listening on (...)
-    #
+    # pass the PHP scripts to FastCGI server listening on the php-fpm socket
     location ~ \.php\$ {
-        try_files \$uri =404;
-        fastcgi_split_path_info ^(.+\\.php)(/.+)\$;
-        # NOTE: You should have "cgi.fix_pathinfo = 0;" in php.ini
-
-        # With php5-cgi alone:
-        fastcgi_pass 127.0.0.1:9000;
-        # With php5-fpm:
-        #fastcgi_pass unix:/var/run/php5-fpm.sock;
-        fastcgi_index index.php;
-        include fastcgi_params;
+            try_files $uri =404;
+            # With php5-cgi alone:
+            #fastcgi_pass 127.0.0.1:9000;
+            # With php5-fpm:
+            fastcgi_pass unix:/var/run/php5-fpm.sock;
+            fastcgi_index index.php;
+            fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
+            include fastcgi_params;        
     }
     
     ## Include phpmyadmin location here
-    include phpmyadmin.conf;
-    
-    location /doc/ {
-        alias /usr/share/doc/;
-        allow 127.0.0.1;
-        allow ::1;
-        deny all;
-    }
+    include ${phpmyadmin.conf};
 
 }
 EOF
 ###
 # Change configuration www.conf
 ###
-#sed -i 's/^listen =  127.0.0.1:9000/listen = /var/run/php5-fpm.sock/' ${www_conf}
+sed -i 's/^listen =  127.0.0.1:9000/listen = /var/run/php5-fpm.sock/' ${www_conf}
 ###
 # Install PHP
 ###
@@ -328,8 +318,8 @@ location /phpmyadmin {
                try_files \$uri =404;
                root /usr/share/;
                # Choose only one from the two lines below
-               fastcgi_pass 127.0.0.1:9000;
-               #fastcgi_pass unix:/var/run/php5-fpm.sock;
+               #fastcgi_pass 127.0.0.1:9000;
+               fastcgi_pass unix:/var/run/php5-fpm.sock;
                fastcgi_index index.php;
                fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
                include /etc/nginx/fastcgi_params;
@@ -340,9 +330,9 @@ location /phpmyadmin {
 }
 EOF
 # Create a symbolic link between phpMyAdmin and website root directory
-cd ${site_path}
-ln -s /usr/share/phpmyadmin/
-chmod 777 -R ${site_path}/phpmyadmin
+chmod 777 -R /usr/share/phpmyadmin
+chmod 777 -R /usr/share/nginx/html
+ln -s /usr/share/phpmyadmin/ /usr/share/nginx/html
 ###
 # Give permissions for log file
 ###
