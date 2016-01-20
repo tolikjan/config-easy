@@ -182,7 +182,7 @@ echo ${green}...................................................................
 php_config_file1="/etc/php5/fpm/php.ini"
 # site folder path
 site_path="/usr/share/nginx/html"
-server_name="local.host.com"
+server_name="local.com"
 # www config
 www_conf="/etc/php5/fpm/pool.d/www.conf"
 # nginx config
@@ -242,9 +242,9 @@ server {
         # NOTE: You should have "cgi.fix_pathinfo = 0;" in php.ini
 
         # With php5-cgi alone:
-        #fastcgi_pass 127.0.0.1:9000;
+        fastcgi_pass 127.0.0.1:9000;
         # With php5-fpm:
-        fastcgi_pass unix:/var/run/php5-fpm.sock;
+        #fastcgi_pass unix:/var/run/php5-fpm.sock;
         fastcgi_index index.php;
         include fastcgi_params;
     }
@@ -264,7 +264,7 @@ EOF
 ###
 # Change configuration www.conf
 ###
-sed -i 's/^listen =  127.0.0.1:9000/listen = /var/run/php5-fpm.sock/' ${www_conf}
+#sed -i 's/^listen =  127.0.0.1:9000/listen = /var/run/php5-fpm.sock/' ${www_conf}
 ###
 # Install PHP
 ###
@@ -327,8 +327,9 @@ location /phpmyadmin {
        location ~ ^/phpmyadmin/(.+\\.php)\$ {
                try_files \$uri =404;
                root /usr/share/;
-               #fastcgi_pass 127.0.0.1:9000;
-               fastcgi_pass unix:/var/run/php5-fpm.sock;
+               # Choose only one from the two lines below
+               fastcgi_pass 127.0.0.1:9000;
+               #fastcgi_pass unix:/var/run/php5-fpm.sock;
                fastcgi_index index.php;
                fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
                include /etc/nginx/fastcgi_params;
