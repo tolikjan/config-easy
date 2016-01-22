@@ -269,7 +269,8 @@ apt-get install php5 php5-fpm php5-mysql php5-cli php5-curl php5-gd php5-mcrypt 
 ###
 # Backup default php.ini files
 cp ${php_config_file1} ${php_config_file1}.backup
-# Change configuration for better security and convenience
+# Change configuration for better security and convenienceboxes.org
+
 sed -i 's/^error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT/error_reporting = E_ALL/' ${php_config_file1}
 sed -i 's/^html_errors = Off/html_errors = On/' ${php_config_file1}
 sed -i 's/^display_startup_errors = Off/display_startup_errors = On/' ${php_config_file1}
