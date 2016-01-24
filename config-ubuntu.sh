@@ -102,6 +102,16 @@ echo -ne '\n' | add-apt-repository ppa:v-2e/tox
 apt-get update
 apt-get install utox -y
 #
+# Install Telegram messanger
+#
+echo ${green}.................................................................................................${reset}
+echo ${green}..................................... Installing Telegram .......................................${reset}
+echo ${green}.................................................................................................${reset}
+sleep 5
+echo -ne '\n' | add-apt-repository ppa:atareao/telegram
+apt-get update
+apt-get install telegram -y
+#
 # Install Shutter
 #
 echo ${green}.................................................................................................${reset}
