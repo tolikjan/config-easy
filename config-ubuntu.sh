@@ -20,6 +20,8 @@ echo ${green}................................ Update and Upgrade the system ....
 echo ${green}.................................................................................................${reset}
 sleep 5
 apt-get update && apt-get upgrade -y
+# disable guest session
+echo "allow-guest=false" >> /usr/share/lightdm/lightdm.conf.d/50-ubuntu.conf
 #
 # Install Chrome
 #
@@ -131,6 +133,7 @@ apt-get update
 apt-get install openssh-client -y
 apt-get install openssh-server -y
 mkdir ~/.ssh
+chmod 777 -R .ssh/
 #
 # Install Git
 #
@@ -152,6 +155,7 @@ apt-get update
 apt-get install php5-curl -y
 apt-get install curl php5-cli git -y
 curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+chmod 777 -R .composer/
 # Install codesnifer for phpStorm
 #composer global require drupal/coder
 #export PATH="$PATH:$HOME/.composer/vendor/bin"
@@ -178,6 +182,10 @@ apt-get install openjdk-7-jre-headless -y
 #apt-get install xvfb -y
 # Starting up Selenium server
 #DISPLAY=:1 xvfb-run java -jar ~/selenium/selenium-server-standalone-2.48.2.jar
+wget -N http://chromedriver.storage.googleapis.com/2.20/chromedriver_linux64.zip
+unzip chromedriver_linux64.zip
+rm -rf chromedriver_linux64.zip
+chmod 777 -R selenium/
 ###
 # Install LEMP (nginx + MySQL + PHPMyAdmin) and configure it
 ###
@@ -247,12 +255,9 @@ server {
     }
 
     # pass the PHP scripts to FastCGI server listening on the php-fpm socket
-    location ~ \.php\$ {
+    location ~ \\.php\$ {
         fastcgi_split_path_info ^(.+\\.php)(/.+)\$;
-        try_files \$uri =404;
-        fastcgi_pass 127.0.0.1:9000;
-        fastcgi_index index.php;
-        fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
+        fastcgi_pass unix:/var/run/php5-fpm.sock;
         fastcgi_index index.php;
         include fastcgi_params;        
     }
@@ -261,8 +266,6 @@ server {
 EOF
 # Add site name to /etc/hosts
 echo "127.0.0.1       ${server_name}" >> /etc/hosts
-# Restart nginx service
-service nginx restart
 ###
 # Install mysql-server
 ###
@@ -275,46 +278,59 @@ apt-get install mysql-server php5-mysql -y
 ###
 apt-get install php5 php5-fpm php5-mysql php5-cli php5-curl php5-gd php5-mcrypt php5-xdebug -y
 ###
-# Configuration for /etc/php5/fpm/php.ini
+# php.ini error reporting configuring
 ###
-# Backup default php.ini files
-cp ${php_config_file1} ${php_config_file1}.backup
-# Change configuration for better security and convenienceboxes.org
+for ini in $(find /etc -name 'php.ini')
+do
+    errRep=$(grep '^error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT' '${ini}')
+    sed -i 's/${errRep}/error_reporting = E_ALL/' ${ini}
 
-sed -i 's/^error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT/error_reporting = E_ALL/' ${php_config_file1}
-sed -i 's/^html_errors = Off/html_errors = On/' ${php_config_file1}
-sed -i 's/^display_startup_errors = Off/display_startup_errors = On/' ${php_config_file1}
-sed -i 's/^display_errors = Off/display_errors = On/' ${php_config_file1}
-sed -i 's/^;cgi.fix_pathinfo=1/cgi.fix_pathinfo = 0/' ${php_config_file1}
-# Change configuration if you planing to load big files
-sed -i 's/^post_max_size = 8M/post_max_size = 200M/' ${php_config_file1}
-sed -i 's/^upload_max_filesize = 2M/upload_max_filesize = 200M/' ${php_config_file1}
+    dispErr=$(grep '^display_errors = Off' '${ini}')
+    sed -i 's/${dispErr}/display_errors = On/' ${ini}
+
+    dispStrtErr=$(grep '^display_startup_errors = Off' '${ini}')
+    sed -i 's/${dispStrtErr}/display_startup_errors = On/' ${ini}
+
+    dispHtmlErr=$(grep '^html_errors = Off' '${ini}')
+    sed -i 's/${dispHtmlErr}/html_errors = On/' ${ini}
+
+    cgiPathinfo=$(grep '^;cgi.fix_pathinfo=1' '${ini}')
+    sed -i 's/${cgiPathinfo}/cgi.fix_pathinfo=0/' ${ini}
+
+    # Change configuration if you planing to load big files
+    postMaxSize=$(grep '^post_max_size = 8M' '${ini}')
+    sed -i 's/${postMaxSize}/post_max_size = 200M/' ${ini}
+
+    uploadMaxFilesize=$(grep '^upload_max_filesize = 2M' '${ini}')
+    sed -i 's/${uploadMaxFilesize}/upload_max_filesize = 200M/' ${ini}
+done
 ###
-# xdebug configuring in php.ini file
+# php.ini xdebug configuring
 ###
-# TODO: check settings for xdebug
-xdebug=$(find / -name 'xdebug.so' 2> /dev/null)
-echo "zend_extension=\"${xdebug}\"" >> ${php_config_file1}
-echo "xdebug.remote_autostart=1" >> ${php_config_file1}
-echo "xdebug.remote_enable=1" >> ${php_config_file1}
-echo "xdebug.remote_connect_back=1" >> ${php_config_file1}
-echo "xdebug.remote_port=9002" >> ${php_config_file1}
-echo "xdebug.idekey=PHP_STORM" >> ${php_config_file1}
-echo "xdebug.scream=0" >> ${php_config_file1}
-echo "xdebug.cli_color=1" >> ${php_config_file1}
-echo "xdebug.show_local_vars=1" >> ${php_config_file1}
-echo ";var_dump display" >> ${php_config_file1}
-echo "xdebug.var_display_max_depth = 5" >> ${php_config_file1}
-echo "xdebug.var_display_max_children = 256" >> ${php_config_file1}
-echo "xdebug.var_display_max_data = 1024" >> ${php_config_file1}
+for ini in $(find /etc -name 'php.ini')
+do
+    xdebug=$(find / -name 'xdebug.so' 2> /dev/null)
+    echo 'zend_extension_ts=\"${xdebug}\"' >> ${ini}
+    echo 'xdebug.remote_autostart=1' >> ${ini}
+    echo 'xdebug.remote_enable=1' >> ${ini}
+    echo 'xdebug.remote_connect_back=1' >> ${ini}
+    echo 'xdebug.remote_port=9002' >> ${ini}
+    echo 'xdebug.idekey=PHP_STORM' >> ${ini}
+    echo 'xdebug.scream=0' >> ${ini}
+    echo 'xdebug.cli_color=1' >> ${ini}
+    echo 'xdebug.show_local_vars=1' >> ${ini}
+    echo ';var_dump display' >> ${ini}
+    echo 'xdebug.var_display_max_depth = 5' >> ${ini}
+    echo 'xdebug.var_display_max_children = 256' >> ${ini}
+    echo 'xdebug.var_display_max_data = 1024' >> ${ini}
+done    
 ###
 # Change configuration www.conf
 ###
-#sed -i 's/^listen =  127.0.0.1:9000/listen = /var/run/php5-fpm.sock/' ${www_conf}
+sed -i 's/^listen =  127.0.0.1:9000/listen = /var/run/php5-fpm.sock/' ${www_conf}
 # Create phpinfo() file
 cat > ${site_path}/info.php << EOF
-<?php
-echo phpinfo();
+<?php phpinfo(); ?>
 EOF
 # Restart services
 service mysql restart
@@ -347,8 +363,8 @@ dpkg --configure -a
 apt-get install dkms virtualbox-5.0 -y
 # Install Extension Pack for VirtualBox
 # You can check latest extension pack version here - https://www.virtualbox.org/wiki/Downloads
-ext_pack="Oracle_VM_VirtualBox_Extension_Pack-5.0.12-104815.vbox-extpack"
-wget http://download.virtualbox.org/virtualbox/5.0.12/${ext_pack}
+ext_pack="Oracle_VM_VirtualBox_Extension_Pack-5.0.14-105127.vbox-extpack"
+wget http://download.virtualbox.org/virtualbox/5.0.14/${ext_pack}
 rm -rf ${ext_pack}
 echo ${root_pass} | VBoxManage extpack install ${ext_pack}
 # install Vagrant
