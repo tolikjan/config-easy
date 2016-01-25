@@ -298,10 +298,10 @@ done
 ###
 # php.ini xdebug configuring
 ###
-xdebug=$(find / -name "xdebug.so" 2> /dev/null)
-sleep 120
 for ini in $(find /etc -name 'php.ini')
 do
+    xdebug=$(find / -name "xdebug.so" 2> /dev/null)
+    sleep 120
     echo 'zend_extension_ts=\"${xdebug}\"' >> ${ini}
     echo 'xdebug.remote_autostart=1' >> ${ini}
     echo 'xdebug.remote_enable=1' >> ${ini}
