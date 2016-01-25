@@ -282,34 +282,34 @@ apt-get install php5 php5-fpm php5-mysql php5-cli php5-curl php5-gd php5-mcrypt 
 ###
 for ini in $(find /etc -name 'php.ini')
 do
-    errRep=$(grep '^error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT' '${ini}')
-    sed -i 's/${errRep}/error_reporting = E_ALL/' ${ini}
+    errRep=$(grep '^error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT' ${ini})
+    sed -i 's/${errRep}/error_reporting = E_ALL/g' ${ini}
 
-    dispErr=$(grep '^display_errors = Off' '${ini}')
-    sed -i 's/${dispErr}/display_errors = On/' ${ini}
+    dispErr=$(grep '^display_errors = Off' ${ini})
+    sed -i 's/${dispErr}/display_errors = On/g' ${ini}
 
-    dispStrtErr=$(grep '^display_startup_errors = Off' '${ini}')
-    sed -i 's/${dispStrtErr}/display_startup_errors = On/' ${ini}
+    dispStrtErr=$(grep '^display_startup_errors = Off' ${ini})
+    sed -i 's/${dispStrtErr}/display_startup_errors = On/g' ${ini}
 
-    dispHtmlErr=$(grep '^html_errors = Off' '${ini}')
-    sed -i 's/${dispHtmlErr}/html_errors = On/' ${ini}
+    dispHtmlErr=$(grep '^html_errors = Off' ${ini})
+    sed -i 's/${dispHtmlErr}/html_errors = On/g' ${ini}
 
-    cgiPathinfo=$(grep '^;cgi.fix_pathinfo=1' '${ini}')
-    sed -i 's/${cgiPathinfo}/cgi.fix_pathinfo=0/' ${ini}
+    cgiPathinfo=$(grep '^;cgi.fix_pathinfo=1' ${ini})
+    sed -i 's/${cgiPathinfo}/cgi.fix_pathinfo=0/g' ${ini}
 
     # Change configuration if you planing to load big files
-    postMaxSize=$(grep '^post_max_size = 8M' '${ini}')
-    sed -i 's/${postMaxSize}/post_max_size = 200M/' ${ini}
+    postMaxSize=$(grep '^post_max_size = 8M' ${ini})
+    sed -i 's/${postMaxSize}/post_max_size = 200M/g' ${ini}
 
-    uploadMaxFilesize=$(grep '^upload_max_filesize = 2M' '${ini}')
-    sed -i 's/${uploadMaxFilesize}/upload_max_filesize = 200M/' ${ini}
+    uploadMaxFilesize=$(grep '^upload_max_filesize = 2M' ${ini})
+    sed -i 's/${uploadMaxFilesize}/upload_max_filesize = 200M/g' ${ini}
 done
 ###
 # php.ini xdebug configuring
 ###
+xdebug=$(find / -name 'xdebug.so' 2> /dev/null)
 for ini in $(find /etc -name 'php.ini')
 do
-    xdebug=$(find / -name 'xdebug.so' 2> /dev/null)
     echo 'zend_extension_ts=\"${xdebug}\"' >> ${ini}
     echo 'xdebug.remote_autostart=1' >> ${ini}
     echo 'xdebug.remote_enable=1' >> ${ini}
