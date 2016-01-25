@@ -256,10 +256,14 @@ server {
 
     # pass the PHP scripts to FastCGI server listening on the php-fpm socket
     location ~ \\.php\$ {
+
         fastcgi_split_path_info ^(.+\\.php)(/.+)\$;
+        try_files \$uri =404;
         fastcgi_pass unix:/var/run/php5-fpm.sock;
+        #fastcgi_pass 127.0.0.1:9000;
+        fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
         fastcgi_index index.php;
-        include fastcgi_params;        
+        include fastcgi_params;       
     }
 
 }
@@ -282,32 +286,20 @@ apt-get install php5 php5-fpm php5-mysql php5-cli php5-curl php5-gd php5-mcrypt 
 ###
 for ini in $(find /etc -name 'php.ini')
 do
-    errRep=$(grep '^error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT' ${ini})
-    sed -i 's/${errRep}/error_reporting = E_ALL/g' ${ini}
-
-    dispErr=$(grep '^display_errors = Off' ${ini})
-    sed -i 's/${dispErr}/display_errors = On/g' ${ini}
-
-    dispStrtErr=$(grep '^display_startup_errors = Off' ${ini})
-    sed -i 's/${dispStrtErr}/display_startup_errors = On/g' ${ini}
-
-    dispHtmlErr=$(grep '^html_errors = Off' ${ini})
-    sed -i 's/${dispHtmlErr}/html_errors = On/g' ${ini}
-
-    cgiPathinfo=$(grep '^;cgi.fix_pathinfo=1' ${ini})
-    sed -i 's/${cgiPathinfo}/cgi.fix_pathinfo=0/g' ${ini}
-
+    sed -i 's/^error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT/error_reporting = E_ALL/' ${ini}
+    sed -i 's/^display_errors = Off/display_errors = On/' ${ini}
+    sed -i 's/^display_startup_errors = Off/display_startup_errors = On/' ${ini}
+    sed -i 's/^html_errors = Off/html_errors = On/' ${ini}
+    sed -i 's/^;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/' ${ini}
     # Change configuration if you planing to load big files
-    postMaxSize=$(grep '^post_max_size = 8M' ${ini})
-    sed -i 's/${postMaxSize}/post_max_size = 200M/g' ${ini}
-
-    uploadMaxFilesize=$(grep '^upload_max_filesize = 2M' ${ini})
-    sed -i 's/${uploadMaxFilesize}/upload_max_filesize = 200M/g' ${ini}
+    sed -i 's/^post_max_size = 8M/post_max_size = 200M/' ${ini}
+    sed -i 's/^upload_max_filesize = 2M/upload_max_filesize = 200M/' ${ini}
 done
 ###
 # php.ini xdebug configuring
 ###
-xdebug=$(find / -name 'xdebug.so' 2> /dev/null)
+xdebug=$(find / -name "xdebug.so" 2> /dev/null)
+sleep 60
 for ini in $(find /etc -name 'php.ini')
 do
     echo 'zend_extension_ts=\"${xdebug}\"' >> ${ini}
@@ -363,10 +355,10 @@ dpkg --configure -a
 apt-get install dkms virtualbox-5.0 -y
 # Install Extension Pack for VirtualBox
 # You can check latest extension pack version here - https://www.virtualbox.org/wiki/Downloads
-ext_pack="Oracle_VM_VirtualBox_Extension_Pack-5.0.14-105127.vbox-extpack"
+ext_pack="Oracle_VM_VirtualBox_Extension_Pack-5.0.14.vbox-extpack"
 wget http://download.virtualbox.org/virtualbox/5.0.14/${ext_pack}
-rm -rf ${ext_pack}
 echo ${root_pass} | VBoxManage extpack install ${ext_pack}
+rm -rf ${ext_pack}
 # install Vagrant
 # Get deb,unpack it and remove after installing
 wget https://releases.hashicorp.com/vagrant/1.8.1/vagrant_1.8.1_x86_64.deb
