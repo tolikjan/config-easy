@@ -322,7 +322,7 @@ done
 sed -i 's/^listen =  127.0.0.1:9000/listen = /var/run/php5-fpm.sock/' ${www_conf}
 # Create phpinfo() file
 cat > ${site_path}/info.php << EOF
-<?php phpinfo(); ?>
+<?php echo "Hello World"; ?>
 EOF
 # Restart services
 service mysql restart
