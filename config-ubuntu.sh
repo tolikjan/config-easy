@@ -284,22 +284,22 @@ apt-get install php5 php5-fpm php5-mysql php5-cli php5-curl php5-gd php5-mcrypt 
 ###
 # php.ini error reporting configuring
 ###
-for ini in $(find /etc -name 'php.ini')
+for ini1 in $(find /etc -name 'php.ini')
 do
-    sed -i 's/^error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT/error_reporting = E_ALL/' ${ini}
-    sed -i 's/^display_errors = Off/display_errors = On/' ${ini}
-    sed -i 's/^display_startup_errors = Off/display_startup_errors = On/' ${ini}
-    sed -i 's/^html_errors = Off/html_errors = On/' ${ini}
-    sed -i 's/^;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/' ${ini}
+    sed -i 's/^error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT/error_reporting = E_ALL/' ${ini1}
+    sed -i 's/^display_errors = Off/display_errors = On/' ${ini1}
+    sed -i 's/^display_startup_errors = Off/display_startup_errors = On/' ${ini1}
+    sed -i 's/^html_errors = Off/html_errors = On/' ${ini1}
+    sed -i 's/^;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/' ${ini1}
     # Change configuration if you planing to load big files
-    sed -i 's/^post_max_size = 8M/post_max_size = 200M/' ${ini}
-    sed -i 's/^upload_max_filesize = 2M/upload_max_filesize = 200M/' ${ini}
+    sed -i 's/^post_max_size = 8M/post_max_size = 200M/' ${ini1}
+    sed -i 's/^upload_max_filesize = 2M/upload_max_filesize = 200M/' ${ini1}
 done
 ###
 # php.ini xdebug configuring
 ###
 xdebug=$(find / -name "xdebug.so" 2> /dev/null)
-sleep 60
+sleep 120
 for ini in $(find /etc -name 'php.ini')
 do
     echo 'zend_extension_ts=\"${xdebug}\"' >> ${ini}
