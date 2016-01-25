@@ -133,7 +133,7 @@ apt-get update
 apt-get install openssh-client -y
 apt-get install openssh-server -y
 mkdir ~/.ssh
-chmod 777 -R .ssh/
+chmod 777 -R ~/.ssh/
 #
 # Install Git
 #
@@ -155,7 +155,7 @@ apt-get update
 apt-get install php5-curl -y
 apt-get install curl php5-cli git -y
 curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-chmod 777 -R .composer/
+chmod 777 -R ~/.composer/
 # Install codesnifer for phpStorm
 #composer global require drupal/coder
 #export PATH="$PATH:$HOME/.composer/vendor/bin"
@@ -185,7 +185,7 @@ apt-get install openjdk-7-jre-headless -y
 wget -N http://chromedriver.storage.googleapis.com/2.20/chromedriver_linux64.zip
 unzip chromedriver_linux64.zip
 rm -rf chromedriver_linux64.zip
-chmod 777 -R selenium/
+chmod 777 -R ~/selenium/
 ###
 # Install LEMP (nginx + MySQL + PHPMyAdmin) and configure it
 ###
