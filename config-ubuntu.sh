@@ -33,7 +33,9 @@ echo ${green}........................................ Installing ccsm ..........
 echo ${green}.................................................................................................${reset}
 sleep 5
 apt-get install compizconfig-settings-manager -y
-# For  additional info - http://help.ubuntu.ru/wiki/ccsm
+# For additional info:
+# http://help.ubuntu.ru/wiki/ccsm
+# http://wiki.compiz.org/CCSM
 # Install Chrome
 echo ${green}.................................................................................................${reset}
 echo ${green}................................... Installing Google Chrome ....................................${reset}
