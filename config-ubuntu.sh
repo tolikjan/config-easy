@@ -19,6 +19,7 @@ sleep 5
 apt-get update && apt-get upgrade -y
 # disable guest session
 echo "allow-guest=false" >> /usr/share/lightdm/lightdm.conf.d/50-ubuntu.conf
+# Install xclip
 echo ${green}.................................................................................................${reset}
 echo ${green}........................................ Installing xclip .......................................${reset}
 echo ${green}.................................................................................................${reset}
@@ -26,6 +27,13 @@ sleep 5
 apt-get install xclip -y
 # Copies the contents of the id_rsa.pub file to your clipboard with command below
 #xclip -sel clip < ~/.ssh/id_rsa.pub
+# Install ccsm
+echo ${green}.................................................................................................${reset}
+echo ${green}........................................ Installing ccsm ........................................${reset}
+echo ${green}.................................................................................................${reset}
+sleep 5
+apt-get install compizconfig-settings-manager -y
+# For  additional info - http://help.ubuntu.ru/wiki/ccsm
 # Install Chrome
 echo ${green}.................................................................................................${reset}
 echo ${green}................................... Installing Google Chrome ....................................${reset}
