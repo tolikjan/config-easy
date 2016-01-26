@@ -11,10 +11,7 @@ red=`tput setaf 1`
 green=`tput setaf 2`
 reset=`tput sgr0`
 
-sleep 5
-#
 # Update & Upgrade
-#
 echo ${green}.................................................................................................${reset}
 echo ${green}................................ Update and Upgrade the system ..................................${reset}
 echo ${green}.................................................................................................${reset}
@@ -22,16 +19,13 @@ sleep 5
 apt-get update && apt-get upgrade -y
 # disable guest session
 echo "allow-guest=false" >> /usr/share/lightdm/lightdm.conf.d/50-ubuntu.conf
-#
 # Install Chrome
-#
 echo ${green}.................................................................................................${reset}
 echo ${green}................................... Installing Google Chrome ....................................${reset}
 echo ${green}.................................................................................................${reset}
 sleep 5
 # Another way which occur errors after Updating System
-# TODO: Need check whether chrome driver works with selenium
-# 
+# TODO: Need check whether chrome driver works with selenium 
 #wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
 #sh -c 'echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
 #sudo apt-get update
@@ -42,34 +36,26 @@ wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
 dpkg -i ./google-chrome*.deb
 apt-get install -f -y
 rm -rf google-chrome*.deb
-#
 # Install Flash player for Firefox
-#
 echo ${green}.................................................................................................${reset}
 echo ${green}.............................. Installing Flash player for Firefox ..............................${reset}
 echo ${green}.................................................................................................${reset}
 sleep 5
 apt-get install flashplugin-installer
-#
 # Install Tweak Tools for Ubuntu additional settings
-#
 echo ${green}.................................................................................................${reset}
 echo ${green}................................... Installing Tweak Tools ......................................${reset}
 echo ${green}.................................................................................................${reset}
 sleep 5
 apt-get install unity-tweak-tool
-#
 # Install utilites for archive manager with 7z and rar support
-#
 echo ${green}.................................................................................................${reset}
 echo ${green}.................................. Installing 7z and Unrar ......................................${reset}
 echo ${green}.................................................................................................${reset}
 sleep 5
 apt-get install p7zip-full -y
 sudo apt-get install unrar -y
-#
 # Install Skype
-#
 echo ${green}.................................................................................................${reset}
 echo ${green}..................................... Installing Skype ..........................................${reset}
 echo ${green}.................................................................................................${reset}
@@ -83,9 +69,7 @@ apt-get update
 apt-get install skype -y
 # Install sound plugins for fixing problems with sound for Ubuntu
 apt-get install libasound2-plugins:i386 -y
-#
 # Install Tor Browser
-#
 echo ${green}.................................................................................................${reset}
 echo ${green}................................... Installing Tor Browser ......................................${reset}
 echo ${green}.................................................................................................${reset}
@@ -93,9 +77,7 @@ sleep 5
 echo -ne '\n' | add-apt-repository ppa:webupd8team/tor-browser
 apt-get update
 apt-get install tor-browser -y
-#
-# Install Tox http://utox.org/
-#
+# Install uTox http://utox.org/
 echo ${green}.................................................................................................${reset}
 echo ${green}...................................... Installing uTox ..........................................${reset}
 echo ${green}.................................................................................................${reset}
@@ -103,9 +85,7 @@ sleep 5
 echo -ne '\n' | add-apt-repository ppa:v-2e/tox
 apt-get update
 apt-get install utox -y
-#
 # Install Telegram messanger
-#
 echo ${green}.................................................................................................${reset}
 echo ${green}..................................... Installing Telegram .......................................${reset}
 echo ${green}.................................................................................................${reset}
@@ -113,18 +93,14 @@ sleep 5
 echo -ne '\n' | add-apt-repository ppa:atareao/telegram
 apt-get update
 apt-get install telegram -y
-#
 # Install Shutter
-#
 echo ${green}.................................................................................................${reset}
 echo ${green}..................................... Installing Shutter ........................................${reset}
 echo ${green}.................................................................................................${reset}
 sleep 5
 echo -ne '\n' | add-apt-repository ppa:shutter/ppa
 apt-get install shutter -y
-#
 # Install SSH
-#
 echo ${green}.................................................................................................${reset}
 echo ${green}..................................... Installing SSH Server .....................................${reset}
 echo ${green}.................................................................................................${reset}
@@ -134,9 +110,7 @@ apt-get install openssh-client -y
 apt-get install openssh-server -y
 mkdir ~/.ssh
 chmod 777 -R ~/.ssh/
-#
 # Install Git
-#
 echo ${green}.................................................................................................${reset}
 echo ${green}......................................... Installing Git ........................................${reset}
 echo ${green}.................................................................................................${reset}
@@ -144,9 +118,7 @@ sleep 5
 apt-get update
 apt-get install git -y
 apt-get install tig -y
-#
 # Install Composer
-#
 echo ${green}.................................................................................................${reset}
 echo ${green}....................................... Installing Composer .....................................${reset}
 echo ${green}.................................................................................................${reset}
@@ -160,9 +132,7 @@ chmod 777 -R ~/.composer/
 #composer global require drupal/coder
 #export PATH="$PATH:$HOME/.composer/vendor/bin"
 #phpcs --config-set installed_paths ~/.composer/vendor/drupal/coder/coder_sniffer
-#
 # Install Selenium Server
-#
 echo ${green}.................................................................................................${reset}
 echo ${green}.................................. Installing Selenium Server ...................................${reset}
 echo ${green}.................................................................................................${reset}
@@ -171,7 +141,6 @@ echo -ne '\n' | add-apt-repository ppa:webupd8team/java
 apt-get update
 # Create folder for Selenium
 mkdir ~/selenium
-chmod 777 -R selenium/
 cd ~/selenium
 # Install xvfb - display server wich implementing the X11 display server protocol
 apt-get install xvfb -y
@@ -186,20 +155,17 @@ wget -N http://chromedriver.storage.googleapis.com/2.20/chromedriver_linux64.zip
 unzip chromedriver_linux64.zip
 rm -rf chromedriver_linux64.zip
 chmod 777 -R ~/selenium/
-###
 # Install LEMP (nginx + MySQL + PHPMyAdmin) and configure it
-###
 echo ${green}.................................................................................................${reset}
-echo ${green}.................... Installing and Configuring LEMP - Linux + nginx + MySQL ....................${reset}
+echo ${green}................... Installing and Configuring LEMP - nginx + MySQL + PHPMyAdmin ................${reset}
 echo ${green}.................................................................................................${reset}
+sleep 5
 # Uninstall/Clear possible extra programs
 apt-get purge -y apache2* php5* mysql*
 dpkg -l | grep apache*
 dpkg -l | grep php5*
 dpkg -l | grep mysql*
-###
-# Set Up variables
-###
+# Set up variables
 # TODO: Do something with this fucking web server
 # php.ini path
 php_config_file1="/etc/php5/fpm/php.ini"
@@ -219,9 +185,14 @@ phpmyadmin.conf="/etc/nginx/phpmyadmin.conf"
 mysql_config_file="/etc/mysql/my.cnf"
 mysql_root_user="root"
 mysql_root_password="root"
-###
+# php.ini path
+php_ini_1="/etc/php5/fpm/php.ini"
+php_ini_2="/etc/php5/cli/php.ini"
 # Install nginx
-###
+echo ${green}.................................................................................................${reset}
+echo ${green}.......................................... Installing Nginx .....................................${reset}
+echo ${green}.................................................................................................${reset}
+sleep 5
 echo -ne '\n' | add-apt-repository ppa:nginx/stable
 apt-get update
 apt-get upgrade -y
@@ -270,55 +241,64 @@ server {
 EOF
 # Add site name to /etc/hosts
 echo "127.0.0.1       ${server_name}" >> /etc/hosts
-###
 # Install mysql-server
-###
+echo ${green}.................................................................................................${reset}
+echo ${green}...................................... Installing MySQL Server ..................................${reset}
+echo ${green}.................................................................................................${reset}
+sleep 5
 # Set password for root account
 echo "mysql-server mysql-server/root_password password $mysql_root_password" | debconf-set-selections
 echo "mysql-server mysql-server/root_password_again password $mysql_root_password" | debconf-set-selections
 apt-get install mysql-server php5-mysql -y
-###
 # Install PHP
-###
+echo ${green}.................................................................................................${reset}
+echo ${green}.......................................... Installing PHP .......................................${reset}
+echo ${green}.................................................................................................${reset}
+sleep 5
 apt-get install php5 php5-fpm php5-mysql php5-cli php5-curl php5-gd php5-mcrypt php5-xdebug -y
-###
-# php.ini error reporting configuring
-###
-for ini1 in $(find /etc -name 'php.ini')
-do
-    sed -i 's/^error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT/error_reporting = E_ALL/' ${ini1}
-    sed -i 's/^display_errors = Off/display_errors = On/' ${ini1}
-    sed -i 's/^display_startup_errors = Off/display_startup_errors = On/' ${ini1}
-    sed -i 's/^html_errors = Off/html_errors = On/' ${ini1}
-    sed -i 's/^;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/' ${ini1}
-    # Change configuration if you planing to load big files
-    sed -i 's/^post_max_size = 8M/post_max_size = 200M/' ${ini1}
-    sed -i 's/^upload_max_filesize = 2M/upload_max_filesize = 200M/' ${ini1}
-done
-###
-# php.ini xdebug configuring
-###
+# php.ini configuration for displaying errors
 for ini in $(find /etc -name 'php.ini')
 do
-    xdebug=$(find / -name "xdebug.so" 2> /dev/null)
-    sleep 120
-    echo 'zend_extension_ts=\"${xdebug}\"' >> ${ini}
-    echo 'xdebug.remote_autostart=1' >> ${ini}
-    echo 'xdebug.remote_enable=1' >> ${ini}
-    echo 'xdebug.remote_connect_back=1' >> ${ini}
-    echo 'xdebug.remote_port=9002' >> ${ini}
-    echo 'xdebug.idekey=PHP_STORM' >> ${ini}
-    echo 'xdebug.scream=0' >> ${ini}
-    echo 'xdebug.cli_color=1' >> ${ini}
-    echo 'xdebug.show_local_vars=1' >> ${ini}
-    echo ';var_dump display' >> ${ini}
-    echo 'xdebug.var_display_max_depth = 5' >> ${ini}
-    echo 'xdebug.var_display_max_children = 256' >> ${ini}
-    echo 'xdebug.var_display_max_data = 1024' >> ${ini}
-done    
-###
-# Change configuration www.conf
-###
+    sed -i 's/^error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT/error_reporting = E_ALL/' ${ini}
+    sed -i 's/^display_errors = Off/display_errors = On/' ${ini}
+    sed -i 's/^display_startup_errors = Off/display_startup_errors = On/' ${ini}
+    sed -i 's/^html_errors = Off/html_errors = On/' ${ini}
+    sed -i 's/^;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/' ${ini}
+    # Change configuration if you planing to load big files
+    sed -i 's/^post_max_size = 8M/post_max_size = 200M/' ${ini}
+    sed -i 's/^upload_max_filesize = 2M/upload_max_filesize = 200M/' ${ini}
+done
+# Set up xdebug variable
+xdebug=$(find / -name "xdebug.so" 2> /dev/null)
+sleep 120
+# fpm/php.ini configuration for xdebug
+echo "zend_extension_ts=\"${xdebug}\"" >> ${php_ini_1}
+echo "xdebug.remote_autostart=1" >> ${php_ini_1}
+echo "xdebug.remote_enable=1" >> ${php_ini_1}
+echo "xdebug.remote_connect_back=1" >> ${php_ini_1}
+echo "xdebug.remote_port=9002" >> ${php_ini_1}
+echo "xdebug.idekey=PHP_STORM" >> ${php_ini_1}
+echo "xdebug.scream=0" >> ${php_ini_1}
+echo "xdebug.cli_color=1" >> ${php_ini_1}
+echo "xdebug.show_local_vars=1" >> ${php_ini_1}
+echo ";var_dump display" >> ${php_ini_1}
+echo "xdebug.var_display_max_depth = 5" >> ${php_ini_1}
+echo "xdebug.var_display_max_children = 256" >> ${php_ini_1}
+echo "xdebug.var_display_max_data = 1024" >> ${php_ini_1}
+# cli/php.ini configuration for xdebug
+echo "zend_extension_ts=\"${xdebug}\"" >> ${php_ini_2}
+echo "xdebug.remote_autostart=1" >> ${php_ini_2}
+echo "xdebug.remote_enable=1" >> ${php_ini_2}
+echo "xdebug.remote_connect_back=1" >> ${php_ini_2}
+echo "xdebug.remote_port=9002" >> ${php_ini_2}
+echo "xdebug.idekey=PHP_STORM" >> ${php_ini_2}
+echo "xdebug.scream=0" >> ${php_ini_2}
+echo "xdebug.cli_color=1" >> ${php_ini_2}
+echo "xdebug.show_local_vars=1" >> ${php_ini_2}
+echo ";var_dump display" >> ${php_ini_2}
+echo "xdebug.var_display_max_depth = 5" >> ${php_ini_2}
+echo "xdebug.var_display_max_children = 256" >> ${php_ini_2}
+echo "xdebug.var_display_max_data = 1024" >> ${php_ini_2}
 sed -i 's/^listen =  127.0.0.1:9000/listen = /var/run/php5-fpm.sock/' ${www_conf}
 # Create phpinfo() file
 cat > ${site_path}/info.php << EOF
@@ -328,9 +308,7 @@ EOF
 service mysql restart
 service nginx restart
 service php5-fpm restart
-###
 # Install Virtualbox and Vagrant
-###
 echo ${green}.................................................................................................${reset}
 echo ${green}................................ Installing VirtualBox and Vagrant ..............................${reset}
 echo ${green}.................................................................................................${reset}
@@ -366,6 +344,9 @@ dpkg -i vagrant*.deb
 apt-get install vagrant -y
 apt-get install -f -y
 rm -rf vagrant*.deb
+
+
+
 echo ${green}.................................................................................................${reset}
 echo ${green}............................................. DONE ..............................................${reset}
 echo ${green}.................................................................................................${reset}
