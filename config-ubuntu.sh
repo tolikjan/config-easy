@@ -19,6 +19,13 @@ sleep 5
 apt-get update && apt-get upgrade -y
 # disable guest session
 echo "allow-guest=false" >> /usr/share/lightdm/lightdm.conf.d/50-ubuntu.conf
+echo ${green}.................................................................................................${reset}
+echo ${green}........................................ Installing xclip .......................................${reset}
+echo ${green}.................................................................................................${reset}
+sleep 5
+apt-get install xclip -y
+# Copies the contents of the id_rsa.pub file to your clipboard with command below
+#xclip -sel clip < ~/.ssh/id_rsa.pub
 # Install Chrome
 echo ${green}.................................................................................................${reset}
 echo ${green}................................... Installing Google Chrome ....................................${reset}
