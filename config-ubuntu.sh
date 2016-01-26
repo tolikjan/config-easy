@@ -302,7 +302,7 @@ echo "xdebug.var_display_max_data = 1024" >> ${php_ini_2}
 sed -i 's/^listen =  127.0.0.1:9000/listen = /var/run/php5-fpm.sock/' ${www_conf}
 # Create phpinfo() file
 cat > ${site_path}/info.php << EOF
-<?php echo "Hello World"; ?>
+<?php phpinfo(); ?>
 EOF
 # Restart services
 service mysql restart
@@ -345,8 +345,39 @@ apt-get install vagrant -y
 apt-get install -f -y
 rm -rf vagrant*.deb
 
+# TODO: add Drupal and phpmyadmin
 
-
+# Install SublimeText 3
+# Licence code here - https://gist.github.com/J2TeaM/9f24a57d5832e475fc4d
+echo ${green}.................................................................................................${reset}
+echo ${green}.................................... Installing SublimeText 3 ...................................${reset}
+echo ${green}.................................................................................................${reset}
+sleep 5
+echo -ne '\n' | add-apt-repository ppa:webupd8team/sublime-text-3
+apt-get update
+apt-get install sublime-text-installer -y
+# Install PhpStorm 10
+# Licence code here - https://бэкдор.рф/phpstorm-7-8-9-10-product-key/
+echo ${green}.................................................................................................${reset}
+echo ${green}............................. Installing and Configuring PHPStopm 10 ............................${reset}
+echo ${green}.................................................................................................${reset}
+sleep 5
+wget http://download-cf.jetbrains.com/webide/PhpStorm-10.0.3.tar.gz
+tar -xvf PhpStorm-10.0.3.tar.gz
+# NOTE: For finishing installation you should execute two commands below
+#cd PhpStorm-*/bin/
+#./phpstorm.sh || TRUE
+# Install HipChat
+echo ${green}.................................................................................................${reset}
+echo ${green}...................................... Installing HipChat .......................................${reset}
+echo ${green}.................................................................................................${reset}
+sleep 5
+echo osboxes.org | sudo su
+echo "deb http://downloads.hipchat.com/linux/apt stable main" > /etc/apt/sources.list.d/atlassian-hipchat.list
+wget -O - https://www.hipchat.com/keys/hipchat-linux.key | apt-key add -
+apt-get update
+apt-get install hipchat
+#exit
 echo ${green}.................................................................................................${reset}
 echo ${green}............................................. DONE ..............................................${reset}
 echo ${green}.................................................................................................${reset}
