@@ -374,10 +374,10 @@ sleep 5
 echo -ne '\n' | add-apt-repository ppa:webupd8team/sublime-text-3
 apt-get update
 apt-get install sublime-text-installer -y
-# Install PhpStorm 10
+# Install PhpStorm 10.0.3
 # Licence code here - https://бэкдор.рф/phpstorm-7-8-9-10-product-key/
 echo ${green}.................................................................................................${reset}
-echo ${green}............................. Installing and Configuring PHPStopm 10 ............................${reset}
+echo ${green}......................... Installing and Configuring PHPStopm 10.0.3 ............................${reset}
 echo ${green}.................................................................................................${reset}
 sleep 5
 wget http://download-cf.jetbrains.com/webide/PhpStorm-10.0.3.tar.gz
