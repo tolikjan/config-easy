@@ -1,4 +1,4 @@
-﻿#!/bin/bash
+#!/bin/bash
 
 # This script will be helpful after reinstalling you operating system
 # Tested on Ubuntu 14.04.3 64x
@@ -64,7 +64,7 @@ echo ${green}...................................................................
 echo ${green}................................... Installing Tweak Tools ......................................${reset}
 echo ${green}.................................................................................................${reset}
 sleep 5
-apt-get install unity-tweak-tool
+apt-get install unity-tweak-tool -y
 # Install utilites for archive manager with 7z and rar support
 echo ${green}.................................................................................................${reset}
 echo ${green}.................................. Installing 7z and Unrar ......................................${reset}
@@ -172,6 +172,7 @@ wget -N http://chromedriver.storage.googleapis.com/2.20/chromedriver_linux64.zip
 unzip chromedriver_linux64.zip
 rm -rf chromedriver_linux64.zip
 chmod 777 -R ~/selenium/
+cd
 # Install LEMP (nginx + MySQL + PHPMyAdmin) and configure it
 echo ${green}.................................................................................................${reset}
 echo ${green}................... Installing and Configuring LEMP - nginx + MySQL + PHPMyAdmin ................${reset}
@@ -316,7 +317,7 @@ echo ";var_dump display" >> ${php_ini_2}
 echo "xdebug.var_display_max_depth = 5" >> ${php_ini_2}
 echo "xdebug.var_display_max_children = 256" >> ${php_ini_2}
 echo "xdebug.var_display_max_data = 1024" >> ${php_ini_2}
-sed -i 's/^listen =  127.0.0.1:9000/listen = /var/run/php5-fpm.sock/' ${www_conf}
+sed -i 's/^listen =  127.0.0.1:9000/listen = \/var\/run\/php5-fpm.sock/' ${www_conf}
 # Create phpinfo() file
 cat > ${site_path}/info.php << EOF
 <?php phpinfo(); ?>
@@ -365,7 +366,7 @@ rm -rf vagrant*.deb
 # TODO: add Drupal and phpmyadmin
 
 # Install SublimeText 3
-# Licence code here - https://gist.github.com/J2TeaM/9f24a57d5832e475fc4d
+# Licence code here - https://gist.github.com/thuannvn/672fa21a50cc8c67634a
 echo ${green}.................................................................................................${reset}
 echo ${green}.................................... Installing SublimeText 3 ...................................${reset}
 echo ${green}.................................................................................................${reset}
