@@ -206,9 +206,6 @@ phpmyadmin.conf="/etc/nginx/phpmyadmin.conf"
 mysql_config_file="/etc/mysql/my.cnf"
 mysql_root_user="root"
 mysql_root_password="root"
-# php.ini path
-php_ini_1="/etc/php5/fpm/php.ini"
-php_ini_2="/etc/php5/cli/php.ini"
 #
 ### Install nginx
 echo ${green}.................................................................................................${reset}
