@@ -13,6 +13,7 @@ reset=`tput sgr0`
 
 #
 ### Update & Upgrade system
+sleep 5
 echo ${green}.................................................................................................${reset}
 echo ${green}................................. Update and Upgrade the system .................................${reset}
 echo ${green}.................................................................................................${reset}
@@ -148,7 +149,7 @@ echo ${green}.................................... Installing Codesniffer .......
 echo ${green}.................................................................................................${reset}
 #
 ### Install codesniffer for phpStorm
-# TODO: Check the codesnifer instalation
+# TODO: Check the codesniffer instalation
 #composer global require drupal/coder
 #export PATH="$PATH:$HOME/.composer/vendor/bin"
 #phpcs --config-set installed_paths ~/.composer/vendor/drupal/coder/coder_sniffer
@@ -266,7 +267,6 @@ echo "127.0.0.1       ${server_name}" >> /etc/hosts
 echo ${green}.................................................................................................${reset}
 echo ${green}.......................................... Installing PHP .......................................${reset}
 echo ${green}.................................................................................................${reset}
-sleep 5
 apt-get install php5 php5-fpm php5-mysql php5-cli php5-curl php5-gd php5-mcrypt php5-xdebug -y
 # php.ini error reporting configuring
 for ini in $(find /etc -name 'php.ini')
