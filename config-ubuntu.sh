@@ -299,37 +299,8 @@ do
     echo 'xdebug.var_display_max_children = 256' >> ${ini}
     echo 'xdebug.var_display_max_data = 1024' >> ${ini}
 done
-
-## fpm/php.ini configuration for xdebug
-#echo "zend_extension_ts=\"${xdebug}\"" >> ${php_ini_1}
-#echo "xdebug.remote_autostart=1" >> ${php_ini_1}
-#echo "xdebug.remote_enable=1" >> ${php_ini_1}
-#echo "xdebug.remote_connect_back=1" >> ${php_ini_1}
-#echo "xdebug.remote_port=9002" >> ${php_ini_1}
-#echo "xdebug.idekey=PHP_STORM" >> ${php_ini_1}
-#echo "xdebug.scream=0" >> ${php_ini_1}
-#echo "xdebug.cli_color=1" >> ${php_ini_1}
-#echo "xdebug.show_local_vars=1" >> ${php_ini_1}
-#echo ";var_dump display" >> ${php_ini_1}
-#echo "xdebug.var_display_max_depth = 5" >> ${php_ini_1}
-#echo "xdebug.var_display_max_children = 256" >> ${php_ini_1}
-#echo "xdebug.var_display_max_data = 1024" >> ${php_ini_1}
-## cli/php.ini configuration for xdebug
-#echo "zend_extension_ts=\"${xdebug}\"" >> ${php_ini_2}
-#echo "xdebug.remote_autostart=1" >> ${php_ini_2}
-#echo "xdebug.remote_enable=1" >> ${php_ini_2}
-#echo "xdebug.remote_connect_back=1" >> ${php_ini_2}
-#echo "xdebug.remote_port=9002" >> ${php_ini_2}
-#echo "xdebug.idekey=PHP_STORM" >> ${php_ini_2}
-#echo "xdebug.scream=0" >> ${php_ini_2}
-#echo "xdebug.cli_color=1" >> ${php_ini_2}
-#echo "xdebug.show_local_vars=1" >> ${php_ini_2}
-#echo ";var_dump display" >> ${php_ini_2}
-#echo "xdebug.var_display_max_depth = 5" >> ${php_ini_2}
-#echo "xdebug.var_display_max_children = 256" >> ${php_ini_2}
-#echo "xdebug.var_display_max_data = 1024" >> ${php_ini_2}
-#sed -i 's/^listen =  127.0.0.1:9000/listen = \/var\/run\/php5-fpm.sock/' ${www_conf}
-
+# Change settings for unix socket
+sed -i 's/^listen =  127.0.0.1:9000/listen = \/var\/run\/php5-fpm.sock/' ${www_conf}
 # Create phpinfo() file
 cat > ${site_path}/info.php << EOF
 <?php phpinfo(); ?>
