@@ -1,4 +1,4 @@
-﻿#!/bin/bash
+#!/bin/bash
 
 # This script will be helpful after reinstalling you operating system
 # Tested on Ubuntu 14.04.3 64x
@@ -10,6 +10,7 @@ root_pass="osboxes.org"
 red=`tput setaf 1`
 green=`tput setaf 2`
 reset=`tput sgr0`
+
 #
 ### Update & Upgrade system
 echo ${green}.................................................................................................${reset}
@@ -19,24 +20,38 @@ apt-get update && apt-get upgrade -y
 # disable guest session
 echo "allow-guest=false" >> /usr/share/lightdm/lightdm.conf.d/50-ubuntu.conf
 # configure system to allow more performance
+# "vm.swappiness=10" — means that you system will use swap when you RAM will be full for 90%
 echo "vm.swappiness=10" >> /etc/sysctl.conf
 #
 ### Install Google Chrome https://www.google.com/chrome/
 echo ${green}.................................................................................................${reset}
 echo ${green}................................... Installing Google Chrome ....................................${reset}
 echo ${green}.................................................................................................${reset}
-# TODO: Need check whether chrome driver works with selenium
 # Get deb, unpack it and remove after installing
 wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
 dpkg -i ./google-chrome*.deb
 apt-get install -f -y
 rm -rf google-chrome*.deb
 #
+### Install xclip (for copy files via terminal)
+echo ${green}.................................................................................................${reset}
+echo ${green}........................................ Installing xclip .......................................${reset}
+echo ${green}.................................................................................................${reset}
+apt-get install xclip -y
+# Example for copy the contents of the id_rsa.pub file to your clipboard with command below
+#xclip -sel clip < ~/.ssh/id_rsa.pub
+#
+### Install ccsm http://wiki.compiz.org/CCSM http://help.ubuntu.ru/wiki/ccsm
+echo ${green}.................................................................................................${reset}
+echo ${green}........................................ Installing ccsm ........................................${reset}
+echo ${green}.................................................................................................${reset}
+apt-get install compizconfig-settings-manager -y
+#
 ### Install Flash player for Firefox
 echo ${green}.................................................................................................${reset}
 echo ${green}.............................. Installing Flash player for Firefox ..............................${reset}
 echo ${green}.................................................................................................${reset}
-apt-get install flashplugin-installer
+apt-get install flashplugin-installer -y
 #
 ### Install Tweak Tools for Ubuntu additional settings
 #echo ${green}.................................................................................................${reset}
@@ -44,12 +59,17 @@ apt-get install flashplugin-installer
 #echo ${green}.................................................................................................${reset}
 #apt-get install unity-tweak-tool
 #
-### Install utilites for archive manager with 7z and rar support
+### Install utilities for archive manager with 7z and rar support
 echo ${green}.................................................................................................${reset}
 echo ${green}.................................... Installing 7z and Unrar ....................................${reset}
 echo ${green}.................................................................................................${reset}
 apt-get install p7zip-full -y
-sudo apt-get install unrar -y
+apt-get install unrar -y
+#
+### Install Tweak Tools for Ubuntu additional settings
+echo ${green}.................................................................................................${reset}
+echo ${green}.................................... Installing Tweak Tools .....................................${reset}
+echo ${green}.................................................................................................${reset}
 #
 ### Install Skype http://www.skype.com/
 echo ${green}.................................................................................................${reset}
@@ -141,7 +161,6 @@ echo -ne '\n' | add-apt-repository ppa:webupd8team/java
 apt-get update
 # Create folder for Selenium
 mkdir ~/selenium
-chmod 777 -R selenium/
 cd ~/selenium
 # Install xvfb - display server which implementing the X11 display server protocol
 apt-get install xvfb -y
@@ -156,17 +175,18 @@ wget -N http://chromedriver.storage.googleapis.com/2.21/chromedriver_linux64.zip
 unzip chromedriver_linux64.zip
 rm -rf chromedriver_linux64.zip
 chmod 777 -R ~/selenium/
+cd
 #
 ### Install LEMP (nginx + MySQL + PHPMyAdmin) and configure it
 echo ${green}.................................................................................................${reset}
-echo ${green}.................... Installing and Configuring LEMP — Linux + nginx + MySQL ....................${reset}
+echo ${green}.............. Installing and Configuring LEMP — Linux + nginx + MySQL + phpmyadmin .............${reset}
 echo ${green}.................................................................................................${reset}
 # Uninstall/Clear possible extra programs
 apt-get purge -y apache2* php5* mysql*
 dpkg -l | grep apache*
 dpkg -l | grep php5*
 dpkg -l | grep mysql*
-# Set Up variables
+# Set up variables
 # php.ini path
 php_config_file1="/etc/php5/fpm/php.ini"
 # site folder path
@@ -185,7 +205,14 @@ phpmyadmin.conf="/etc/nginx/phpmyadmin.conf"
 mysql_config_file="/etc/mysql/my.cnf"
 mysql_root_user="root"
 mysql_root_password="root"
-# Install nginx
+# php.ini path
+php_ini_1="/etc/php5/fpm/php.ini"
+php_ini_2="/etc/php5/cli/php.ini"
+#
+### Install nginx
+echo ${green}.................................................................................................${reset}
+echo ${green}.......................................... Installing Nginx .....................................${reset}
+echo ${green}.................................................................................................${reset}
 echo -ne '\n' | add-apt-repository ppa:nginx/stable
 apt-get update
 apt-get upgrade -y
@@ -234,7 +261,70 @@ server {
 EOF
 # Add site name to /etc/hosts
 echo "127.0.0.1       ${server_name}" >> /etc/hosts
-# Install mysql-server and phpmyadmin
+#
+### Install PHP
+echo ${green}.................................................................................................${reset}
+echo ${green}.......................................... Installing PHP .......................................${reset}
+echo ${green}.................................................................................................${reset}
+sleep 5
+apt-get install php5 php5-fpm php5-mysql php5-cli php5-curl php5-gd php5-mcrypt php5-xdebug -y
+# php.ini error reporting configuring
+for ini in $(find /etc -name 'php.ini')
+do
+    sed -i 's/^error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT/error_reporting = E_ALL/' ${ini}
+    sed -i 's/^display_errors = Off/display_errors = On/' ${ini}
+    sed -i 's/^display_startup_errors = Off/display_startup_errors = On/' ${ini}
+    sed -i 's/^html_errors = Off/html_errors = On/' ${ini}
+    sed -i 's/^;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/' ${ini}
+    # Change configuration if you planing to load big files
+    sed -i 's/^post_max_size = 8M/post_max_size = 200M/' ${ini}
+    sed -i 's/^upload_max_filesize = 2M/upload_max_filesize = 200M/' ${ini}
+done
+# Set up xdebug variable
+xdebug=$(find / -name "xdebug.so" 2> /dev/null)
+sleep 120
+# fpm/php.ini configuration for xdebug
+echo "zend_extension_ts=\"${xdebug}\"" >> ${php_ini_1}
+echo "xdebug.remote_autostart=1" >> ${php_ini_1}
+echo "xdebug.remote_enable=1" >> ${php_ini_1}
+echo "xdebug.remote_connect_back=1" >> ${php_ini_1}
+echo "xdebug.remote_port=9002" >> ${php_ini_1}
+echo "xdebug.idekey=PHP_STORM" >> ${php_ini_1}
+echo "xdebug.scream=0" >> ${php_ini_1}
+echo "xdebug.cli_color=1" >> ${php_ini_1}
+echo "xdebug.show_local_vars=1" >> ${php_ini_1}
+echo ";var_dump display" >> ${php_ini_1}
+echo "xdebug.var_display_max_depth = 5" >> ${php_ini_1}
+echo "xdebug.var_display_max_children = 256" >> ${php_ini_1}
+echo "xdebug.var_display_max_data = 1024" >> ${php_ini_1}
+# cli/php.ini configuration for xdebug
+echo "zend_extension_ts=\"${xdebug}\"" >> ${php_ini_2}
+echo "xdebug.remote_autostart=1" >> ${php_ini_2}
+echo "xdebug.remote_enable=1" >> ${php_ini_2}
+echo "xdebug.remote_connect_back=1" >> ${php_ini_2}
+echo "xdebug.remote_port=9002" >> ${php_ini_2}
+echo "xdebug.idekey=PHP_STORM" >> ${php_ini_2}
+echo "xdebug.scream=0" >> ${php_ini_2}
+echo "xdebug.cli_color=1" >> ${php_ini_2}
+echo "xdebug.show_local_vars=1" >> ${php_ini_2}
+echo ";var_dump display" >> ${php_ini_2}
+echo "xdebug.var_display_max_depth = 5" >> ${php_ini_2}
+echo "xdebug.var_display_max_children = 256" >> ${php_ini_2}
+echo "xdebug.var_display_max_data = 1024" >> ${php_ini_2}
+sed -i 's/^listen =  127.0.0.1:9000/listen = \/var\/run\/php5-fpm.sock/' ${www_conf}
+# Create phpinfo() file
+cat > ${site_path}/info.php << EOF
+<?php phpinfo(); ?>
+EOF
+# Restart services
+service mysql restart
+service nginx restart
+service php5-fpm restart
+#
+### Install mysql-server and phpmyadmin
+echo ${green}.................................................................................................${reset}
+echo ${green}................................. Installing MySQL & phpmyadmin .................................${reset}
+echo ${green}.................................................................................................${reset}
 apt-get update
 echo "mysql-server mysql-server/root_password password $mysql_root_password" | debconf-set-selections
 echo "mysql-server mysql-server/root_password_again password $mysql_root_password" | debconf-set-selections
@@ -247,49 +337,6 @@ apt-get install mysql-server php5-mysql phpmyadmin -y
 ln -s /usr/share/phpmyadmin /usr/share/nginx/html
 # Enable mycrypt and restart service
 php5enmod mcrypt
-service php5-fpm restart
-# Install PHP
-apt-get install php5 php5-fpm php5-mysql php5-cli php5-curl php5-gd php5-mcrypt php5-xdebug -y
-# php.ini error reporting configuring
-for ini1 in $(find /etc -name 'php.ini')
-do
-    sed -i 's/^error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT/error_reporting = E_ALL/' ${ini1}
-    sed -i 's/^display_errors = Off/display_errors = On/' ${ini1}
-    sed -i 's/^display_startup_errors = Off/display_startup_errors = On/' ${ini1}
-    sed -i 's/^html_errors = Off/html_errors = On/' ${ini1}
-    sed -i 's/^;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/' ${ini1}
-    # Change configuration if you planing to load big files
-    sed -i 's/^post_max_size = 8M/post_max_size = 200M/' ${ini1}
-    sed -i 's/^upload_max_filesize = 2M/upload_max_filesize = 200M/' ${ini1}
-done
-# php.ini xdebug configuring
-for ini in $(find /etc -name 'php.ini')
-do
-    xdebug=$(find / -name "xdebug.so" 2> /dev/null)
-    sleep 120
-    echo 'zend_extension_ts=\"${xdebug}\"' >> ${ini}
-    echo 'xdebug.remote_autostart=1' >> ${ini}
-    echo 'xdebug.remote_enable=1' >> ${ini}
-    echo 'xdebug.remote_connect_back=1' >> ${ini}
-    echo 'xdebug.remote_port=9002' >> ${ini}
-    echo 'xdebug.idekey=PHP_STORM' >> ${ini}
-    echo 'xdebug.scream=0' >> ${ini}
-    echo 'xdebug.cli_color=1' >> ${ini}
-    echo 'xdebug.show_local_vars=1' >> ${ini}
-    echo ';var_dump display' >> ${ini}
-    echo 'xdebug.var_display_max_depth = 5' >> ${ini}
-    echo 'xdebug.var_display_max_children = 256' >> ${ini}
-    echo 'xdebug.var_display_max_data = 1024' >> ${ini}
-done
-# Change configuration www.conf
-sed -i 's/^listen =  127.0.0.1:9000/listen = /var/run/php5-fpm.sock/' ${www_conf}
-# Create phpinfo() file
-cat > ${site_path}/info.php << EOF
-<?php echo "Hello World"; ?>
-EOF
-# Restart services
-service mysql restart
-service nginx restart
 service php5-fpm restart
 #
 ### Install VirtualBox and Vagrant
@@ -327,16 +374,17 @@ dpkg -i vagrant*.deb
 apt-get install vagrant -y
 apt-get install -f -y
 rm -rf vagrant*.deb
-# Install SublimeText 3 https://www.sublimetext.com/3
-# TODO: Licence code here - https://gist.github.com/J2TeaM/9f24a57d5832e475fc4d
+#
+### Install SublimeText 3
+# Licence code here - https://gist.github.com/vertexclique/9839383
 echo ${green}.................................................................................................${reset}
 echo ${green}.................................... Installing SublimeText 3 ...................................${reset}
 echo ${green}.................................................................................................${reset}
-sleep 5
 echo -ne '\n' | add-apt-repository ppa:webupd8team/sublime-text-3
 apt-get update
 apt-get install sublime-text-installer -y
-# Install PhpStorm 10 https://www.jetbrains.com/phpstorm/download/
+#
+### Install PhpStorm 10 https://www.jetbrains.com/phpstorm/download/
 # Licence code here - https://бэкдор.рф/phpstorm-7-8-9-10-product-key/
 echo ${green}.................................................................................................${reset}
 echo ${green}............................. Installing and Configuring PHPStopm 10 ............................${reset}
@@ -355,6 +403,7 @@ echo "deb http://downloads.hipchat.com/linux/apt stable main" > /etc/apt/sources
 wget -O - https://www.hipchat.com/keys/hipchat-linux.key | apt-key add -
 apt-get update
 apt-get install hipchat
+#exit
 echo ${green}.................................................................................................${reset}
 echo ${green}............................................. DONE ..............................................${reset}
 echo ${green}.................................................................................................${reset}
