@@ -180,7 +180,7 @@ cd
 #
 ### Install LEMP (nginx + MySQL + PHPMyAdmin) and configure it
 echo ${green}.................................................................................................${reset}
-echo ${green}.............. Installing and Configuring LEMP — Linux + nginx + MySQL + phpmyadmin .............${reset}
+echo ${green}.............. Installing and Configuring LEMP: Linux + nginx + MySQL + phpmyadmin ..............${reset}
 echo ${green}.................................................................................................${reset}
 # Uninstall/Clear possible extra programs
 apt-get purge -y apache2* php5* mysql*
@@ -188,8 +188,6 @@ dpkg -l | grep apache*
 dpkg -l | grep php5*
 dpkg -l | grep mysql*
 # Set up variables
-# php.ini path
-php_config_file1="/etc/php5/fpm/php.ini"
 # site folder path
 site_path="/usr/share/nginx/html"
 server_name="local.com"
@@ -200,10 +198,7 @@ nginx_conf="/etc/nginx/nginx.conf"
 # default nginx config
 default_nginx_conf="/etc/nginx/sites-available/default"
 default_nginx_conf_link="/etc/nginx/sites-enabled/default"
-# phpmyadmin config path
-phpmyadmin.conf="/etc/nginx/phpmyadmin.conf"
 # mysql variables
-mysql_config_file="/etc/mysql/my.cnf"
 mysql_root_user="root"
 mysql_root_password="root"
 #
@@ -232,7 +227,7 @@ server {
     index index.php index.html index.htm;
 
     server_name ${server_name};
-    
+
     location / {
         try_files \$uri \$uri/ /index.php;
     }
@@ -252,7 +247,7 @@ server {
         #fastcgi_pass 127.0.0.1:9000;
         fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
         fastcgi_index index.php;
-        include fastcgi_params;       
+        include fastcgi_params;
     }
 
 }
@@ -336,23 +331,20 @@ apt-get purge "^virtualbox-.*" -y
 apt-get update
 # Clean up
 apt-get autoremove -y | apt-get autoclean - y | apt-get clean -y
-# Add deb
-cat > /etc/apt/sources.list.d/oracle-vbox.list << EOF
-deb http://download.virtualbox.org/virtualbox/debian trusty contrib  
-# deb-src http://download.virtualbox.org/virtualbox/debian trusty contrib
-EOF
+# add the official Virtualbox repository for Linux
+sh -c 'echo "deb http://download.virtualbox.org/virtualbox/debian $(lsb_release -cs) contrib" >> /etc/apt/sources.list.d/virtualbox.list'
 # Now, download and register the ORACLE public key
-wget -q -O - https://www.virtualbox.org/download/oracle_vbox.asc | sudo apt-key add -  
-# Update and install virtualbox
+wget -q https://www.virtualbox.org/download/oracle_vbox.asc -O- | sudo apt-key add -
+# Update and install Virtualbox
 apt-get update
-dpkg --configure -a
-apt-get install dkms virtualbox-5.0.14 -y
+apt-get install dkms virtualbox-5.0 -y
 # Install Extension Pack for VirtualBox
 # You can check latest extension pack version here - https://www.virtualbox.org/wiki/Downloads
 ext_pack="Oracle_VM_VirtualBox_Extension_Pack-5.0.14.vbox-extpack"
 wget http://download.virtualbox.org/virtualbox/5.0.14/${ext_pack}
 echo ${root_pass} | VBoxManage extpack install ${ext_pack}
 rm -rf ${ext_pack}
+rm -rf virtualbox*.deb
 # Install Vagrant
 # Get deb,unpack it and remove after installing
 wget https://releases.hashicorp.com/vagrant/1.8.1/vagrant_1.8.1_x86_64.deb
