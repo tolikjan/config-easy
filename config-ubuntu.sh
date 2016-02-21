@@ -307,6 +307,7 @@ echo ${green}...................................................................
 echo ${green}................................. Installing MySQL & phpmyadmin .................................${reset}
 echo ${green}.................................................................................................${reset}
 apt-get update
+echo -ne '\n' | add-apt-repository ppa:nijel/phpmyadmin
 echo "mysql-server mysql-server/root_password password $mysql_root_password" | debconf-set-selections
 echo "mysql-server mysql-server/root_password_again password $mysql_root_password" | debconf-set-selections
 echo "phpmyadmin phpmyadmin/dbconfig-install boolean true" | debconf-set-selections
