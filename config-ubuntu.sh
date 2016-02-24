@@ -203,6 +203,52 @@ default_nginx_conf_link="/etc/nginx/sites-enabled/default"
 mysql_root_user="root"
 mysql_root_password="root"
 #
+### Install PHP
+echo ${green}.................................................................................................${reset}
+echo ${green}.......................................... Installing PHP .......................................${reset}
+echo ${green}.................................................................................................${reset}
+echo -ne '\n' | add-apt-repository ppa:ondrej/php5-5.6
+apt-get update && apt-get upgrade -y
+apt-get install php5 -y
+apt-get install php5-fpm php5-mysql php5-cli php5-curl php5-gd php5-mcrypt php5-xdebug -y
+# php.ini error reporting configuring
+for ini in $(find /etc -name 'php.ini')
+do
+    sed -i 's/^error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT/error_reporting = E_ALL/' ${ini}
+    sed -i 's/^display_errors = Off/display_errors = On/' ${ini}
+    sed -i 's/^display_startup_errors = Off/display_startup_errors = On/' ${ini}
+    sed -i 's/^html_errors = Off/html_errors = On/' ${ini}
+    sed -i 's/^;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/' ${ini}
+    # Change configuration if you planing to load big files
+    sed -i 's/^post_max_size = 8M/post_max_size = 200M/' ${ini}
+    sed -i 's/^upload_max_filesize = 2M/upload_max_filesize = 200M/' ${ini}
+done
+# Set up xdebug variable
+xdebug=$(find / -name "xdebug.so" 2> /dev/null)
+sleep 120
+for ini in $(find /etc -name 'php.ini')
+do
+    echo 'zend_extension_ts=\"${xdebug}\"' >> ${ini}
+    echo 'xdebug.remote_autostart=1' >> ${ini}
+    echo 'xdebug.remote_enable=1' >> ${ini}
+    echo 'xdebug.remote_connect_back=1' >> ${ini}
+    echo 'xdebug.remote_port=9002' >> ${ini}
+    echo 'xdebug.idekey=PHP_STORM' >> ${ini}
+    echo 'xdebug.scream=0' >> ${ini}
+    echo 'xdebug.cli_color=1' >> ${ini}
+    echo 'xdebug.show_local_vars=1' >> ${ini}
+    echo ';var_dump display' >> ${ini}
+    echo 'xdebug.var_display_max_depth = 5' >> ${ini}
+    echo 'xdebug.var_display_max_children = 256' >> ${ini}
+    echo 'xdebug.var_display_max_data = 1024' >> ${ini}
+done
+# Change settings for unix socket
+sed -i 's/^listen =  127.0.0.1:9000/listen = \/var\/run\/php5-fpm.sock/' ${www_conf}
+# Create phpinfo() file
+cat > ${site_path}/info.php << EOF
+<?php phpinfo(); ?>
+EOF
+#
 ### Install nginx
 echo ${green}.................................................................................................${reset}
 echo ${green}.......................................... Installing Nginx .....................................${reset}
@@ -255,49 +301,6 @@ server {
 EOF
 # Add site name to /etc/hosts
 echo "127.0.0.1       ${server_name}" >> /etc/hosts
-#
-### Install PHP
-echo ${green}.................................................................................................${reset}
-echo ${green}.......................................... Installing PHP .......................................${reset}
-echo ${green}.................................................................................................${reset}
-apt-get install php5 php5-fpm php5-mysql php5-cli php5-curl php5-gd php5-mcrypt php5-xdebug -y
-# php.ini error reporting configuring
-for ini in $(find /etc -name 'php.ini')
-do
-    sed -i 's/^error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT/error_reporting = E_ALL/' ${ini}
-    sed -i 's/^display_errors = Off/display_errors = On/' ${ini}
-    sed -i 's/^display_startup_errors = Off/display_startup_errors = On/' ${ini}
-    sed -i 's/^html_errors = Off/html_errors = On/' ${ini}
-    sed -i 's/^;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/' ${ini}
-    # Change configuration if you planing to load big files
-    sed -i 's/^post_max_size = 8M/post_max_size = 200M/' ${ini}
-    sed -i 's/^upload_max_filesize = 2M/upload_max_filesize = 200M/' ${ini}
-done
-# Set up xdebug variable
-xdebug=$(find / -name "xdebug.so" 2> /dev/null)
-sleep 120
-for ini in $(find /etc -name 'php.ini')
-do
-    echo 'zend_extension_ts=\"${xdebug}\"' >> ${ini}
-    echo 'xdebug.remote_autostart=1' >> ${ini}
-    echo 'xdebug.remote_enable=1' >> ${ini}
-    echo 'xdebug.remote_connect_back=1' >> ${ini}
-    echo 'xdebug.remote_port=9002' >> ${ini}
-    echo 'xdebug.idekey=PHP_STORM' >> ${ini}
-    echo 'xdebug.scream=0' >> ${ini}
-    echo 'xdebug.cli_color=1' >> ${ini}
-    echo 'xdebug.show_local_vars=1' >> ${ini}
-    echo ';var_dump display' >> ${ini}
-    echo 'xdebug.var_display_max_depth = 5' >> ${ini}
-    echo 'xdebug.var_display_max_children = 256' >> ${ini}
-    echo 'xdebug.var_display_max_data = 1024' >> ${ini}
-done
-# Change settings for unix socket
-sed -i 's/^listen =  127.0.0.1:9000/listen = \/var\/run\/php5-fpm.sock/' ${www_conf}
-# Create phpinfo() file
-cat > ${site_path}/info.php << EOF
-<?php phpinfo(); ?>
-EOF
 # Restart services
 service mysql restart
 service nginx restart
