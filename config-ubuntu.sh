@@ -3,7 +3,8 @@
 # This script will be helpful after reinstalling you operating system
 # Tested on Ubuntu 14.04.3 64x
 
-# Password for root user for ubuntu box http://sourceforge.net/projects/osboxes/files/vms/vbox/Ubuntu/14.04/14.04.3/Ubuntu_14.04.3-64bit.7z/download
+# Password for root user for ubuntu box
+# http://sourceforge.net/projects/osboxes/files/vms/vbox/Ubuntu/14.04/14.04.3/Ubuntu_14.04.3-64bit.7z/download
 root_pass="osboxes.org"
 
 # coloured variables
