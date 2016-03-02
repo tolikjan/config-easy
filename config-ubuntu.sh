@@ -48,6 +48,12 @@ echo ${green}........................................ Installing ccsm ..........
 echo ${green}.................................................................................................${reset}
 apt-get install compizconfig-settings-manager -y
 #
+### Install gparted http://gparted.org/
+echo ${green}.................................................................................................${reset}
+echo ${green}...................................... Installing gparted .......................................${reset}
+echo ${green}.................................................................................................${reset}
+apt-get install gparted -y
+#
 ### Install Flash player for Firefox
 echo ${green}.................................................................................................${reset}
 echo ${green}.............................. Installing Flash player for Firefox ..............................${reset}
@@ -93,14 +99,6 @@ echo ${green}...................................................................
 echo -ne '\n' | add-apt-repository ppa:webupd8team/tor-browser
 apt-get update
 apt-get install tor-browser -y
-#
-### Install Tox Messenger http://utox.org/
-echo ${green}.................................................................................................${reset}
-echo ${green}........................................ Installing uTox ........................................${reset}
-echo ${green}.................................................................................................${reset}
-echo -ne '\n' | add-apt-repository ppa:v-2e/tox
-apt-get update
-apt-get install utox -y
 #
 ### Install Telegram messenger https://telegram.org/
 echo ${green}.................................................................................................${reset}
