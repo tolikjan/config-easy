@@ -2,15 +2,12 @@
 
 # This script will be helpful after reinstalling you operating system
 # Tested on Ubuntu 14.04.3 64x
-
-# Password for root user for ubuntu box http://sourceforge.net/projects/osboxes/files/vms/vbox/Ubuntu/14.04/14.04.3/Ubuntu_14.04.3-64bit.7z/download
+# Password for root user for ubuntu box
+# http://sourceforge.net/projects/osboxes/files/vms/vbox/Ubuntu/14.04/14.04.3/Ubuntu_14.04.3-64bit.7z/download
 root_pass="osboxes.org"
-
 # coloured variables
-red=`tput setaf 1`
-green=`tput setaf 2`
 reset=`tput sgr0`
-
+green=`tput setaf 2`
 #
 ### Update & Upgrade system
 sleep 5
@@ -48,6 +45,12 @@ echo ${green}........................................ Installing ccsm ..........
 echo ${green}.................................................................................................${reset}
 apt-get install compizconfig-settings-manager -y
 #
+### Install gparted http://gparted.org/
+echo ${green}.................................................................................................${reset}
+echo ${green}...................................... Installing gparted .......................................${reset}
+echo ${green}.................................................................................................${reset}
+apt-get install gparted -y
+#
 ### Install Flash player for Firefox
 echo ${green}.................................................................................................${reset}
 echo ${green}.............................. Installing Flash player for Firefox ..............................${reset}
@@ -56,7 +59,7 @@ apt-get install flashplugin-installer -y
 #
 ### Install Tweak Tools for Ubuntu additional settings
 #echo ${green}.................................................................................................${reset}
-#echo ${green}.................................... Installing Tweak Tools .....................................${reset}
+#echo ${green}.................................... Installing Tweak Tool ......................................${reset}
 #echo ${green}.................................................................................................${reset}
 #apt-get install unity-tweak-tool
 #
@@ -66,11 +69,6 @@ echo ${green}.................................... Installing 7z and Unrar ......
 echo ${green}.................................................................................................${reset}
 apt-get install p7zip-full -y
 apt-get install unrar -y
-#
-### Install Tweak Tools for Ubuntu additional settings
-echo ${green}.................................................................................................${reset}
-echo ${green}.................................... Installing Tweak Tools .....................................${reset}
-echo ${green}.................................................................................................${reset}
 #
 ### Install Skype http://www.skype.com/
 echo ${green}.................................................................................................${reset}
@@ -93,14 +91,6 @@ echo ${green}...................................................................
 echo -ne '\n' | add-apt-repository ppa:webupd8team/tor-browser
 apt-get update
 apt-get install tor-browser -y
-#
-### Install Tox Messenger http://utox.org/
-echo ${green}.................................................................................................${reset}
-echo ${green}........................................ Installing uTox ........................................${reset}
-echo ${green}.................................................................................................${reset}
-echo -ne '\n' | add-apt-repository ppa:v-2e/tox
-apt-get update
-apt-get install utox -y
 #
 ### Install Telegram messenger https://telegram.org/
 echo ${green}.................................................................................................${reset}
@@ -148,11 +138,13 @@ echo ${green}...................................................................
 echo ${green}.................................... Installing Codesniffer .....................................${reset}
 echo ${green}.................................................................................................${reset}
 #
-### Install codesniffer for phpStorm
-# TODO: Check the codesniffer instalation
-#composer global require drupal/coder
-#export PATH="$PATH:$HOME/.composer/vendor/bin"
-#phpcs --config-set installed_paths ~/.composer/vendor/drupal/coder/coder_sniffer
+### Install code sniffer for phpStorm
+# https://www.drupal.org/node/1419988
+# TODO: Check the code sniffer installation
+composer global require drupal/coder
+composer global update drupal/coder --prefer-source
+export PATH="$PATH:$HOME/.composer/vendor/bin"
+phpcs --config-set installed_paths ~/.composer/vendor/drupal/coder/coder_sniffer
 #
 ### Install Selenium Server http://www.seleniumhq.org/
 echo ${green}.................................................................................................${reset}
@@ -172,9 +164,15 @@ apt-get install openjdk-7-jre-headless -y
 #apt-get install xvfb -y
 # Starting up Selenium server
 #DISPLAY=:1 xvfb-run java -jar ~/selenium/selenium-server-standalone-2.52.0.jar
-wget -N http://chromedriver.storage.googleapis.com/2.21/chromedriver_linux64.zip
-unzip chromedriver_linux64.zip
-rm -rf chromedriver_linux64.zip
+# Get latest Chrome Driver variable from LATEST_RELEASE file
+wget -N http://chromedriver.storage.googleapis.com/LATEST_RELEASE
+cat LATEST_RELEASE | while read line
+do
+ wget -N http://chromedriver.storage.googleapis.com/${line}/chromedriver_linux64.zip
+ unzip chromedriver_linux64.zip
+ rm -rf chromedriver_linux64.zip
+ rm LATEST_RELEASE
+done
 chmod 777 -R ~/selenium/
 cd
 #
@@ -201,6 +199,52 @@ default_nginx_conf_link="/etc/nginx/sites-enabled/default"
 # mysql variables
 mysql_root_user="root"
 mysql_root_password="root"
+#
+### Install PHP
+echo ${green}.................................................................................................${reset}
+echo ${green}.......................................... Installing PHP .......................................${reset}
+echo ${green}.................................................................................................${reset}
+echo -ne '\n' | add-apt-repository ppa:ondrej/php5-5.6
+apt-get update && apt-get upgrade -y
+apt-get install php5 -y
+apt-get install php5-fpm php5-mysql php5-cli php5-curl php5-gd php5-mcrypt php5-xdebug -y
+# php.ini error reporting configuring
+for ini in $(find /etc -name 'php.ini')
+do
+    sed -i 's/^error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT/error_reporting = E_ALL/' ${ini}
+    sed -i 's/^display_errors = Off/display_errors = On/' ${ini}
+    sed -i 's/^display_startup_errors = Off/display_startup_errors = On/' ${ini}
+    sed -i 's/^html_errors = Off/html_errors = On/' ${ini}
+    sed -i 's/^;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/' ${ini}
+    # Change configuration if you planing to load big files
+    sed -i 's/^post_max_size = 8M/post_max_size = 200M/' ${ini}
+    sed -i 's/^upload_max_filesize = 2M/upload_max_filesize = 200M/' ${ini}
+done
+# Set up xdebug variable
+xdebug=$(find / -name "xdebug.so" 2> /dev/null)
+sleep 120
+for ini in $(find /etc -name 'php.ini')
+do
+    echo 'zend_extension_ts=\"${xdebug}\"' >> ${ini}
+    echo 'xdebug.remote_autostart=1' >> ${ini}
+    echo 'xdebug.remote_enable=1' >> ${ini}
+    echo 'xdebug.remote_connect_back=1' >> ${ini}
+    echo 'xdebug.remote_port=9002' >> ${ini}
+    echo 'xdebug.idekey=PHP_STORM' >> ${ini}
+    echo 'xdebug.scream=0' >> ${ini}
+    echo 'xdebug.cli_color=1' >> ${ini}
+    echo 'xdebug.show_local_vars=1' >> ${ini}
+    echo ';var_dump display' >> ${ini}
+    echo 'xdebug.var_display_max_depth = 5' >> ${ini}
+    echo 'xdebug.var_display_max_children = 256' >> ${ini}
+    echo 'xdebug.var_display_max_data = 1024' >> ${ini}
+done
+# Change settings for unix socket
+sed -i 's/^listen =  127.0.0.1:9000/listen = \/var\/run\/php5-fpm.sock/' ${www_conf}
+# Create phpinfo() file
+cat > ${site_path}/info.php << EOF
+<?php phpinfo(); ?>
+EOF
 #
 ### Install nginx
 echo ${green}.................................................................................................${reset}
@@ -254,49 +298,6 @@ server {
 EOF
 # Add site name to /etc/hosts
 echo "127.0.0.1       ${server_name}" >> /etc/hosts
-#
-### Install PHP
-echo ${green}.................................................................................................${reset}
-echo ${green}.......................................... Installing PHP .......................................${reset}
-echo ${green}.................................................................................................${reset}
-apt-get install php5 php5-fpm php5-mysql php5-cli php5-curl php5-gd php5-mcrypt php5-xdebug -y
-# php.ini error reporting configuring
-for ini in $(find /etc -name 'php.ini')
-do
-    sed -i 's/^error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT/error_reporting = E_ALL/' ${ini}
-    sed -i 's/^display_errors = Off/display_errors = On/' ${ini}
-    sed -i 's/^display_startup_errors = Off/display_startup_errors = On/' ${ini}
-    sed -i 's/^html_errors = Off/html_errors = On/' ${ini}
-    sed -i 's/^;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/' ${ini}
-    # Change configuration if you planing to load big files
-    sed -i 's/^post_max_size = 8M/post_max_size = 200M/' ${ini}
-    sed -i 's/^upload_max_filesize = 2M/upload_max_filesize = 200M/' ${ini}
-done
-# Set up xdebug variable
-xdebug=$(find / -name "xdebug.so" 2> /dev/null)
-sleep 120
-for ini in $(find /etc -name 'php.ini')
-do
-    echo 'zend_extension_ts=\"${xdebug}\"' >> ${ini}
-    echo 'xdebug.remote_autostart=1' >> ${ini}
-    echo 'xdebug.remote_enable=1' >> ${ini}
-    echo 'xdebug.remote_connect_back=1' >> ${ini}
-    echo 'xdebug.remote_port=9002' >> ${ini}
-    echo 'xdebug.idekey=PHP_STORM' >> ${ini}
-    echo 'xdebug.scream=0' >> ${ini}
-    echo 'xdebug.cli_color=1' >> ${ini}
-    echo 'xdebug.show_local_vars=1' >> ${ini}
-    echo ';var_dump display' >> ${ini}
-    echo 'xdebug.var_display_max_depth = 5' >> ${ini}
-    echo 'xdebug.var_display_max_children = 256' >> ${ini}
-    echo 'xdebug.var_display_max_data = 1024' >> ${ini}
-done
-# Change settings for unix socket
-sed -i 's/^listen =  127.0.0.1:9000/listen = \/var\/run\/php5-fpm.sock/' ${www_conf}
-# Create phpinfo() file
-cat > ${site_path}/info.php << EOF
-<?php phpinfo(); ?>
-EOF
 # Restart services
 service mysql restart
 service nginx restart
@@ -341,13 +342,13 @@ apt-get update
 apt-get install dkms virtualbox-5.0 -y
 # Install Extension Pack for VirtualBox
 # You can check latest extension pack version here - https://www.virtualbox.org/wiki/Downloads
-ext_pack="Oracle_VM_VirtualBox_Extension_Pack-5.0.14.vbox-extpack"
-wget http://download.virtualbox.org/virtualbox/5.0.14/${ext_pack}
+ext_pack="Oracle_VM_VirtualBox_Extension_Pack-5.0.16.vbox-extpack"
+wget http://download.virtualbox.org/virtualbox/5.0.16/${ext_pack}
 echo ${root_pass} | VBoxManage extpack install ${ext_pack}
 rm -rf ${ext_pack}
 rm -rf virtualbox*.deb
 # Install Vagrant
-# Get deb,unpack it and remove after installing
+# Get deb, unpack it and remove after installing
 wget https://releases.hashicorp.com/vagrant/1.8.1/vagrant_1.8.1_x86_64.deb
 dpkg -i vagrant*.deb
 apt-get install vagrant -y
@@ -355,7 +356,22 @@ apt-get install -f -y
 rm -rf vagrant*.deb
 #
 ### Install SublimeText 3
-# Licence code here - https://gist.github.com/vertexclique/9839383
+# Just uncomment lines below between "—– BEGIN LICENSE —–" and "—— END LICENSE —"
+# or use some code from this gist — https://gist.github.com/wayou/3a2d7c1576340f1d3ac8
+###
+#—– BEGIN LICENSE —–
+#Michael Barnes
+#Single User License
+#EA7E-821385
+#8A353C41 872A0D5C DF9B2950 AFF6F667
+#C458EA6D 8EA3C286 98D1D650 131A97AB
+#AA919AEC EF20E143 B361B1E7 4C8B7F04
+#B085E65E 2F5F5360 8489D422 FB8FC1AA
+#93F6323C FD7F7544 3F39C318 D95E6480
+#FCCC7561 8A4A1741 68FA4223 ADCEDE07
+#200C25BE DBBC4855 C4CFB774 C5EC138C
+#0FEC1CEF D9DCECEC D3A5DAD1 01316C36
+#—— END LICENSE —
 echo ${green}.................................................................................................${reset}
 echo ${green}.................................... Installing SublimeText 3 ...................................${reset}
 echo ${green}.................................................................................................${reset}
@@ -370,7 +386,7 @@ echo ${green}............................. Installing and Configuring PHPStopm 1
 echo ${green}.................................................................................................${reset}
 wget http://download-cf.jetbrains.com/webide/PhpStorm-10.0.3.tar.gz
 tar -xvf PhpStorm-10.0.3.tar.gz
-# NOTE: For complete installation, you should execute two commands below from Terminal after finishing
+# IMPORTANT: For complete installation, you should execute two commands below from Terminal after finishing this script
 #cd PhpStorm-*/bin/
 #./phpstorm.sh || TRUE
 # Install HipChat https://www.hipchat.com/
