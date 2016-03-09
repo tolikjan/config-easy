@@ -2,16 +2,12 @@
 
 # This script will be helpful after reinstalling you operating system
 # Tested on Ubuntu 14.04.3 64x
-
 # Password for root user for ubuntu box
 # http://sourceforge.net/projects/osboxes/files/vms/vbox/Ubuntu/14.04/14.04.3/Ubuntu_14.04.3-64bit.7z/download
 root_pass="osboxes.org"
-
 # coloured variables
-red=`tput setaf 1`
-green=`tput setaf 2`
 reset=`tput sgr0`
-
+green=`tput setaf 2`
 #
 ### Update & Upgrade system
 sleep 5
@@ -63,7 +59,7 @@ apt-get install flashplugin-installer -y
 #
 ### Install Tweak Tools for Ubuntu additional settings
 #echo ${green}.................................................................................................${reset}
-#echo ${green}.................................... Installing Tweak Tools .....................................${reset}
+#echo ${green}.................................... Installing Tweak Tool ......................................${reset}
 #echo ${green}.................................................................................................${reset}
 #apt-get install unity-tweak-tool
 #
@@ -73,11 +69,6 @@ echo ${green}.................................... Installing 7z and Unrar ......
 echo ${green}.................................................................................................${reset}
 apt-get install p7zip-full -y
 apt-get install unrar -y
-#
-### Install Tweak Tools for Ubuntu additional settings
-echo ${green}.................................................................................................${reset}
-echo ${green}.................................... Installing Tweak Tools .....................................${reset}
-echo ${green}.................................................................................................${reset}
 #
 ### Install Skype http://www.skype.com/
 echo ${green}.................................................................................................${reset}
@@ -147,11 +138,13 @@ echo ${green}...................................................................
 echo ${green}.................................... Installing Codesniffer .....................................${reset}
 echo ${green}.................................................................................................${reset}
 #
-### Install codesniffer for phpStorm
-# TODO: Check the codesniffer instalation
-#composer global require drupal/coder
-#export PATH="$PATH:$HOME/.composer/vendor/bin"
-#phpcs --config-set installed_paths ~/.composer/vendor/drupal/coder/coder_sniffer
+### Install code sniffer for phpStorm
+# https://www.drupal.org/node/1419988
+# TODO: Check the code sniffer installation
+composer global require drupal/coder
+composer global update drupal/coder --prefer-source
+export PATH="$PATH:$HOME/.composer/vendor/bin"
+phpcs --config-set installed_paths ~/.composer/vendor/drupal/coder/coder_sniffer
 #
 ### Install Selenium Server http://www.seleniumhq.org/
 echo ${green}.................................................................................................${reset}
@@ -171,9 +164,15 @@ apt-get install openjdk-7-jre-headless -y
 #apt-get install xvfb -y
 # Starting up Selenium server
 #DISPLAY=:1 xvfb-run java -jar ~/selenium/selenium-server-standalone-2.52.0.jar
-wget -N http://chromedriver.storage.googleapis.com/2.21/chromedriver_linux64.zip
-unzip chromedriver_linux64.zip
-rm -rf chromedriver_linux64.zip
+# Get latest Chrome Driver variable from LATEST_RELEASE file
+wget -N http://chromedriver.storage.googleapis.com/LATEST_RELEASE
+cat LATEST_RELEASE | while read line
+do
+ wget -N http://chromedriver.storage.googleapis.com/${line}/chromedriver_linux64.zip
+ unzip chromedriver_linux64.zip
+ rm -rf chromedriver_linux64.zip
+ rm LATEST_RELEASE
+done
 chmod 777 -R ~/selenium/
 cd
 #
@@ -343,13 +342,13 @@ apt-get update
 apt-get install dkms virtualbox-5.0 -y
 # Install Extension Pack for VirtualBox
 # You can check latest extension pack version here - https://www.virtualbox.org/wiki/Downloads
-ext_pack="Oracle_VM_VirtualBox_Extension_Pack-5.0.14.vbox-extpack"
-wget http://download.virtualbox.org/virtualbox/5.0.14/${ext_pack}
+ext_pack="Oracle_VM_VirtualBox_Extension_Pack-5.0.16.vbox-extpack"
+wget http://download.virtualbox.org/virtualbox/5.0.16/${ext_pack}
 echo ${root_pass} | VBoxManage extpack install ${ext_pack}
 rm -rf ${ext_pack}
 rm -rf virtualbox*.deb
 # Install Vagrant
-# Get deb,unpack it and remove after installing
+# Get deb, unpack it and remove after installing
 wget https://releases.hashicorp.com/vagrant/1.8.1/vagrant_1.8.1_x86_64.deb
 dpkg -i vagrant*.deb
 apt-get install vagrant -y
@@ -357,7 +356,22 @@ apt-get install -f -y
 rm -rf vagrant*.deb
 #
 ### Install SublimeText 3
-# Licence code here - https://gist.github.com/vertexclique/9839383
+# Just uncomment lines below between "—– BEGIN LICENSE —–" and "—— END LICENSE —"
+# or use some code from this gist — https://gist.github.com/wayou/3a2d7c1576340f1d3ac8
+###
+#—– BEGIN LICENSE —–
+#Michael Barnes
+#Single User License
+#EA7E-821385
+#8A353C41 872A0D5C DF9B2950 AFF6F667
+#C458EA6D 8EA3C286 98D1D650 131A97AB
+#AA919AEC EF20E143 B361B1E7 4C8B7F04
+#B085E65E 2F5F5360 8489D422 FB8FC1AA
+#93F6323C FD7F7544 3F39C318 D95E6480
+#FCCC7561 8A4A1741 68FA4223 ADCEDE07
+#200C25BE DBBC4855 C4CFB774 C5EC138C
+#0FEC1CEF D9DCECEC D3A5DAD1 01316C36
+#—— END LICENSE —
 echo ${green}.................................................................................................${reset}
 echo ${green}.................................... Installing SublimeText 3 ...................................${reset}
 echo ${green}.................................................................................................${reset}
@@ -372,7 +386,7 @@ echo ${green}............................. Installing and Configuring PHPStopm 1
 echo ${green}.................................................................................................${reset}
 wget http://download-cf.jetbrains.com/webide/PhpStorm-10.0.3.tar.gz
 tar -xvf PhpStorm-10.0.3.tar.gz
-# NOTE: For complete installation, you should execute two commands below from Terminal after finishing
+# IMPORTANT: For complete installation, you should execute two commands below from Terminal after finishing this script
 #cd PhpStorm-*/bin/
 #./phpstorm.sh || TRUE
 # Install HipChat https://www.hipchat.com/
