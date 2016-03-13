@@ -2,9 +2,13 @@
 
 # This script will be helpful after reinstalling you operating system
 # Tested on Ubuntu 14.04.3 64x
-# Password for root user for ubuntu box
+#
+# For testing I used vagrant-box
 # http://sourceforge.net/projects/osboxes/files/vms/vbox/Ubuntu/14.04/14.04.3/Ubuntu_14.04.3-64bit.7z/download
 ROOT_PASS="osboxes.org"
+#
+# type your own password below which should be correct for you system
+#ROOT_PASS=""
 # coloured variables
 RESET=`tput sgr0`
 GREEN=`tput setaf 2`
