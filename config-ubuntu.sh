@@ -4,16 +4,16 @@
 # Tested on Ubuntu 14.04.3 64x
 # Password for root user for ubuntu box
 # http://sourceforge.net/projects/osboxes/files/vms/vbox/Ubuntu/14.04/14.04.3/Ubuntu_14.04.3-64bit.7z/download
-root_pass="osboxes.org"
+ROOT_PASS="osboxes.org"
 # coloured variables
-reset=`tput sgr0`
-green=`tput setaf 2`
+RESET=`tput sgr0`
+GREEN=`tput setaf 2`
 #
 ### Update & Upgrade system
 sleep 5
-echo ${green}.................................................................................................${reset}
-echo ${green}................................. Update and Upgrade the system .................................${reset}
-echo ${green}.................................................................................................${reset}
+echo ${GREEN}.................................................................................................${RESET}
+echo ${GREEN}................................. Update and Upgrade the system .................................${RESET}
+echo ${GREEN}.................................................................................................${RESET}
 apt-get update && apt-get upgrade -y
 # disable guest session
 echo "allow-guest=false" >> /usr/share/lightdm/lightdm.conf.d/50-ubuntu.conf
@@ -22,9 +22,9 @@ echo "allow-guest=false" >> /usr/share/lightdm/lightdm.conf.d/50-ubuntu.conf
 echo "vm.swappiness=10" >> /etc/sysctl.conf
 #
 ### Install Google Chrome https://www.google.com/chrome/
-echo ${green}.................................................................................................${reset}
-echo ${green}................................... Installing Google Chrome ....................................${reset}
-echo ${green}.................................................................................................${reset}
+echo ${GREEN}.................................................................................................${RESET}
+echo ${GREEN}................................... Installing Google Chrome ....................................${RESET}
+echo ${GREEN}.................................................................................................${RESET}
 # Get deb, unpack it and remove after installing
 wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
 dpkg -i ./google-chrome*.deb
@@ -32,48 +32,48 @@ apt-get install -f -y
 rm -rf google-chrome*.deb
 #
 ### Install xclip (for copy files via terminal)
-echo ${green}.................................................................................................${reset}
-echo ${green}........................................ Installing xclip .......................................${reset}
-echo ${green}.................................................................................................${reset}
+echo ${GREEN}.................................................................................................${RESET}
+echo ${GREEN}........................................ Installing xclip .......................................${RESET}
+echo ${GREEN}.................................................................................................${RESET}
 apt-get install xclip -y
 # Example for copy the contents of the id_rsa.pub file to your clipboard with command below
 #xclip -sel clip < ~/.ssh/id_rsa.pub
 #
 ### Install ccsm http://wiki.compiz.org/CCSM http://help.ubuntu.ru/wiki/ccsm
-echo ${green}.................................................................................................${reset}
-echo ${green}........................................ Installing ccsm ........................................${reset}
-echo ${green}.................................................................................................${reset}
+echo ${GREEN}.................................................................................................${RESET}
+echo ${GREEN}........................................ Installing ccsm ........................................${RESET}
+echo ${GREEN}.................................................................................................${RESET}
 apt-get install compizconfig-settings-manager -y
 #
 ### Install gparted http://gparted.org/
-echo ${green}.................................................................................................${reset}
-echo ${green}...................................... Installing gparted .......................................${reset}
-echo ${green}.................................................................................................${reset}
+echo ${GREEN}.................................................................................................${RESET}
+echo ${GREEN}...................................... Installing gparted .......................................${RESET}
+echo ${GREEN}.................................................................................................${RESET}
 apt-get install gparted -y
 #
 ### Install Flash player for Firefox
-echo ${green}.................................................................................................${reset}
-echo ${green}.............................. Installing Flash player for Firefox ..............................${reset}
-echo ${green}.................................................................................................${reset}
+echo ${GREEN}.................................................................................................${RESET}
+echo ${GREEN}.............................. Installing Flash player for Firefox ..............................${RESET}
+echo ${GREEN}.................................................................................................${RESET}
 apt-get install flashplugin-installer -y
 #
 ### Install Tweak Tools for Ubuntu additional settings
-#echo ${green}.................................................................................................${reset}
-#echo ${green}.................................... Installing Tweak Tool ......................................${reset}
-#echo ${green}.................................................................................................${reset}
+#echo ${GREEN}.................................................................................................${RESET}
+#echo ${GREEN}.................................... Installing Tweak Tool ......................................${RESET}
+#echo ${GREEN}.................................................................................................${RESET}
 #apt-get install unity-tweak-tool
 #
 ### Install utilities for archive manager with 7z and rar support
-echo ${green}.................................................................................................${reset}
-echo ${green}.................................... Installing 7z and Unrar ....................................${reset}
-echo ${green}.................................................................................................${reset}
+echo ${GREEN}.................................................................................................${RESET}
+echo ${GREEN}.................................... Installing 7z and Unrar ....................................${RESET}
+echo ${GREEN}.................................................................................................${RESET}
 apt-get install p7zip-full -y
 apt-get install unrar -y
 #
 ### Install Skype http://www.skype.com/
-echo ${green}.................................................................................................${reset}
-echo ${green}........................................ Installing Skype .......................................${reset}
-echo ${green}.................................................................................................${reset}
+echo ${GREEN}.................................................................................................${RESET}
+echo ${GREEN}........................................ Installing Skype .......................................${RESET}
+echo ${GREEN}.................................................................................................${RESET}
 # Install dependencies for Skype
 apt-get install -y sni-qt:i386 libdbusmenu-qt2:i386 libqt4-dbus:i386 libxss1:i386
 apt-get install -y libgtk2.0-0:i386 gtk2-engines:i386 libgconf-2-4:i386
@@ -85,32 +85,32 @@ apt-get install skype -y
 apt-get install libasound2-plugins:i386 -y
 #
 ### Install Tor Browser https://www.torproject.org/
-echo ${green}.................................................................................................${reset}
-echo ${green}.................................... Installing Tor Browser .....................................${reset}
-echo ${green}.................................................................................................${reset}
+echo ${GREEN}.................................................................................................${RESET}
+echo ${GREEN}.................................... Installing Tor Browser .....................................${RESET}
+echo ${GREEN}.................................................................................................${RESET}
 echo -ne '\n' | add-apt-repository ppa:webupd8team/tor-browser
 apt-get update
 apt-get install tor-browser -y
 #
 ### Install Telegram messenger https://telegram.org/
-echo ${green}.................................................................................................${reset}
-echo ${green}...................................... Installing Telegram ......................................${reset}
-echo ${green}.................................................................................................${reset}
+echo ${GREEN}.................................................................................................${RESET}
+echo ${GREEN}...................................... Installing Telegram ......................................${RESET}
+echo ${GREEN}.................................................................................................${RESET}
 echo -ne '\n' | add-apt-repository ppa:atareao/telegram
 apt-get update
 apt-get install telegram -y
 #
 ### Install Shutter http://shutter-project.org/
-echo ${green}.................................................................................................${reset}
-echo ${green}...................................... Installing Shutter .......................................${reset}
-echo ${green}.................................................................................................${reset}
+echo ${GREEN}.................................................................................................${RESET}
+echo ${GREEN}...................................... Installing Shutter .......................................${RESET}
+echo ${GREEN}.................................................................................................${RESET}
 echo -ne '\n' | add-apt-repository ppa:shutter/ppa
 apt-get install shutter -y
 #
 ### Install SSH
-echo ${green}.................................................................................................${reset}
-echo ${green}..................................... Installing SSH Server .....................................${reset}
-echo ${green}.................................................................................................${reset}
+echo ${GREEN}.................................................................................................${RESET}
+echo ${GREEN}..................................... Installing SSH Server .....................................${RESET}
+echo ${GREEN}.................................................................................................${RESET}
 apt-get update
 apt-get install openssh-client -y
 apt-get install openssh-server -y
@@ -118,25 +118,25 @@ mkdir ~/.ssh
 chmod 777 -R ~/.ssh/
 #
 ### Install Git
-echo ${green}.................................................................................................${reset}
-echo ${green}......................................... Installing Git ........................................${reset}
-echo ${green}.................................................................................................${reset}
+echo ${GREEN}.................................................................................................${RESET}
+echo ${GREEN}......................................... Installing Git ........................................${RESET}
+echo ${GREEN}.................................................................................................${RESET}
 apt-get update
 apt-get install git -y
 apt-get install tig -y
 #
 ### Install Composer
-echo ${green}.................................................................................................${reset}
-echo ${green}...................................... Installing Composer ......................................${reset}
-echo ${green}.................................................................................................${reset}
+echo ${GREEN}.................................................................................................${RESET}
+echo ${GREEN}...................................... Installing Composer ......................................${RESET}
+echo ${GREEN}.................................................................................................${RESET}
 apt-get update
 apt-get install php5-curl -y
 apt-get install curl php5-cli git -y
 curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 chmod 777 -R ~/.composer/
-echo ${green}.................................................................................................${reset}
-echo ${green}.................................... Installing Codesniffer .....................................${reset}
-echo ${green}.................................................................................................${reset}
+echo ${GREEN}.................................................................................................${RESET}
+echo ${GREEN}.................................... Installing Codesniffer .....................................${RESET}
+echo ${GREEN}.................................................................................................${RESET}
 #
 ### Install code sniffer for phpStorm
 # https://www.drupal.org/node/1419988
@@ -147,9 +147,9 @@ export PATH="$PATH:$HOME/.composer/vendor/bin"
 phpcs --config-set installed_paths ~/.composer/vendor/drupal/coder/coder_sniffer
 #
 ### Install Selenium Server http://www.seleniumhq.org/
-echo ${green}.................................................................................................${reset}
-echo ${green}.................................. Installing Selenium Server ...................................${reset}
-echo ${green}.................................................................................................${reset}
+echo ${GREEN}.................................................................................................${RESET}
+echo ${GREEN}.................................. Installing Selenium Server ...................................${RESET}
+echo ${GREEN}.................................................................................................${RESET}
 echo -ne '\n' | add-apt-repository ppa:webupd8team/java
 apt-get update
 # Create folder for Selenium
@@ -177,9 +177,9 @@ chmod 777 -R ~/selenium/
 cd
 #
 ### Install LEMP (nginx + MySQL + PHPMyAdmin) and configure it
-echo ${green}.................................................................................................${reset}
-echo ${green}.............. Installing and Configuring LEMP: Linux + nginx + MySQL + phpmyadmin ..............${reset}
-echo ${green}.................................................................................................${reset}
+echo ${GREEN}.................................................................................................${RESET}
+echo ${GREEN}.............. Installing and Configuring LEMP: Linux + nginx + MySQL + phpmyadmin ..............${RESET}
+echo ${GREEN}.................................................................................................${RESET}
 # Uninstall/Clear possible extra programs
 apt-get purge -y apache2* php5* mysql*
 dpkg -l | grep apache*
@@ -187,82 +187,82 @@ dpkg -l | grep php5*
 dpkg -l | grep mysql*
 # Set up variables
 # site folder path
-site_path="/usr/share/nginx/html"
-server_name="local.com"
+SITE_PATH="/usr/share/nginx/html"
+SERVER_NAME="local.com"
 # www config
-www_conf="/etc/php5/fpm/pool.d/www.conf"
+WWW_CONF="/etc/php5/fpm/pool.d/www.conf"
 # nginx config
-nginx_conf="/etc/nginx/nginx.conf"
+NGINX_CONF="/etc/nginx/nginx.conf"
 # default nginx config
-default_nginx_conf="/etc/nginx/sites-available/default"
-default_nginx_conf_link="/etc/nginx/sites-enabled/default"
+DEFAULT_NGINX_CONF="/etc/nginx/sites-available/default"
+DEFAULT_NGINX_CONF_LINK="/etc/nginx/sites-enabled/default"
 # mysql variables
-mysql_root_user="root"
-mysql_root_password="root"
+MYSQL_ROOT_USER="root"
+MYSQL_ROOT_PASS="root"
 #
 ### Install PHP
-echo ${green}.................................................................................................${reset}
-echo ${green}.......................................... Installing PHP .......................................${reset}
-echo ${green}.................................................................................................${reset}
+echo ${GREEN}.................................................................................................${RESET}
+echo ${GREEN}.......................................... Installing PHP .......................................${RESET}
+echo ${GREEN}.................................................................................................${RESET}
 echo -ne '\n' | add-apt-repository ppa:ondrej/php5-5.6
 apt-get update && apt-get upgrade -y
 apt-get install php5 -y
 apt-get install php5-fpm php5-mysql php5-cli php5-curl php5-gd php5-mcrypt php5-xdebug -y
 # php.ini error reporting configuring
-for ini in $(find /etc -name 'php.ini')
+for INI in $(find /etc -name 'php.ini')
 do
-    sed -i 's/^error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT/error_reporting = E_ALL/' ${ini}
-    sed -i 's/^display_errors = Off/display_errors = On/' ${ini}
-    sed -i 's/^display_startup_errors = Off/display_startup_errors = On/' ${ini}
-    sed -i 's/^html_errors = Off/html_errors = On/' ${ini}
-    sed -i 's/^;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/' ${ini}
+    sed -i 's/^error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT/error_reporting = E_ALL/' ${INI}
+    sed -i 's/^display_errors = Off/display_errors = On/' ${INI}
+    sed -i 's/^display_startup_errors = Off/display_startup_errors = On/' ${INI}
+    sed -i 's/^html_errors = Off/html_errors = On/' ${INI}
+    sed -i 's/^;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/' ${INI}
     # Change configuration if you planing to load big files
-    sed -i 's/^post_max_size = 8M/post_max_size = 200M/' ${ini}
-    sed -i 's/^upload_max_filesize = 2M/upload_max_filesize = 200M/' ${ini}
+    sed -i 's/^post_max_size = 8M/post_max_size = 200M/' ${INI}
+    sed -i 's/^upload_max_filesize = 2M/upload_max_filesize = 200M/' ${INI}
 done
 # Set up xdebug variable
-xdebug=$(find / -name "xdebug.so" 2> /dev/null)
-sleep 120
-for ini in $(find /etc -name 'php.ini')
+XDEBUG="$(find / -name "xdebug.so" 2> /dev/null)"
+sleep 10
+for INI in $(find /etc -name 'php.ini')
 do
-    echo 'zend_extension_ts=\"${xdebug}\"' >> ${ini}
-    echo 'xdebug.remote_autostart=1' >> ${ini}
-    echo 'xdebug.remote_enable=1' >> ${ini}
-    echo 'xdebug.remote_connect_back=1' >> ${ini}
-    echo 'xdebug.remote_port=9002' >> ${ini}
-    echo 'xdebug.idekey=PHP_STORM' >> ${ini}
-    echo 'xdebug.scream=0' >> ${ini}
-    echo 'xdebug.cli_color=1' >> ${ini}
-    echo 'xdebug.show_local_vars=1' >> ${ini}
-    echo ';var_dump display' >> ${ini}
-    echo 'xdebug.var_display_max_depth = 5' >> ${ini}
-    echo 'xdebug.var_display_max_children = 256' >> ${ini}
-    echo 'xdebug.var_display_max_data = 1024' >> ${ini}
+    echo "zend_extension_ts=\"${XDEBUG}\"" >> ${INI}
+    echo "xdebug.remote_autostart=1" >> ${INI}
+    echo "xdebug.remote_enable=1" >> ${INI}
+    echo "xdebug.remote_connect_back=1" >> ${INI}
+    echo "xdebug.remote_port=9002" >> ${INI}
+    echo "xdebug.idekey=PHP_STORM" >> ${INI}
+    echo "xdebug.scream=0" >> ${INI}
+    echo "xdebug.cli_color=1" >> ${INI}
+    echo "xdebug.show_local_vars=1" >> ${INI}
+    echo ";var_dump display" >> ${INI}
+    echo "xdebug.var_display_max_depth = 5" >> ${INI}
+    echo "xdebug.var_display_max_children = 256" >> ${INI}
+    echo "xdebug.var_display_max_data = 1024" >> ${INI}
 done
 # Change settings for unix socket
-sed -i 's/^listen =  127.0.0.1:9000/listen = \/var\/run\/php5-fpm.sock/' ${www_conf}
+sed -i 's/^listen =  127.0.0.1:9000/listen = \/var\/run\/php5-fpm.sock/' ${WWW_CONF}
 # Create phpinfo() file
-cat > ${site_path}/info.php << EOF
+cat > ${SITE_PATH}/info.php << EOF
 <?php phpinfo(); ?>
 EOF
 #
 ### Install nginx
-echo ${green}.................................................................................................${reset}
-echo ${green}.......................................... Installing Nginx .....................................${reset}
-echo ${green}.................................................................................................${reset}
+echo ${GREEN}.................................................................................................${RESET}
+echo ${GREEN}.......................................... Installing Nginx .....................................${RESET}
+echo ${GREEN}.................................................................................................${RESET}
 echo -ne '\n' | add-apt-repository ppa:nginx/stable
 apt-get update
 apt-get upgrade -y
 apt-get install nginx -y
 service nginx stop
 # Backup default settings for nginx.conf
-cp ${nginx_conf} ${nginx_conf}.backup
+cp ${NGINX_CONF} ${NGINX_CONF}.backup
 # Configure nginx.conf
-sed -i 's/^worker_processes 4;/worker_processes 1;/' ${nginx_conf}
+sed -i 's/^worker_processes 4;/worker_processes 1;/' ${NGINX_CONF}
 # Backup default settings for nginx
-cp ${default_nginx_conf} ${default_nginx_conf}.backup
+cp ${DEFAULT_NGINX_CONF} ${DEFAULT_NGINX_CONF}.backup
 # Configure nginx for http://localhost/
-cat > ${default_nginx_conf} << EOF
+cat > ${DEFAULT_NGINX_CONF} << EOF
 server {
     listen   80; ## listen for ipv4; this line is default and implied
     listen   [::]:80 default_server ipv6only=on; ## listen for ipv6
@@ -270,7 +270,7 @@ server {
     root /usr/share/nginx/html;
     index index.php index.html index.htm;
 
-    server_name ${server_name};
+    SERVER_NAME ${SERVER_NAME};
 
     location / {
         try_files \$uri \$uri/ /index.php;
@@ -297,24 +297,24 @@ server {
 }
 EOF
 # Add site name to /etc/hosts
-echo "127.0.0.1       ${server_name}" >> /etc/hosts
+echo "127.0.0.1       ${SERVER_NAME}" >> /etc/hosts
 # Restart services
 service mysql restart
 service nginx restart
 service php5-fpm restart
 #
 ### Install mysql-server and phpmyadmin
-echo ${green}.................................................................................................${reset}
-echo ${green}................................. Installing MySQL & phpmyadmin .................................${reset}
-echo ${green}.................................................................................................${reset}
+echo ${GREEN}.................................................................................................${RESET}
+echo ${GREEN}................................. Installing MySQL & phpmyadmin .................................${RESET}
+echo ${GREEN}.................................................................................................${RESET}
 apt-get update
 echo -ne '\n' | add-apt-repository ppa:nijel/phpmyadmin
-echo "mysql-server mysql-server/root_password password $mysql_root_password" | debconf-set-selections
-echo "mysql-server mysql-server/root_password_again password $mysql_root_password" | debconf-set-selections
+echo "mysql-server mysql-server/root_password password $MYSQL_ROOT_PASS" | debconf-set-selections
+echo "mysql-server mysql-server/root_password_again password $MYSQL_ROOT_PASS" | debconf-set-selections
 echo "phpmyadmin phpmyadmin/dbconfig-install boolean true" | debconf-set-selections
-echo "phpmyadmin phpmyadmin/app-password-confirm password $mysql_root_password" | debconf-set-selections
-echo "phpmyadmin phpmyadmin/mysql/admin-pass password $mysql_root_password" | debconf-set-selections
-echo "phpmyadmin phpmyadmin/mysql/app-pass password $mysql_root_password" | debconf-set-selections
+echo "phpmyadmin phpmyadmin/app-password-confirm password $MYSQL_ROOT_PASS" | debconf-set-selections
+echo "phpmyadmin phpmyadmin/mysql/admin-pass password $MYSQL_ROOT_PASS" | debconf-set-selections
+echo "phpmyadmin phpmyadmin/mysql/app-pass password $MYSQL_ROOT_PASS" | debconf-set-selections
 echo "phpmyadmin phpmyadmin/reconfigure-webserver multiselect none" | debconf-set-selections
 apt-get install mysql-server php5-mysql phpmyadmin -y
 ln -s /usr/share/phpmyadmin /usr/share/nginx/html
@@ -323,9 +323,9 @@ php5enmod mcrypt
 service php5-fpm restart
 #
 ### Install VirtualBox and Vagrant
-echo ${green}.................................................................................................${reset}
-echo ${green}............................... Installing VirtualBox and Vagrant ...............................${reset}
-echo ${green}.................................................................................................${reset}
+echo ${GREEN}.................................................................................................${RESET}
+echo ${GREEN}............................... Installing VirtualBox and Vagrant ...............................${RESET}
+echo ${GREEN}.................................................................................................${RESET}
 # IMPORTANT! Before using VirtualBox, make sure that virtualization is enabled in your BIOS settings
 # IMPORTANT! Make sure that VirtualBox not running right now
 # Uninstall VirtualBox if it was installed previously
@@ -342,10 +342,10 @@ apt-get update
 apt-get install dkms virtualbox-5.0 -y
 # Install Extension Pack for VirtualBox
 # You can check latest extension pack version here - https://www.virtualbox.org/wiki/Downloads
-ext_pack="Oracle_VM_VirtualBox_Extension_Pack-5.0.16.vbox-extpack"
-wget http://download.virtualbox.org/virtualbox/5.0.16/${ext_pack}
-echo ${root_pass} | VBoxManage extpack install ${ext_pack}
-rm -rf ${ext_pack}
+EXT_PACK="Oracle_VM_VirtualBox_Extension_Pack-5.0.16.vbox-extpack"
+wget http://download.virtualbox.org/virtualbox/5.0.16/${EXT_PACK}
+echo ${ROOT_PASS} | VBoxManage extpack install ${EXT_PACK}
+rm -rf ${EXT_PACK}
 rm -rf virtualbox*.deb
 # Install Vagrant
 # Get deb, unpack it and remove after installing
@@ -372,33 +372,33 @@ rm -rf vagrant*.deb
 #200C25BE DBBC4855 C4CFB774 C5EC138C
 #0FEC1CEF D9DCECEC D3A5DAD1 01316C36
 #—— END LICENSE —
-echo ${green}.................................................................................................${reset}
-echo ${green}.................................... Installing SublimeText 3 ...................................${reset}
-echo ${green}.................................................................................................${reset}
+echo ${GREEN}.................................................................................................${RESET}
+echo ${GREEN}.................................... Installing SublimeText 3 ...................................${RESET}
+echo ${GREEN}.................................................................................................${RESET}
 echo -ne '\n' | add-apt-repository ppa:webupd8team/sublime-text-3
 apt-get update
 apt-get install sublime-text-installer -y
 #
 ### Install PhpStorm 10 https://www.jetbrains.com/phpstorm/download/
 # Licence code here - https://бэкдор.рф/phpstorm-7-8-9-10-product-key/
-echo ${green}.................................................................................................${reset}
-echo ${green}............................. Installing and Configuring PHPStopm 10 ............................${reset}
-echo ${green}.................................................................................................${reset}
+echo ${GREEN}.................................................................................................${RESET}
+echo ${GREEN}............................. Installing and Configuring PHPStopm 10 ............................${RESET}
+echo ${GREEN}.................................................................................................${RESET}
 wget http://download-cf.jetbrains.com/webide/PhpStorm-10.0.3.tar.gz
 tar -xvf PhpStorm-10.0.3.tar.gz
 # IMPORTANT: For complete installation, you should execute two commands below from Terminal after finishing this script
 #cd PhpStorm-*/bin/
 #./phpstorm.sh || TRUE
 # Install HipChat https://www.hipchat.com/
-echo ${green}.................................................................................................${reset}
-echo ${green}...................................... Installing HipChat .......................................${reset}
-echo ${green}.................................................................................................${reset}
+echo ${GREEN}.................................................................................................${RESET}
+echo ${GREEN}...................................... Installing HipChat .......................................${RESET}
+echo ${GREEN}.................................................................................................${RESET}
 echo osboxes.org | sudo su
 echo "deb http://downloads.hipchat.com/linux/apt stable main" > /etc/apt/sources.list.d/atlassian-hipchat.list
 wget -O - https://www.hipchat.com/keys/hipchat-linux.key | apt-key add -
 apt-get update
 apt-get install hipchat
 #exit
-echo ${green}.................................................................................................${reset}
-echo ${green}............................................. DONE ..............................................${reset}
-echo ${green}.................................................................................................${reset}
+echo ${GREEN}.................................................................................................${RESET}
+echo ${GREEN}............................................. DONE ..............................................${RESET}
+echo ${GREEN}.................................................................................................${RESET}
