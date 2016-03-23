@@ -3,7 +3,7 @@
 You could use following shell script for auto installation all needed 
 programs after OS reinstall.
 You could choose which programs your want to install. Choice mode 
-will be running after update & upgrade of your OS (approximately 5 min).
+will be running after update & upgrade of your OS (approximately 10 min).
  
 Please, do not chose "LEMP" and "LAMP" options in the same time!
 
