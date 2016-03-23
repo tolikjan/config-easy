@@ -12,20 +12,10 @@ ROOT_PASS="osboxes.org"
 # coloured variables
 RESET=`tput sgr0`
 GREEN=`tput setaf 2`
-#
-### Update & Upgrade system
-sleep 5
-echo ${GREEN}.................................................................................................${RESET}
-echo ${GREEN}................................. Update and Upgrade the system .................................${RESET}
-echo ${GREEN}.................................................................................................${RESET}
-apt-get update && apt-get upgrade -y
-# disable guest session
-echo "allow-guest=false" >> /usr/share/lightdm/lightdm.conf.d/50-ubuntu.conf
-# configure system to allow more performance
-# "vm.swappiness=10" — means that you system will use swap when you RAM will be full for 90%
-echo "vm.swappiness=10" >> /etc/sysctl.conf
 
+# List of tools where your can choose all preferred programs
 whiptail --title "Config Ubuntu Script" --checklist --separate-output "Use <Space> to choose tools which you want to install:" 30 58 23 \
+"UpdateUpgrade" "" on \
 "GoogleChromeBrowser" "" on \
 "xclip" "" off \
 "CCSM" "" off \
@@ -53,6 +43,20 @@ whiptail --title "Config Ubuntu Script" --checklist --separate-output "Use <Spac
 while read CHOICE
 do
 	case $CHOICE in
+		UpdateUpgrade)
+#
+### Update & Upgrade system
+sleep 5
+echo ${GREEN}.................................................................................................${RESET}
+echo ${GREEN}................................. Update and Upgrade the system .................................${RESET}
+echo ${GREEN}.................................................................................................${RESET}
+apt-get update && apt-get upgrade -y
+# disable guest session
+echo "allow-guest=false" >> /usr/share/lightdm/lightdm.conf.d/50-ubuntu.conf
+# configure system to allow more performance
+# "vm.swappiness=10" — means that you system will use swap when you RAM will be full for 90%
+echo "vm.swappiness=10" >> /etc/sysctl.conf
+		;;
 		GoogleChromeBrowser)
 #
 ### Install Google Chrome https://www.google.com/chrome/
