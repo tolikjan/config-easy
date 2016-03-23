@@ -15,31 +15,31 @@ GREEN=`tput setaf 2`
 
 # List of tools where your can choose all preferred programs
 whiptail --title "Config Ubuntu Script" --checklist --separate-output "Use <Space> to choose tools which you want to install:" 30 58 23 \
-"UpdateUpgrade" "" on \
-"GoogleChromeBrowser" "" on \
-"xclip" "" off \
-"CCSM" "" off \
-"Gparted" "" off \
-"FireFoxFlashPlayer" "" on \
-"TweakTool" "" off \
-"7zandUnrar" "" on \
-"Skype" "" on \
-"TorBrowser" "" on \
-"Telegram" "" on \
-"Shutter" "" on \
-"SSHServer" "" on \
-"Git" "" on \
-"Composer" "" on \
-"Codesniffer" "" off \
-"SeleniumServer" "" on \
-"LEMP" "" on \
-"LAMP" "" off \
-"VirtualBox" "" on \
-"Vagrant" "" on \
-"Docker" "" off \
-"SublimeText3" "" on \
-"PHPStopm10" "" on \
-"HipChat" "" on 2>results
+updUpg "UpdateUpgrade" "" on \
+chrome "GoogleChromeBrowser" "" on \
+xclip "xclip" "" off \
+ccsm "CCSM" "" off \
+gparted "Gparted" "" off \
+flashPlayer "FireFoxFlashPlayer" "" on \
+tweakTool "TweakTool" "" off \
+7zandUnrar "7zandUnrar" "" on \
+skype "Skype" "" on \
+torBrowser "TorBrowser" "" on \
+telegram "Telegram" "" on \
+shutter "Shutter" "" on \
+serverSsh "SSHServer" "" on \
+git "Git" "" on \
+composer "Composer" "" on \
+codesniffer "Codesniffer" "" off \
+selenium "SeleniumServer" "" on \
+lemp "LEMP" "" on \
+lamp "LAMP" "" off \
+virtualBox "VirtualBox" "" on \
+vagrant "Vagrant" "" on \
+docker "Docker" "" off \
+sublime "SublimeText3" "" on \
+phpStorm10 "PHPStopm10" "" on \
+hipChat "HipChat" "" on 2>results
 
 while read CHOICE
 do
