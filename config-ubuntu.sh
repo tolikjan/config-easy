@@ -15,7 +15,7 @@ GREEN=`tput setaf 2`
 
 
 ### Functions
-function updUpg() {
+updUpg() {
 ### Update & Upgrade system
 sleep 5
 echo ${GREEN}.................................................................................................${RESET}
@@ -28,7 +28,7 @@ echo "allow-guest=false" >> /usr/share/lightdm/lightdm.conf.d/50-ubuntu.conf
 # "vm.swappiness=10" — means that you system will use swap when you RAM will be full for 90%
 echo "vm.swappiness=10" >> /etc/sysctl.conf
 }
-function chrome() {
+chrome() {
 ### Install Google Chrome https://www.google.com/chrome/
 echo ${GREEN}.................................................................................................${RESET}
 echo ${GREEN}................................... Installing Google Chrome ....................................${RESET}
@@ -39,7 +39,7 @@ dpkg -i ./google-chrome*.deb
 apt-get install -f -y
 rm -rf google-chrome*.deb
 }
-function xclip() {
+xclip() {
 ### Install xclip (for copy files via terminal)
 echo ${GREEN}.................................................................................................${RESET}
 echo ${GREEN}........................................ Installing xclip .......................................${RESET}
@@ -48,14 +48,14 @@ apt-get install xclip -y
 # Example for copy the contents of the id_rsa.pub file to your clipboard with command below
 #xclip -sel clip < ~/.ssh/id_rsa.pub
 }
-function ccsm() {
+ccsm() {
 ### Install ccsm http://wiki.compiz.org/CCSM http://help.ubuntu.ru/wiki/ccsm
 echo ${GREEN}.................................................................................................${RESET}
 echo ${GREEN}........................................ Installing ccsm ........................................${RESET}
 echo ${GREEN}.................................................................................................${RESET}
 apt-get install compizconfig-settings-manager -y
 }
-function gparted() {
+gparted() {
 ### Install gparted http://gparted.org/
 echo ${GREEN}.................................................................................................${RESET}
 echo ${GREEN}...................................... Installing gparted .......................................${RESET}
@@ -69,14 +69,14 @@ echo ${GREEN}............................... Installing Firefox Flash Player ...
 echo ${GREEN}.................................................................................................${RESET}
 apt-get install flashplugin-installer -y
 }
-function tweakTool() {
+tweakTool() {
 ### Install Tweak Tools for Ubuntu additional settings
 echo ${GREEN}.................................................................................................${RESET}
 echo ${GREEN}.................................... Installing Tweak Tool ......................................${RESET}
 echo ${GREEN}.................................................................................................${RESET}
 apt-get install unity-tweak-tool
 }
-function 7zandUnrar() {
+7zandUnrar() {
 ### Install utilities for archive manager with 7z and rar support
 echo ${GREEN}.................................................................................................${RESET}
 echo ${GREEN}.................................... Installing 7z and Unrar ....................................${RESET}
@@ -84,7 +84,7 @@ echo ${GREEN}...................................................................
 apt-get install p7zip-full -y
 apt-get install unrar -y
 }
-function skype() {
+skype() {
 ### Install Skype http://www.skype.com/
 echo ${GREEN}.................................................................................................${RESET}
 echo ${GREEN}........................................ Installing Skype .......................................${RESET}
@@ -99,7 +99,7 @@ apt-get install skype -y
 # Install sound plugins for fixing problems with sound for Ubuntu
 apt-get install libasound2-plugins:i386 -y
 }
-function torBrowser() {
+torBrowser() {
 ### Install Tor Browser https://www.torproject.org/
 echo ${GREEN}.................................................................................................${RESET}
 echo ${GREEN}.................................... Installing Tor Browser .....................................${RESET}
@@ -108,7 +108,7 @@ echo -ne '\n' | add-apt-repository ppa:webupd8team/tor-browser
 apt-get update
 apt-get install tor-browser -y
 }
-function telegram() {
+telegram() {
 ### Install Telegram messenger https://telegram.org/
 echo ${GREEN}.................................................................................................${RESET}
 echo ${GREEN}...................................... Installing Telegram ......................................${RESET}
@@ -117,7 +117,7 @@ echo -ne '\n' | add-apt-repository ppa:atareao/telegram
 apt-get update
 apt-get install telegram -y
 }
-function shutter() {
+shutter() {
 ### Install Shutter http://shutter-project.org/
 echo ${GREEN}.................................................................................................${RESET}
 echo ${GREEN}...................................... Installing Shutter .......................................${RESET}
@@ -125,7 +125,7 @@ echo ${GREEN}...................................................................
 echo -ne '\n' | add-apt-repository ppa:shutter/ppa
 apt-get install shutter -y
 }
-function serverSsh() {
+serverSsh() {
 ### Install SSH
 echo ${GREEN}.................................................................................................${RESET}
 echo ${GREEN}..................................... Installing SSH Server .....................................${RESET}
@@ -136,7 +136,7 @@ apt-get install openssh-server -y
 mkdir ~/.ssh
 chmod 777 -R ~/.ssh/
 }
-function git() {
+git() {
 ### Install Git
 echo ${GREEN}.................................................................................................${RESET}
 echo ${GREEN}......................................... Installing Git ........................................${RESET}
@@ -145,7 +145,7 @@ apt-get update
 apt-get install git -y
 apt-get install tig -y
 }
-function composer() {
+composer() {
 ### Install Composer
 echo ${GREEN}.................................................................................................${RESET}
 echo ${GREEN}...................................... Installing Composer ......................................${RESET}
@@ -156,7 +156,7 @@ apt-get install curl php5-cli git -y
 curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 chmod 777 -R ~/.composer/
 }
-function codesniffer() {
+codesniffer() {
 ### Install Codesniffer
 echo ${GREEN}.................................................................................................${RESET}
 echo ${GREEN}.................................... Installing Codesniffer .....................................${RESET}
@@ -169,7 +169,7 @@ composer global update drupal/coder --prefer-source
 export PATH="$PATH:$HOME/.composer/vendor/bin"
 phpcs --config-set installed_paths ~/.composer/vendor/drupal/coder/coder_sniffer
 }
-function selenium() {
+selenium() {
 ### Install Selenium Server http://www.seleniumhq.org/
 echo ${GREEN}.................................................................................................${RESET}
 echo ${GREEN}.................................. Installing Selenium Server ...................................${RESET}
@@ -200,7 +200,7 @@ done
 chmod 777 -R ~/selenium/
 cd
 }
-function lemp() {
+lemp() {
 ### Install LEMP (nginx + MySQL + PHPMyAdmin) and configure it
 echo ${GREEN}.................................................................................................${RESET}
 echo ${GREEN}.............. Installing and Configuring LEMP: Linux + nginx + MySQL + phpmyadmin ..............${RESET}
@@ -344,14 +344,14 @@ ln -s /usr/share/phpmyadmin /usr/share/nginx/html
 php5enmod mcrypt
 service php5-fpm restart
 }
-function lamp() {
+lamp() {
 ### Install LAMP (Apache2 + MySQL + PHPMyAdmin) and configure it
 echo ${GREEN}.................................................................................................${RESET}
 echo ${GREEN}............. Installing and Configuring LAMP: Linux + Apache2 + MySQL + phpmyadmin .............${RESET}
 echo ${GREEN}.................................................................................................${RESET}
 # TODO: Implement LAMP installation
 }
-function virtualBox() {
+virtualBox() {
 ### Install VirtualBox
 echo ${GREEN}.................................................................................................${RESET}
 echo ${GREEN}.................................... Installing VirtualBox  .....................................${RESET}
@@ -378,7 +378,7 @@ echo ${ROOT_PASS} | VBoxManage extpack install ${EXT_PACK}
 rm -rf ${EXT_PACK}
 rm -rf virtualbox*.deb
 }
-function vagrant() {
+vagrant() {
 ### Install Vagrant
 # Get deb, unpack it and remove after installing
 wget https://releases.hashicorp.com/vagrant/1.8.1/vagrant_1.8.1_x86_64.deb
@@ -387,14 +387,14 @@ apt-get install vagrant -y
 apt-get install -f -y
 rm -rf vagrant*.deb
 }
-function docker {
+docker() {
 ### Install Docker and configure it
 echo ${GREEN}.................................................................................................${RESET}
 echo ${GREEN}............................... Installing and Configuring Docker ...............................${RESET}
 echo ${GREEN}.................................................................................................${RESET}
 # TODO: Implement Docker installation
 }
-function sublime() {
+sublime() {
 ### Install SublimeText 3
 # Just uncomment lines below between "—– BEGIN LICENSE —–" and "—— END LICENSE —"
 # or use some code from this gist — https://gist.github.com/wayou/3a2d7c1576340f1d3ac8
@@ -419,7 +419,7 @@ echo -ne '\n' | add-apt-repository ppa:webupd8team/sublime-text-3
 apt-get update
 apt-get install sublime-text-installer -y
 }
-function phpStorm10() {
+phpStorm10() {
 ### Install PhpStorm 10 https://www.jetbrains.com/phpstorm/download/
 # Licence server here - https://бэкдор.рф/phpstorm-7-8-9-10-product-key/
 echo ${GREEN}.................................................................................................${RESET}
@@ -431,7 +431,7 @@ tar -xvf PhpStorm-10.0.3.tar.gz
 #cd PhpStorm-*/bin/
 #./phpstorm.sh || TRUE
 }
-function hipChat() {
+hipChat() {
 ### Install HipChat https://www.hipchat.com/
 echo ${GREEN}.................................................................................................${RESET}
 echo ${GREEN}...................................... Installing HipChat .......................................${RESET}
@@ -476,53 +476,53 @@ do
 	case $CHOICE in
 		UpdateUpgrade)updUpg()
 		;;
-		GoogleChromeBrowser)chrome
+		GoogleChromeBrowser)chrome()
 		;;
-		xclip)xclip
+		xclip)xclip()
 		;;
-		ccsm)ccsm
+		ccsm)ccsm()
 		;;
-		gparted)gparted
+		gparted)gparted()
 		;;
-		FlashPlayer)flashPlayer
+		FlashPlayer)flashPlayer()
 		;;
-		tweakTool)tweakTool
+		tweakTool)tweakTool()
 		;;
-		7zandUnrar)7zandUnrar
+		7zandUnrar)7zandUnrar()
 		;;
-		skype)skype
+		skype)skype()
 		;;
-		torBrowser)torBrowser
+		torBrowser)torBrowser()
 		;;
-		telegram)telegram
+		telegram)telegram()
 		;;
-		shutter)shutter
+		shutter)shutter()
 		;;
-		serverSsh)serverSsh
+		serverSsh)serverSsh()
 		;;
-		git)git
+		git)git()
 		;;
-		composer)composer
+		composer)composer()
 		;;
-		codesniffer)codesniffer
+		codesniffer)codesniffer()
 		;;
-		selenium)selenium
+		selenium)selenium()
 		;;
-		lemp)lemp
+		lemp)lemp()
 		;;
-		lamp)lamp
+		lamp)lamp()
 		;;
-		virtualBox)virtualBox
+		virtualBox)virtualBox()
 		;;
-		vagrant)vagrant
+		vagrant)vagrant()
 		;;
-		docker)docker
+		docker)docker()
 		;;
-		sublime)sublime
+		sublime)sublime()
 		;;
-		phpStorm10)phpStorm10
+		phpStorm10)phpStorm10()
 		;;
-		hipChat)hipChat
+		hipChat)hipChat()
 		;;
 		*)
 		;;
