@@ -445,31 +445,31 @@ apt-get install hipchat
 
 # List of tools where your can choose all preferred programs
 whiptail --title "Config Ubuntu Script" --checklist --separate-output "Use <Space> to choose tools which you want to install:" 30 58 23 \
-updUpg "UpdateUpgrade" "" on \
-chrome "GoogleChromeBrowser" "" on \
-xclip "xclip" "" off \
-ccsm "CCSM" "" off \
-gparted "Gparted" "" off \
-flashPlayer "FireFoxFlashPlayer" "" on \
-tweakTool "TweakTool" "" off \
-7zandUnrar "7zandUnrar" "" on \
-skype "Skype" "" on \
-torBrowser "TorBrowser" "" on \
-telegram "Telegram" "" on \
-shutter "Shutter" "" on \
-serverSsh "SSHServer" "" on \
-git "Git" "" on \
-composer "Composer" "" on \
-codesniffer "Codesniffer" "" off \
+UpdateUpgrade "Update & Upgrade the system" "" on \
+GoogleChromeBrowser "Install Google Chrome Browser" "" on \
+xclip "Install xclip" "" off \
+ccsm "Install CCSM" "" off \
+gparted "Install Gparted" "" off \
+flashPlayer "Install FlashPlayer for FireFox" "" on \
+tweakTool "Install Tweak Tool" "" off \
+7zandUnrar "Install 7z and Unrar" "" on \
+skype "Install Skype" "" on \
+torBrowser "Install Tor Browser" "" on \
+telegram "Install Telegram" "" on \
+shutter "Install Shutter" "" on \
+serverSsh "Install SSH Server" "" on \
+git "Install git" "" on \
+composer "InstallComposer" "" on \
+codesniffer "Install Codesniffer (for PHPStorm10)" "" off \
 selenium "SeleniumServer" "" on \
-lemp "LEMP" "" on \
-lamp "LAMP" "" off \
-virtualBox "VirtualBox" "" on \
-vagrant "Vagrant" "" on \
-docker "Docker" "" off \
-sublime "SublimeText3" "" on \
-phpStorm10 "PHPStopm10" "" on \
-hipChat "HipChat" "" on 2>results
+lemp "Install LEMP Server" "" on \
+lamp "Install LAMP Server" "" off \
+virtualBox "Install Virtual Box" "" on \
+vagrant "Install Vagrant" "" on \
+docker "Install Docker" "" off \
+sublime "Install Sublime Text 3" "" on \
+phpStorm10 "Install PHPStopm 10" "" on \
+hipChat "Install HipChat" "" on 2>results
 
 while read CHOICE
 do
@@ -480,49 +480,49 @@ do
 		;;
 		xclip)xclip
 		;;
-		CCSM)ccsm
+		ccsm)ccsm
 		;;
-		Gparted)gparted
+		gparted)gparted
 		;;
-		FireFoxFlashPlayer)flashPlayer
+		FlashPlayer)flashPlayer
 		;;
-		TweakTool)tweakTool
+		tweakTool)tweakTool
 		;;
 		7zandUnrar)7zandUnrar
 		;;
-		Skype)skype
+		skype)skype
 		;;
-		TorBrowser)torBrowser
+		torBrowser)torBrowser
 		;;
-		Telegram)telegram
+		telegram)telegram
 		;;
-		Shutter)shutter
+		shutter)shutter
 		;;
-		SSHServer)serverSsh
+		serverSsh)serverSsh
 		;;
-		Git)git
+		git)git
 		;;
-		Composer)composer
+		composer)composer
 		;;
-		Codesniffer)codesniffer
+		codesniffer)codesniffer
 		;;
-		SeleniumServer)selenium
+		selenium)selenium
 		;;
-		LEMP)lemp
+		lemp)lemp
 		;;
-		LAMP)lamp
+		lamp)lamp
 		;;
-		VirtualBox)virtualBox
+		virtualBox)virtualBox
 		;;
-		Vagrant)vagrant
+		vagrant)vagrant
 		;;
-		Docker)docker
+		docker)docker
 		;;
-		SublimeText3)sublime
+		sublime)sublime
 		;;
-		PHPStopm10)phpStorm10
+		phpStorm10)phpStorm10
 		;;
-		HipChat)hipChat
+		hipChat)hipChat
 		;;
 		*)
 		;;
