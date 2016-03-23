@@ -13,91 +13,6 @@ ROOT_PASS="osboxes.org"
 RESET=`tput sgr0`
 GREEN=`tput setaf 2`
 
-# List of tools where your can choose all preferred programs
-whiptail --title "Config Ubuntu Script" --checklist --separate-output "Use <Space> to choose tools which you want to install:" 30 58 23 \
-updUpg "UpdateUpgrade" "" on \
-chrome "GoogleChromeBrowser" "" on \
-xclip "xclip" "" off \
-ccsm "CCSM" "" off \
-gparted "Gparted" "" off \
-flashPlayer "FireFoxFlashPlayer" "" on \
-tweakTool "TweakTool" "" off \
-7zandUnrar "7zandUnrar" "" on \
-skype "Skype" "" on \
-torBrowser "TorBrowser" "" on \
-telegram "Telegram" "" on \
-shutter "Shutter" "" on \
-serverSsh "SSHServer" "" on \
-git "Git" "" on \
-composer "Composer" "" on \
-codesniffer "Codesniffer" "" off \
-selenium "SeleniumServer" "" on \
-lemp "LEMP" "" on \
-lamp "LAMP" "" off \
-virtualBox "VirtualBox" "" on \
-vagrant "Vagrant" "" on \
-docker "Docker" "" off \
-sublime "SublimeText3" "" on \
-phpStorm10 "PHPStopm10" "" on \
-hipChat "HipChat" "" on 2>results
-
-while read CHOICE
-do
-	case $CHOICE in
-		UpdateUpgrade)updUpg
-		;;
-		GoogleChromeBrowser)chrome
-		;;
-		xclip)xclip
-		;;
-		CCSM)ccsm
-		;;
-		Gparted)gparted
-		;;
-		FireFoxFlashPlayer)flashPlayer
-		;;
-		TweakTool)tweakTool
-		;;
-		7zandUnrar)7zandUnrar
-		;;
-		Skype)skype
-		;;
-		TorBrowser)torBrowser
-		;;
-		Telegram)telegram
-		;;
-		Shutter)shutter
-		;;
-		SSHServer)serverSsh
-		;;
-		Git)git
-		;;
-		Composer)composer
-		;;
-		Codesniffer)codesniffer
-		;;
-		SeleniumServer)selenium
-		;;
-		LEMP)lemp
-		;;
-		LAMP)lamp
-		;;
-		VirtualBox)virtualBox
-		;;
-		Vagrant)vagrant
-		;;
-		Docker)docker
-		;;
-		SublimeText3)sublime
-		;;
-		PHPStopm10)phpStorm10
-		;;
-		HipChat)hipChat
-		;;
-		*)
-		;;
-	esac
-done < results
 
 ### Functions
 function updUpg {
@@ -527,3 +442,89 @@ wget -O - https://www.hipchat.com/keys/hipchat-linux.key | apt-key add -
 apt-get update
 apt-get install hipchat
 }
+
+# List of tools where your can choose all preferred programs
+whiptail --title "Config Ubuntu Script" --checklist --separate-output "Use <Space> to choose tools which you want to install:" 30 58 23 \
+updUpg "UpdateUpgrade" "" on \
+chrome "GoogleChromeBrowser" "" on \
+xclip "xclip" "" off \
+ccsm "CCSM" "" off \
+gparted "Gparted" "" off \
+flashPlayer "FireFoxFlashPlayer" "" on \
+tweakTool "TweakTool" "" off \
+7zandUnrar "7zandUnrar" "" on \
+skype "Skype" "" on \
+torBrowser "TorBrowser" "" on \
+telegram "Telegram" "" on \
+shutter "Shutter" "" on \
+serverSsh "SSHServer" "" on \
+git "Git" "" on \
+composer "Composer" "" on \
+codesniffer "Codesniffer" "" off \
+selenium "SeleniumServer" "" on \
+lemp "LEMP" "" on \
+lamp "LAMP" "" off \
+virtualBox "VirtualBox" "" on \
+vagrant "Vagrant" "" on \
+docker "Docker" "" off \
+sublime "SublimeText3" "" on \
+phpStorm10 "PHPStopm10" "" on \
+hipChat "HipChat" "" on 2>results
+
+while read CHOICE
+do
+	case $CHOICE in
+		UpdateUpgrade)updUpg
+		;;
+		GoogleChromeBrowser)chrome
+		;;
+		xclip)xclip
+		;;
+		CCSM)ccsm
+		;;
+		Gparted)gparted
+		;;
+		FireFoxFlashPlayer)flashPlayer
+		;;
+		TweakTool)tweakTool
+		;;
+		7zandUnrar)7zandUnrar
+		;;
+		Skype)skype
+		;;
+		TorBrowser)torBrowser
+		;;
+		Telegram)telegram
+		;;
+		Shutter)shutter
+		;;
+		SSHServer)serverSsh
+		;;
+		Git)git
+		;;
+		Composer)composer
+		;;
+		Codesniffer)codesniffer
+		;;
+		SeleniumServer)selenium
+		;;
+		LEMP)lemp
+		;;
+		LAMP)lamp
+		;;
+		VirtualBox)virtualBox
+		;;
+		Vagrant)vagrant
+		;;
+		Docker)docker
+		;;
+		SublimeText3)sublime
+		;;
+		PHPStopm10)phpStorm10
+		;;
+		HipChat)hipChat
+		;;
+		*)
+		;;
+	esac
+done < results
