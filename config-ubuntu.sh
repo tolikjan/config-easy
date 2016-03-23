@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # This script will be helpful after reinstalling you operating system
-# Tested on Ubuntu 14.04.3 64x
+# Tested on Ubuntu 14.04.4 64x
 #
 # For testing I used vagrant-box
 # https://sourceforge.net/projects/osboxes/files/vms/vbox/Ubuntu/14.04/14.04.4/Ubuntu_14.04.4-64bit.7z/download
