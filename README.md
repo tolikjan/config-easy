@@ -2,6 +2,8 @@
 
 You could use following shell script for auto installation all needed 
 programs after OS reinstall.
+You could choose which programs your want to install. Choice mode 
+will be running after update & upgrade of your OS (approximately 5 min). 
 
 Include:
 - Google Chrome (https://www.google.com/chrome/)
