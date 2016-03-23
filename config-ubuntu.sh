@@ -38,7 +38,7 @@ whiptail --title "Config Ubuntu Script" --checklist --separate-output "Use <Spac
 "Docker" "" off \
 "SublimeText3" "" on \
 "PHPStopm10" "" on \
-"HipChat" "" on 2>results
+"HipChat" "" on 24>results
 
 while read CHOICE
 do
