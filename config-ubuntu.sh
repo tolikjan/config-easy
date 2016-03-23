@@ -386,7 +386,7 @@ apt-get update
 apt-get install sublime-text-installer -y
 #
 ### Install PhpStorm 10 https://www.jetbrains.com/phpstorm/download/
-# Licence code here - https://бэкдор.рф/phpstorm-7-8-9-10-product-key/
+# Licence server here - https://бэкдор.рф/phpstorm-7-8-9-10-product-key/
 echo ${GREEN}.................................................................................................${RESET}
 echo ${GREEN}............................. Installing and Configuring PHPStopm 10 ............................${RESET}
 echo ${GREEN}.................................................................................................${RESET}
