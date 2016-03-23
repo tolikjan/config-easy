@@ -50,9 +50,9 @@ whiptail --title "Config Ubuntu Script" --checklist --separate-output "Use <Spac
 "PHPStopm10" "" on \
 "HipChat" "" on 2>results
 
-while read choice
+while read CHOICE
 do
-	case $choice in
+	case $CHOICE in
 		GoogleChromeBrowser)
 #
 ### Install Google Chrome https://www.google.com/chrome/
