@@ -62,7 +62,7 @@ echo ${GREEN}...................................... Installing gparted .........
 echo ${GREEN}.................................................................................................${RESET}
 apt-get install gparted -y
 }
-function flashPlayer() {
+flashPlayer() {
 ### Install Flash player for Firefox
 echo ${GREEN}.................................................................................................${RESET}
 echo ${GREEN}............................... Installing Firefox Flash Player .................................${RESET}
@@ -76,7 +76,7 @@ echo ${GREEN}.................................... Installing Tweak Tool ........
 echo ${GREEN}.................................................................................................${RESET}
 apt-get install unity-tweak-tool
 }
-7zandUnrar() {
+unrar() {
 ### Install utilities for archive manager with 7z and rar support
 echo ${GREEN}.................................................................................................${RESET}
 echo ${GREEN}.................................... Installing 7z and Unrar ....................................${RESET}
@@ -445,84 +445,84 @@ apt-get install hipchat
 
 # List of tools where your can choose all preferred programs
 whiptail --title "Config Ubuntu Script" --checklist --separate-output "Use <Space> to choose tools which you want to install:" 30 58 23 \
-UpdateUpgrade "Update & Upgrade the system" "" on \
-GoogleChromeBrowser "Install Google Chrome Browser" "" on \
-xclip "Install xclip" "" off \
-ccsm "Install CCSM" "" off \
-gparted "Install Gparted" "" off \
-flashPlayer "Install FlashPlayer for FireFox" "" on \
-tweakTool "Install Tweak Tool" "" off \
-7zandUnrar "Install 7z and Unrar" "" on \
-skype "Install Skype" "" on \
-torBrowser "Install Tor Browser" "" on \
-telegram "Install Telegram" "" on \
-shutter "Install Shutter" "" on \
-serverSsh "Install SSH Server" "" on \
-git "Install git" "" on \
-composer "InstallComposer" "" on \
-codesniffer "Install Codesniffer (for PHPStorm10)" "" off \
-selenium "SeleniumServer" "" on \
-lemp "Install LEMP Server" "" on \
-lamp "Install LAMP Server" "" off \
-virtualBox "Install Virtual Box" "" on \
-vagrant "Install Vagrant" "" on \
-docker "Install Docker" "" off \
-sublime "Install Sublime Text 3" "" on \
-phpStorm10 "Install PHPStopm 10" "" on \
-hipChat "Install HipChat" "" on 2>results
+"UpdateUpgrade" "" on \
+"GoogleChrome" "" on \
+"xclip" "" off \
+"CCSM" "" off \
+"Gparted" "" off \
+"FireFoxFlashPlayer" "" on \
+"TweakTool" "" off \
+"7zandUnrar" "" on \
+"Skype" "" on \
+"TorBrowser" "" on \
+"Telegram" "" on \
+"Shutter" "" on \
+"SSHServer" "" on \
+"Git" "" on \
+"Composer" "" on \
+"Codesniffer" "" off \
+"SeleniumServer" "" on \
+"LEMP" "" on \
+"LAMP" "" off \
+"VirtualBox" "" on \
+"Vagrant" "" on \
+"Docker" "" off \
+"SublimeText3" "" on \
+"PHPStopm10" "" on \
+"HipChat" "" on 2>results
 
 while read CHOICE
 do
 	case $CHOICE in
-		UpdateUpgrade)updUpg()
+		UpdateUpgrade)updUpg
 		;;
-		GoogleChromeBrowser)chrome()
+		GoogleChrome)chrome
 		;;
-		xclip)xclip()
+		xclip)xclip
 		;;
-		ccsm)ccsm()
+		CCSM)ccsm
 		;;
-		gparted)gparted()
+		Gparted)gparted
 		;;
-		FlashPlayer)flashPlayer()
+		FireFoxFlashPlayer)flashPlayer
 		;;
-		tweakTool)tweakTool()
+		TweakTool)tweakTool
 		;;
-		7zandUnrar)7zandUnrar()
+		7zandUnrar)unrar
 		;;
-		skype)skype()
+		Skype)skype
 		;;
-		torBrowser)torBrowser()
+		TorBrowser)torBrowser
 		;;
-		telegram)telegram()
+		Telegram)telegram
 		;;
-		shutter)shutter()
+		Shutter)shutter
 		;;
-		serverSsh)serverSsh()
+		SSHServer)serverSsh
 		;;
-		git)git()
+		Git)git
 		;;
-		composer)composer()
+		Composer)composer
 		;;
-		codesniffer)codesniffer()
+		Codesniffer)codesniffer
 		;;
-		selenium)selenium()
+		SeleniumServer)selenium
 		;;
-		lemp)lemp()
+		LEMP)lemp
 		;;
-		lamp)lamp()
+		LAMP)lamp
 		;;
-		virtualBox)virtualBox()
+		VirtualBox)virtualBox
 		;;
-		vagrant)vagrant()
+		Vagrant)vagrant
 		;;
-		docker)docker()
+		Docker)docker
 		;;
-		sublime)sublime()
+		SublimeText3)sublime
 		;;
-		phpStorm10)phpStorm10()
+		PHPStorm10)phpStorm10
 		;;
-		hipChat)hipChat()
+		HipChat)hipChat
 		;;
 		*)
 		;;
