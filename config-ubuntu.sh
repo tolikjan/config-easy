@@ -24,6 +24,36 @@ echo "allow-guest=false" >> /usr/share/lightdm/lightdm.conf.d/50-ubuntu.conf
 # configure system to allow more performance
 # "vm.swappiness=10" — means that you system will use swap when you RAM will be full for 90%
 echo "vm.swappiness=10" >> /etc/sysctl.conf
+
+whiptail --title "Config Ubuntu Script" --checklist --separate-output "Use <Space> to choose tools which you want to install:" 30 58 23 \
+"GoogleChromeBrowser" "" on \
+"xclip" "" off \
+"CCSM" "" off \
+"Gparted" "" off \
+"FireFoxFlashPlayer" "" on \
+"TweakTool" "" off \
+"7zandUnrar" "" on \
+"Skype" "" on \
+"TorBrowser" "" on \
+"Telegram" "" on \
+"Shutter" "" on \
+"SSHServer" "" on \
+"Git" "" on \
+"Composer" "" on \
+"Codesniffer" "" off \
+"SeleniumServer" "" on \
+"LEMP" "" on \
+"LAMP" "" off \
+"VirtualBoxandVagrant" "" on \
+"Docker" "" on \
+"SublimeText3" "" on \
+"PHPStopm10" "" on \
+"HipChat" "" on 2>results
+
+while read choice
+do
+	case $choice in
+		GoogleChromeBrowser)
 #
 ### Install Google Chrome https://www.google.com/chrome/
 echo ${GREEN}.................................................................................................${RESET}
@@ -34,6 +64,8 @@ wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
 dpkg -i ./google-chrome*.deb
 apt-get install -f -y
 rm -rf google-chrome*.deb
+		;;
+		xclip)
 #
 ### Install xclip (for copy files via terminal)
 echo ${GREEN}.................................................................................................${RESET}
@@ -42,30 +74,40 @@ echo ${GREEN}...................................................................
 apt-get install xclip -y
 # Example for copy the contents of the id_rsa.pub file to your clipboard with command below
 #xclip -sel clip < ~/.ssh/id_rsa.pub
+		;;
+		CCSM)
 #
 ### Install ccsm http://wiki.compiz.org/CCSM http://help.ubuntu.ru/wiki/ccsm
 echo ${GREEN}.................................................................................................${RESET}
 echo ${GREEN}........................................ Installing ccsm ........................................${RESET}
 echo ${GREEN}.................................................................................................${RESET}
 apt-get install compizconfig-settings-manager -y
+		;;
+		Gparted)
 #
 ### Install gparted http://gparted.org/
 echo ${GREEN}.................................................................................................${RESET}
 echo ${GREEN}...................................... Installing gparted .......................................${RESET}
 echo ${GREEN}.................................................................................................${RESET}
 apt-get install gparted -y
+		;;
+		FireFoxFlashPlayer)
 #
 ### Install Flash player for Firefox
 echo ${GREEN}.................................................................................................${RESET}
-echo ${GREEN}.............................. Installing Flash player for Firefox ..............................${RESET}
+echo ${GREEN}............................... Installing Firefox Flash Player .................................${RESET}
 echo ${GREEN}.................................................................................................${RESET}
 apt-get install flashplugin-installer -y
+		;;
+		TweakTool)
 #
 ### Install Tweak Tools for Ubuntu additional settings
-#echo ${GREEN}.................................................................................................${RESET}
-#echo ${GREEN}.................................... Installing Tweak Tool ......................................${RESET}
-#echo ${GREEN}.................................................................................................${RESET}
-#apt-get install unity-tweak-tool
+echo ${GREEN}.................................................................................................${RESET}
+echo ${GREEN}.................................... Installing Tweak Tool ......................................${RESET}
+echo ${GREEN}.................................................................................................${RESET}
+apt-get install unity-tweak-tool
+		;;
+		7zandUnrar)
 #
 ### Install utilities for archive manager with 7z and rar support
 echo ${GREEN}.................................................................................................${RESET}
@@ -73,6 +115,8 @@ echo ${GREEN}.................................... Installing 7z and Unrar ......
 echo ${GREEN}.................................................................................................${RESET}
 apt-get install p7zip-full -y
 apt-get install unrar -y
+		;;
+		Skype)
 #
 ### Install Skype http://www.skype.com/
 echo ${GREEN}.................................................................................................${RESET}
@@ -87,6 +131,8 @@ apt-get update
 apt-get install skype -y
 # Install sound plugins for fixing problems with sound for Ubuntu
 apt-get install libasound2-plugins:i386 -y
+		;;
+		TorBrowser)
 #
 ### Install Tor Browser https://www.torproject.org/
 echo ${GREEN}.................................................................................................${RESET}
@@ -95,6 +141,8 @@ echo ${GREEN}...................................................................
 echo -ne '\n' | add-apt-repository ppa:webupd8team/tor-browser
 apt-get update
 apt-get install tor-browser -y
+		;;
+		Telegram)
 #
 ### Install Telegram messenger https://telegram.org/
 echo ${GREEN}.................................................................................................${RESET}
@@ -103,6 +151,8 @@ echo ${GREEN}...................................................................
 echo -ne '\n' | add-apt-repository ppa:atareao/telegram
 apt-get update
 apt-get install telegram -y
+		;;
+		Shutter)
 #
 ### Install Shutter http://shutter-project.org/
 echo ${GREEN}.................................................................................................${RESET}
@@ -110,6 +160,8 @@ echo ${GREEN}...................................... Installing Shutter .........
 echo ${GREEN}.................................................................................................${RESET}
 echo -ne '\n' | add-apt-repository ppa:shutter/ppa
 apt-get install shutter -y
+		;;
+		SSHServer)
 #
 ### Install SSH
 echo ${GREEN}.................................................................................................${RESET}
@@ -120,6 +172,8 @@ apt-get install openssh-client -y
 apt-get install openssh-server -y
 mkdir ~/.ssh
 chmod 777 -R ~/.ssh/
+		;;
+		Git)
 #
 ### Install Git
 echo ${GREEN}.................................................................................................${RESET}
@@ -128,6 +182,8 @@ echo ${GREEN}...................................................................
 apt-get update
 apt-get install git -y
 apt-get install tig -y
+		;;
+		Composer)
 #
 ### Install Composer
 echo ${GREEN}.................................................................................................${RESET}
@@ -138,6 +194,8 @@ apt-get install php5-curl -y
 apt-get install curl php5-cli git -y
 curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 chmod 777 -R ~/.composer/
+		;;
+		Codesniffer)
 #
 ### Install Codesniffer
 echo ${GREEN}.................................................................................................${RESET}
@@ -151,6 +209,8 @@ composer global require drupal/coder
 composer global update drupal/coder --prefer-source
 export PATH="$PATH:$HOME/.composer/vendor/bin"
 phpcs --config-set installed_paths ~/.composer/vendor/drupal/coder/coder_sniffer
+		;;
+		SeleniumServer)
 #
 ### Install Selenium Server http://www.seleniumhq.org/
 echo ${GREEN}.................................................................................................${RESET}
@@ -181,6 +241,8 @@ do
 done
 chmod 777 -R ~/selenium/
 cd
+		;;
+		LEMP)
 #
 ### Install LEMP (nginx + MySQL + PHPMyAdmin) and configure it
 echo ${GREEN}.................................................................................................${RESET}
@@ -320,13 +382,17 @@ echo "mysql-server mysql-server/root_password_again password $MYSQL_ROOT_PASS" |
 echo "phpmyadmin phpmyadmin/dbconfig-install boolean true" | debconf-set-selections
 echo "phpmyadmin phpmyadmin/app-password-confirm password $MYSQL_ROOT_PASS" | debconf-set-selections
 echo "phpmyadmin phpmyadmin/mysql/admin-pass password $MYSQL_ROOT_PASS" | debconf-set-selections
-echo "phpmyadmin phpmyadmin/mysql/app-pass password $MYSQL_ROOT_PASS" | debconf-set-selections
+echo "phpmyadmin phpmyadmin/mysql/app-pass password $MYSQL_ROOT_PASS"v	 | debconf-set-selections
 echo "phpmyadmin phpmyadmin/reconfigure-webserver multiselect none" | debconf-set-selections
 apt-get install mysql-server php5-mysql phpmyadmin -y
 ln -s /usr/share/phpmyadmin /usr/share/nginx/html
 # Enable mycrypt and restart service
 php5enmod mcrypt
 service php5-fpm restart
+		;;
+		LAMP) echo "You chose Adam"
+		;;
+		VirtualBoxandVagrant)
 #
 ### Install VirtualBox and Vagrant
 echo ${GREEN}.................................................................................................${RESET}
@@ -360,6 +426,10 @@ dpkg -i vagrant*.deb
 apt-get install vagrant -y
 apt-get install -f -y
 rm -rf vagrant*.deb
+		;;
+		Docker) echo "You chose Glen"
+		;;
+		SublimeText3)
 #
 ### Install SublimeText 3
 # Just uncomment lines below between "—– BEGIN LICENSE —–" and "—— END LICENSE —"
@@ -384,6 +454,8 @@ echo ${GREEN}...................................................................
 echo -ne '\n' | add-apt-repository ppa:webupd8team/sublime-text-3
 apt-get update
 apt-get install sublime-text-installer -y
+		;;
+		PHPStopm10)
 #
 ### Install PhpStorm 10 https://www.jetbrains.com/phpstorm/download/
 # Licence server here - https://бэкдор.рф/phpstorm-7-8-9-10-product-key/
@@ -395,6 +467,8 @@ tar -xvf PhpStorm-10.0.3.tar.gz
 # IMPORTANT: For complete installation, you should execute two commands below from Terminal after finishing this script
 #cd PhpStorm-*/bin/
 #./phpstorm.sh || TRUE
+		;;
+		HipChat)
 #
 ### Install HipChat https://www.hipchat.com/
 echo ${GREEN}.................................................................................................${RESET}
@@ -405,7 +479,8 @@ echo "deb http://downloads.hipchat.com/linux/apt stable main" > /etc/apt/sources
 wget -O - https://www.hipchat.com/keys/hipchat-linux.key | apt-key add -
 apt-get update
 apt-get install hipchat
-#exit
-echo ${GREEN}.................................................................................................${RESET}
-echo ${GREEN}............................................. DONE ..............................................${RESET}
-echo ${GREEN}.................................................................................................${RESET}
+		;;
+		*)
+		;;
+	esac
+done < results
