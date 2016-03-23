@@ -138,6 +138,8 @@ apt-get install php5-curl -y
 apt-get install curl php5-cli git -y
 curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 chmod 777 -R ~/.composer/
+#
+### Install Codesniffer
 echo ${GREEN}.................................................................................................${RESET}
 echo ${GREEN}.................................... Installing Codesniffer .....................................${RESET}
 echo ${GREEN}.................................................................................................${RESET}
