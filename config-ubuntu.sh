@@ -138,6 +138,8 @@ apt-get install php5-curl -y
 apt-get install curl php5-cli git -y
 curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 chmod 777 -R ~/.composer/
+#
+### Install Codesniffer
 echo ${GREEN}.................................................................................................${RESET}
 echo ${GREEN}.................................... Installing Codesniffer .....................................${RESET}
 echo ${GREEN}.................................................................................................${RESET}
@@ -384,7 +386,7 @@ apt-get update
 apt-get install sublime-text-installer -y
 #
 ### Install PhpStorm 10 https://www.jetbrains.com/phpstorm/download/
-# Licence code here - https://бэкдор.рф/phpstorm-7-8-9-10-product-key/
+# Licence server here - https://бэкдор.рф/phpstorm-7-8-9-10-product-key/
 echo ${GREEN}.................................................................................................${RESET}
 echo ${GREEN}............................. Installing and Configuring PHPStopm 10 ............................${RESET}
 echo ${GREEN}.................................................................................................${RESET}
@@ -393,7 +395,8 @@ tar -xvf PhpStorm-10.0.3.tar.gz
 # IMPORTANT: For complete installation, you should execute two commands below from Terminal after finishing this script
 #cd PhpStorm-*/bin/
 #./phpstorm.sh || TRUE
-# Install HipChat https://www.hipchat.com/
+#
+### Install HipChat https://www.hipchat.com/
 echo ${GREEN}.................................................................................................${RESET}
 echo ${GREEN}...................................... Installing HipChat .......................................${RESET}
 echo ${GREEN}.................................................................................................${RESET}
