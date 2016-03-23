@@ -22,7 +22,7 @@ Include:
 - Selenium Standalone Server (http://www.seleniumhq.org/)
 - PHP 5.6 (http://php.net/)
 - LEMP Server (Linux + nginx + MySQL + phpmyadmin)
-- ONGOING  LAMP Server (Linux + Apache2 + MySQL + phpmyadmin)
+- ONGOING —> LAMP Server (Linux + Apache2 + MySQL + phpmyadmin)
 - VirtualBox (https://www.virtualbox.org/)
 - Vagrant (https://www.vagrantup.com/docs/)
 - ONGOING —> Docker (https://www.docker.com/)
