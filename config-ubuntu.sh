@@ -45,7 +45,7 @@ whiptail --title "Config Ubuntu Script" --checklist --separate-output "Use <Spac
 "LEMP" "" on \
 "LAMP" "" off \
 "VirtualBoxandVagrant" "" on \
-"Docker" "" on \
+"Docker" "" off \
 "SublimeText3" "" on \
 "PHPStopm10" "" on \
 "HipChat" "" on 2>results
@@ -390,7 +390,13 @@ ln -s /usr/share/phpmyadmin /usr/share/nginx/html
 php5enmod mcrypt
 service php5-fpm restart
 		;;
-		LAMP) echo "You chose Adam"
+		LAMP)
+#
+### Install LEMP (nginx + MySQL + PHPMyAdmin) and configure it
+echo ${GREEN}.................................................................................................${RESET}
+echo ${GREEN}.............. Installing and Configuring LEMP: Linux + nginx + MySQL + phpmyadmin ..............${RESET}
+echo ${GREEN}.................................................................................................${RESET}
+# TODO: Implement LAMP installation
 		;;
 		VirtualBoxandVagrant)
 #
@@ -427,7 +433,8 @@ apt-get install vagrant -y
 apt-get install -f -y
 rm -rf vagrant*.deb
 		;;
-		Docker) echo "You chose Glen"
+		Docker)
+# TODO: Implement Docker installation
 		;;
 		SublimeText3)
 #
