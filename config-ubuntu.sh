@@ -13,6 +13,92 @@ ROOT_PASS="osboxes.org"
 RESET=`tput sgr0`
 GREEN=`tput setaf 2`
 
+# List of tools where your can choose all preferred programs
+whiptail --title "Config Ubuntu Script" --checklist --separate-output "Use <Space> to choose tools which you want to install:" 30 58 23 \
+"UpdateUpgrade" "" on \
+"GoogleChromeBrowser" "" on \
+"xclip" "" off \
+"CCSM" "" off \
+"Gparted" "" off \
+"FireFoxFlashPlayer" "" on \
+"TweakTool" "" off \
+"7zandUnrar" "" on \
+"Skype" "" on \
+"TorBrowser" "" on \
+"Telegram" "" on \
+"Shutter" "" on \
+"SSHServer" "" on \
+"Git" "" on \
+"Composer" "" on \
+"Codesniffer" "" off \
+"SeleniumServer" "" on \
+"LEMP" "" on \
+"LAMP" "" off \
+"VirtualBox" "" on \
+"Vagrant" "" on \
+"Docker" "" off \
+"SublimeText3" "" on \
+"PHPStopm10" "" on \
+"HipChat" "" on 2>results
+
+while read CHOICE
+do
+	case $CHOICE in
+		UpdateUpgrade)updUpg
+		;;
+		GoogleChromeBrowser)chrome
+		;;
+		xclip)xclip
+		;;
+		CCSM)ccsm
+		;;
+		Gparted)gparted
+		;;
+		FireFoxFlashPlayer)flashPlayer
+		;;
+		TweakTool)tweakTool
+		;;
+		7zandUnrar)7zandUnrar
+		;;
+		Skype)skype
+		;;
+		TorBrowser)torBrowser
+		;;
+		Telegram)telegram
+		;;
+		Shutter)shutter
+		;;
+		SSHServer)serverSsh
+		;;
+		Git)git
+		;;
+		Composer)composer
+		;;
+		Codesniffer)codesniffer
+		;;
+		SeleniumServer)selenium
+		;;
+		LEMP)lemp
+		;;
+		LAMP)lamp
+		;;
+		VirtualBox)virtualBox
+		;;
+		Vagrant)vagrant
+		;;
+		Docker)docker
+		;;
+		SublimeText3)sublime
+		;;
+		PHPStopm10)phpStorm10
+		;;
+		HipChat)hipChat
+		;;
+		*)
+		;;
+	esac
+done < results
+
 ### Functions
 function updUpg {
 ### Update & Upgrade system
@@ -441,90 +527,3 @@ wget -O - https://www.hipchat.com/keys/hipchat-linux.key | apt-key add -
 apt-get update
 apt-get install hipchat
 }
-
-
-# List of tools where your can choose all preferred programs
-whiptail --title "Config Ubuntu Script" --checklist --separate-output "Use <Space> to choose tools which you want to install:" 30 58 23 \
-"UpdateUpgrade" "" on \
-"GoogleChromeBrowser" "" on \
-"xclip" "" off \
-"CCSM" "" off \
-"Gparted" "" off \
-"FireFoxFlashPlayer" "" on \
-"TweakTool" "" off \
-"7zandUnrar" "" on \
-"Skype" "" on \
-"TorBrowser" "" on \
-"Telegram" "" on \
-"Shutter" "" on \
-"SSHServer" "" on \
-"Git" "" on \
-"Composer" "" on \
-"Codesniffer" "" off \
-"SeleniumServer" "" on \
-"LEMP" "" on \
-"LAMP" "" off \
-"VirtualBox" "" on \
-"Vagrant" "" on \
-"Docker" "" off \
-"SublimeText3" "" on \
-"PHPStopm10" "" on \
-"HipChat" "" on 2>results
-
-while read CHOICE
-do
-	case $CHOICE in
-		UpdateUpgrade)updUpg
-		;;
-		GoogleChromeBrowser)chrome
-		;;
-		xclip)xclip
-		;;
-		CCSM)ccsm
-		;;
-		Gparted)gparted
-		;;
-		FireFoxFlashPlayer)flashPlayer
-		;;
-		TweakTool)tweakTool
-		;;
-		7zandUnrar)7zandUnrar
-		;;
-		Skype)skype
-		;;
-		TorBrowser)torBrowser
-		;;
-		Telegram)telegram
-		;;
-		Shutter)shutter
-		;;
-		SSHServer)serverSsh
-		;;
-		Git)git
-		;;
-		Composer)composer
-		;;
-		Codesniffer)codesniffer
-		;;
-		SeleniumServer)selenium
-		;;
-		LEMP)lemp
-		;;
-		LAMP)lamp
-		;;
-		VirtualBox)virtualBox
-		;;
-		Vagrant)vagrant
-		;;
-		Docker)docker
-		;;
-		SublimeText3)sublime
-		;;
-		PHPStopm10)phpStorm10
-		;;
-		HipChat)hipChat
-		;;
-		*)
-		;;
-	esac
-done < results
