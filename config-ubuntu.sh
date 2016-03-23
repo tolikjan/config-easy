@@ -395,7 +395,8 @@ tar -xvf PhpStorm-10.0.3.tar.gz
 # IMPORTANT: For complete installation, you should execute two commands below from Terminal after finishing this script
 #cd PhpStorm-*/bin/
 #./phpstorm.sh || TRUE
-# Install HipChat https://www.hipchat.com/
+#
+### Install HipChat https://www.hipchat.com/
 echo ${GREEN}.................................................................................................${RESET}
 echo ${GREEN}...................................... Installing HipChat .......................................${RESET}
 echo ${GREEN}.................................................................................................${RESET}
