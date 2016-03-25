@@ -13,7 +13,6 @@ ROOT_PASS="osboxes.org"
 RESET=`tput sgr0`
 GREEN=`tput setaf 2`
 
-
 ### Functions
 updUpg() {
 ### Update & Upgrade system
