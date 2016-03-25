@@ -16,67 +16,67 @@ GREEN=`tput setaf 2`
 
 ### Functions
 updUpg() {
-    exec ./upd-upg.sh
+    exec sudo sh upd-upg.sh
 }
 chrome() {
-    exec ./chrome.sh
+    exec sudo sh chrome.sh
 }
 xclip() {
-    exec ./xclip.sh
+    exec sudo sh xclip.sh
 }
 ccsm() {
-    exec ./ccsm.sh
+    exec sudo sh ccsm.sh
 }
 gparted() {
-    exec ./gparted.sh
+    exec sudo sh gparted.sh
 }
 flashPlayer() {
-    exec ./flash-player-ff.sh
+    exec sudo sh flash-player-ff.sh
 }
 tweakTool() {
-    exec ./tweak-tool.sh
+    exec sudo sh tweak-tool.sh
 }
 unrar() {
-    exec ./unrar-7z.sh
+    exec sudo sh unrar-7z.sh
 }
 skype() {
-    exec ./skype.sh
+    exec sudo sh skype.sh
 }
 torBrowser() {
-    exec ./tor.sh
+    exec sudo sh tor.sh
 }
 telegram() {
-    exec ./telegram.sh
+    exec sudo sh telegram.sh
 }
 shutter() {
-    exec ./shutter.sh
+    exec sudo sh shutter.sh
 }
 serverSsh() {
-    exec ./ssh.sh
+    exec sudo sh ssh.sh
 }
 selenium() {
-    exec ./selenium.sh
+    exec sudo sh selenium.sh
 }
 lemp() {
-    exec ./lemp.sh
+    exec sudo sh lemp.sh
 }
 composer() {
-    exec ./composer.sh
+    exec sudo sh composer.sh
 }
 virtualBox() {
-    exec ./virtual-box.sh
+    exec sudo sh virtual-box.sh
 }
 vagrant() {
-    exec ./vagrant.sh
+    exec sudo sh vagrant.sh
 }
 sublime() {
-    exec ./sublime3.sh
+    exec sudo sh sublime3.sh
 }
 phpStorm10() {
-    exec ./php-storm10.sh
+    exec sudo sh php-storm10.sh
 }
 hipChat() {
-    exec ./hip-chat.sh
+    exec sudo sh hip-chat.sh
 }
 
 # List of tools where your can choose all preferred programs
