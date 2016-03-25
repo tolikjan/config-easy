@@ -16,67 +16,67 @@ GREEN=`tput setaf 2`
 
 ### Functions
 updUpg() {
-    exec upd-upg.sh
+    exec ./upd-upg.sh
 }
 chrome() {
-    exec chrome.sh
+    exec ./chrome.sh
 }
 xclip() {
-    exec xclip.sh
+    exec ./xclip.sh
 }
 ccsm() {
-    exec ccsm.sh
+    exec ./ccsm.sh
 }
 gparted() {
-    exec gparted.sh
+    exec ./gparted.sh
 }
 flashPlayer() {
-    exec flash-player-ff.sh
+    exec ./flash-player-ff.sh
 }
 tweakTool() {
-    exec tweak-tool.sh
+    exec ./tweak-tool.sh
 }
 unrar() {
-    exec unrar-7z.sh
+    exec ./unrar-7z.sh
 }
 skype() {
-    exec skype.sh
+    exec ./skype.sh
 }
 torBrowser() {
-    exec tor.sh
+    exec ./tor.sh
 }
 telegram() {
-    exec telegram.sh
+    exec ./telegram.sh
 }
 shutter() {
-    exec shutter.sh
+    exec ./shutter.sh
 }
 serverSsh() {
-    exec ssh.sh
+    exec ./ssh.sh
 }
 selenium() {
-    exec selenium.sh
+    exec ./selenium.sh
 }
 lemp() {
-    exec lemp.sh
+    exec ./lemp.sh
 }
 composer() {
-    exec composer.sh
+    exec ./composer.sh
 }
 virtualBox() {
-    exec virtual-box.sh
+    exec ./virtual-box.sh
 }
 vagrant() {
-    exec vagrant.sh
+    exec ./vagrant.sh
 }
 sublime() {
-    exec sublime3.sh
+    exec ./sublime3.sh
 }
 phpStorm10() {
-    exec php-storm10.sh
+    exec ./php-storm10.sh
 }
 hipChat() {
-    exec hip-chat.sh
+    exec ./hip-chat.sh
 }
 
 # List of tools where your can choose all preferred programs
