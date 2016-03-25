@@ -80,7 +80,7 @@ hipChat() {
 }
 
 # List of tools where your can choose all preferred programs
-whiptail --title "Config Ubuntu Script" --checklist --separate-output "Use <Space> to choose tools which you want to install:" 30 58 23 \
+whiptail --title "Config Ubuntu Script" --checklist output-fd test "Use <Space> to choose tools which you want to install:" 30 58 23 \
 "UpdateUpgrade" "" on \
 "GoogleChrome" "" on \
 "xclip" "" off \
