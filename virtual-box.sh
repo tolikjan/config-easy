@@ -37,4 +37,3 @@ echo ${ROOT_PASS} | VBoxManage extpack install ${EXT_PACK}
 rm -rf ${EXT_PACK}
 rm -rf virtualbox*.deb
 echo ${GREEN}.............................................. Done .............................................${RESET}
-

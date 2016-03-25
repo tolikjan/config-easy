@@ -22,4 +22,3 @@ tar -xvf PhpStorm-10.0.3.tar.gz
 #cd PhpStorm-*/bin/
 #./phpstorm.sh || TRUE
 echo ${GREEN}.............................................. Done .............................................${RESET}
-

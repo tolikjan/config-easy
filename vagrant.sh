@@ -22,4 +22,3 @@ apt-get install vagrant -y
 apt-get install -f -y
 rm -rf vagrant*.deb
 echo ${GREEN}.............................................. Done .............................................${RESET}
-

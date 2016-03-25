@@ -35,4 +35,3 @@ echo -ne '\n' | add-apt-repository ppa:webupd8team/sublime-text-3
 apt-get update
 apt-get install sublime-text-installer -y
 echo ${GREEN}.............................................. Done .............................................${RESET}
-

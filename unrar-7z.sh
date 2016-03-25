@@ -18,4 +18,3 @@ echo ${GREEN}.................................... Installing Unrar and 7z ......
 apt-get install unrar -y
 apt-get install p7zip-full -y
 echo ${GREEN}.............................................. Done .............................................${RESET}
-

@@ -25,4 +25,3 @@ apt-get install skype -y
 # Install sound plugins for fixing problems with sound for Ubuntu
 apt-get install libasound2-plugins:i386 -y
 echo ${GREEN}.............................................. Done .............................................${RESET}
-

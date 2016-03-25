@@ -17,4 +17,3 @@ GREEN=`tput setaf 2`
 echo ${GREEN}........................................ Installing ccsm ........................................${RESET}
 apt-get install compizconfig-settings-manager -y
 echo ${GREEN}.............................................. Done .............................................${RESET}
-

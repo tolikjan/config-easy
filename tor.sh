@@ -19,4 +19,3 @@ echo -ne '\n' | add-apt-repository ppa:webupd8team/tor-browser
 apt-get update
 apt-get install tor-browser -y
 echo ${GREEN}.............................................. Done .............................................${RESET}
-

@@ -21,4 +21,3 @@ dpkg -i ./google-chrome*.deb
 apt-get install -f -y
 rm -rf google-chrome*.deb
 echo ${GREEN}.............................................. Done .............................................${RESET}
-

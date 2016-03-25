@@ -21,5 +21,3 @@ wget -O - https://www.hipchat.com/keys/hipchat-linux.key | apt-key add -
 apt-get update
 apt-get install hipchat
 echo ${GREEN}.............................................. Done .............................................${RESET}
-
-

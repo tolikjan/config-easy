@@ -18,4 +18,3 @@ echo ${GREEN}...................................... Installing Shutter .........
 echo -ne '\n' | add-apt-repository ppa:shutter/ppa
 apt-get install shutter -y
 echo ${GREEN}.............................................. Done .............................................${RESET}
-

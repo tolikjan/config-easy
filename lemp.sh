@@ -152,4 +152,3 @@ ln -s /usr/share/phpmyadmin /usr/share/nginx/html
 php5enmod mcrypt
 service php5-fpm restart
 echo ${GREEN}.............................................. Done .............................................${RESET}
-

@@ -7,7 +7,26 @@ will be running after script start.
  
 Please, do not chose "LEMP" and "LAMP" options in the same time!
 
-Include:
+### Clone Git Repo:
+1) install `git` if it not installed yet:
+
+    $ sudo apt-get install git -y 
+
+2) go to chosen folder in Terminal:
+
+    $ cd /path/to/folder
+    
+3) clone this GitHub Repo with command (use `sudo` if you in protected folder):
+
+    $ git clone https://github.com/tolikjan/config-easy/tree/develop-t.git
+
+### Usage:
+Start shell with commands below (don't forget about `sudo`):
+
+    $ cd /path/to/folder/config-easy
+    $ sudo sh main-script.sh
+
+### Include:
 - Google Chrome (https://www.google.com/chrome/)
 - xclip — for copy files via terminal
 - CCSM (http://wiki.compiz.org/CCSM http://help.ubuntu.ru/wiki/ccsm)
@@ -20,12 +39,11 @@ Include:
 - Telegram Messenger (https://telegram.org/)
 - Shutter (http://shutter-project.org/)
 - SSH Server (http://www.openssh.com/)
-- Git (https://git-scm.com/)
-- Composer (https://getcomposer.org/)
-- Code Sniffers for Drupal (https://www.drupal.org/node/1419988)
+- ONGOING —> Code Sniffers for Drupal (https://www.drupal.org/node/1419988)
 - Selenium Standalone Server (http://www.seleniumhq.org/)
 - PHP 5.6 (http://php.net/)
 - LEMP Server (Linux + nginx + MySQL + phpmyadmin)
+- Composer (https://getcomposer.org/)
 - ONGOING —> LAMP Server (Linux + Apache2 + MySQL + phpmyadmin)
 - VirtualBox (https://www.virtualbox.org/)
 - Vagrant (https://www.vagrantup.com/docs/)

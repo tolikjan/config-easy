@@ -17,4 +17,3 @@ GREEN=`tput setaf 2`
 echo ${GREEN}............................... Installing Firefox Flash Player .................................${RESET}
 apt-get install flashplugin-installer -y
 echo ${GREEN}.............................................. Done .............................................${RESET}
-

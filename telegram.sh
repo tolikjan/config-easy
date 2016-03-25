@@ -19,4 +19,3 @@ echo -ne '\n' | add-apt-repository ppa:atareao/telegram
 apt-get update
 apt-get install telegram -y
 echo ${GREEN}.............................................. Done .............................................${RESET}
-

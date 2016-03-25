@@ -22,4 +22,3 @@ echo "allow-guest=false" >> /usr/share/lightdm/lightdm.conf.d/50-ubuntu.conf
 # "vm.swappiness=10" — means that you system will use swap when you RAM will be full for 90%
 echo "vm.swappiness=10" >> /etc/sysctl.conf
 echo ${GREEN}.............................................. Done .............................................${RESET}
-

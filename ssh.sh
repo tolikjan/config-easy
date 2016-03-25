@@ -21,4 +21,3 @@ apt-get install openssh-server -y
 mkdir ~/.ssh
 chmod 777 -R ~/.ssh/
 echo ${GREEN}.............................................. Done .............................................${RESET}
-

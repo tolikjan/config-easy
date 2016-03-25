@@ -19,4 +19,3 @@ apt-get install xclip -y
 # Example for copy the contents of the id_rsa.pub file to your clipboard with command below
 #xclip -sel clip < ~/.ssh/id_rsa.pub
 echo ${GREEN}.............................................. Done .............................................${RESET}
-

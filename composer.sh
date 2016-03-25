@@ -21,4 +21,3 @@ apt-get install curl php5-cli git -y
 curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 chmod 777 -R ~/.composer/
 echo ${GREEN}.............................................. Done .............................................${RESET}
-

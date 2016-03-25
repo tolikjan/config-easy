@@ -17,4 +17,3 @@ GREEN=`tput setaf 2`
 echo ${GREEN}.................................... Installing Tweak Tool ......................................${RESET}
 apt-get install unity-tweak-tool
 echo ${GREEN}.............................................. Done .............................................${RESET}
-
