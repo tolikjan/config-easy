@@ -10,6 +10,7 @@ Please, do not chose "LEMP" and "LAMP" options in the same time!
 ### Clone Git Repo:
 1) install `git` if it not installed yet:
 
+    $ sudo apt-get update 
     $ sudo apt-get install git -y 
 
 2) go to chosen folder in Terminal:

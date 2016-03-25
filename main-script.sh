@@ -13,6 +13,72 @@ ROOT_PASS="osboxes.org"
 RESET=`tput sgr0`
 GREEN=`tput setaf 2`
 
+
+### Functions
+updUpg() {
+    exec upd-upg.sh
+}
+chrome() {
+    exec chrome.sh
+}
+xclip() {
+    exec xclip.sh
+}
+ccsm() {
+    exec ccsm.sh
+}
+gparted() {
+    exec gparted.sh
+}
+flashPlayer() {
+    exec flash-player-ff.sh
+}
+tweakTool() {
+    exec tweak-tool.sh
+}
+unrar() {
+    exec unrar-7z.sh
+}
+skype() {
+    exec skype.sh
+}
+torBrowser() {
+    exec tor.sh
+}
+telegram() {
+    exec telegram.sh
+}
+shutter() {
+    exec shutter.sh
+}
+serverSsh() {
+    exec ssh.sh
+}
+selenium() {
+    exec selenium.sh
+}
+lemp() {
+    exec lemp.sh
+}
+composer() {
+    exec composer.sh
+}
+virtualBox() {
+    exec virtual-box.sh
+}
+vagrant() {
+    exec vagrant.sh
+}
+sublime() {
+    exec sublime3.sh
+}
+phpStorm10() {
+    exec php-storm10.sh
+}
+hipChat() {
+    exec hip-chat.sh
+}
+
 # List of tools where your can choose all preferred programs
 whiptail --title "Config Ubuntu Script" --checklist --separate-output "Use <Space> to choose tools which you want to install:" 30 58 23 \
 "UpdateUpgrade" "" on \
@@ -40,47 +106,47 @@ whiptail --title "Config Ubuntu Script" --checklist --separate-output "Use <Spac
 while read CHOICE
 do
 	case $CHOICE in
-		UpdateUpgrade)exec upd-upg.sh
+		UpdateUpgrade)updUpg
 		;;
-		GoogleChrome)exec chrome.sh
+		GoogleChrome)chrome
 		;;
-		xclip)exec xclip.sh
+		xclip)xclip
 		;;
-		CCSM)exec ccsm.sh
+		CCSM)ccsm
 		;;
-		Gparted)exec gparted.sh
+		Gparted)gparted
 		;;
-		FireFoxFlashPlayer)exec flash-player-ff.sh
+		FireFoxFlashPlayer)flashPlayer
 		;;
-		TweakTool)exec tweak-tool.sh
+		TweakTool)tweakTool
 		;;
-		7zandUnrar)exec unrar-7z.sh
+		7zandUnrar)unrar
 		;;
-		Skype)exec skype.sh
+		Skype)skype
 		;;
-		TorBrowser)exec tor.sh
+		TorBrowser)torBrowser
 		;;
-		Telegram)exec telegram.sh
+		Telegram)telegram
 		;;
-		Shutter)exec shutter.sh
+		Shutter)shutter
 		;;
-		SSHServer)exec ssh.sh
+		SSHServer)serverSsh
 		;;
-		SeleniumServer)exec selenium.sh
+		SeleniumServer)selenium
 		;;
-		LEMP)exec lemp.sh
+		LEMP)lemp
 		;;
-		Composer)exec composer.sh
+		Composer)composer
 		;;
-		VirtualBox)exec virtual-box.sh
+		VirtualBox)virtualBox
 		;;
-		Vagrant)exec vagrant.sh
+		Vagrant)vagrant
 		;;
-		SublimeText3)exec sublime3.sh
+		SublimeText3)sublime
 		;;
-		PHPStorm10)exec php-storm10.sh
+		PHPStorm10)phpStorm10
 		;;
-		HipChat)exec hip-chat.sh
+		HipChat)hipChat
 		;;
 		*)
 		;;
