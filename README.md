@@ -19,7 +19,7 @@ Please, do not chose "LEMP" and "LAMP" options in the same time!
     
 3) clone this GitHub Repo with command (use `sudo` if you in protected folder):
 
-    $ git clone https://github.com/tolikjan/config-easy/tree/develop-t.git
+    $ git clone https://github.com/tolikjan/config-easy.git
 
 ### Usage:
 Start shell with commands below (don't forget about `sudo`):
