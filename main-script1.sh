@@ -2,12 +2,14 @@
 
 # This script will be helpful after reinstalling you operating system
 # Tested on Ubuntu 14.04.4 64x
-#
+# TODO: Change README.md to clarify user's credentials
 # For testing I used vagrant-box
 # https://sourceforge.net/projects/osboxes/files/vms/vbox/Ubuntu/14.04/14.04.4/Ubuntu_14.04.4-64bit.7z/download
+ROOT_USER="osboxes"
 ROOT_PASS="osboxes.org"
-#
-# Type your own password below which should be correct for you system
+# Type your own password below which should be correct for you system, comment appropriate lines above
+# and uncoment those lines below
+#ROOT_USER=""
 #ROOT_PASS=""
 # coloured variables for script
 RESET=`tput sgr0`
@@ -23,8 +25,8 @@ apt-get update && apt-get upgrade -y
 # Disable guest session
 echo "allow-guest=false" >> /usr/share/lightdm/lightdm.conf.d/50-ubuntu.conf
 # configure system to allow more performance
-# "vm.swappiness=10" — means that you system will use swap when you RAM will be full for 90%
-echo "vm.swappiness=10" >> /etc/sysctl.conf
+# "vm.swappiness=7" — means that you system will start using swap, when RAM will be full for 93%
+echo "vm.swappiness=7" >> /etc/sysctl.conf
 echo ${GREEN}.............................................. Done .............................................${RESET}
 ### Install Google Chrome https://www.google.com/chrome/
 read -r -p "${YELLOW}Do you want to install Google Chrome Browser? [y/N] ${RESTORE}" CHROME
@@ -243,48 +245,76 @@ case $SELENIUM in
         echo ${RED}............................... Omitting Selenium installation ..................................${RESET}
         ;;
 esac
-
-
-### Install LEMP (nginx + MySQL + PHPMyAdmin) and configure it
-read -r -p "${YELLOW}Do you want to install LEMP Stack? [y/N] ${RESTORE}" LEMP
-case $LEMP in
+### Install LAMP (Apache2 + MySQL + PHPMyAdmin) and configure it
+read -r -p "${YELLOW}Do you want to install LAMP Stack? [y/N] ${RESTORE}" LAMP
+case $LAMP in
     [yY][eE][sS]|[yY])
-        echo ${GREEN}.............. Installing and Configuring LEMP: Linux + nginx + MySQL + phpmyadmin ..............${RESET}
-        # Uninstall/Clear possible extra programs
-        #apt-get purge -y apache2* php5* mysql*
-        #dpkg -l | grep apache*
-        #dpkg -l | grep php5*
-        #dpkg -l | grep mysql*
-        #apt-get autoremove -y
-        # Set up variables:
+        echo ${GREEN}............................. Installing and configuring LAMP Server ............................${RESET}
+        # Set Up variables
         # site folder path
-        SITE_PATH="/usr/share/nginx/html"
+        SITE_PATH="/var/www/html/"
         # server name
         SERVER_NAME="local.com"
-        # www config
-        WWW_CONF="/etc/php5/fpm/pool.d/www.conf"
-        # nginx config
-        NGINX_CONF="/etc/nginx/nginx.conf"
-        # default nginx config
-        DEFAULT_NGINX_CONF="/etc/nginx/sites-available/default"
-        DEFAULT_NGINX_CONF_LINK="/etc/nginx/sites-enabled/default"
         # mysql variables
+        MYSQL_CONFIG_FILE="/etc/mysql/my.cnf"
         MYSQL_ROOT_USER="root"
         MYSQL_ROOT_PASS="root"
-        ### Install PHP 5.6
-        echo ${GREEN}.......................................... Installing PHP .......................................${RESET}
+        # PHPMyAdmin
+        PHPMYADMIN_PASS="root"
+        # Install Apache2 and configure it
+        echo ${GREEN}....................................... Installing Apache2 ......................................${RESET}
+        apt-get install apache2 nstall php5 libapache2-mod-php5 php5-mcrypt -y
+        a2enmod rewrite ssl
+        # Config servername
+        echo "ServerName localhost" > /etc/apache2/conf-available/fqdn.conf
+        a2enconf fqdn
+        # Setting SSL for default site
+        apt-get install ssl-cert -y
+        a2ensite default-ssl
+        # Enable mod_rewrite
+        a2enmod rewrite
+        # Enable mod_ssl
+        a2enmod ssl
+        # Restart service
+        service apache2 restart
+        # Install mysql-server
+        echo ${GREEN}.................................... Installing MySQL Server ....................................${RESET}
+        # Set password for root account
+        echo "mysql-server mysql-server/root_password password $MYSQL_ROOT_PASS" | debconf-set-selections
+        echo "mysql-server mysql-server/root_password_again password $MYSQL_ROOT_PASS" | debconf-set-selections
+        apt-get install mysql-server php5-mysql -y
+        # Allow connections to this server from outside
+        #sed -i s/bind-address\s*=\s*127.0.0.1/bind-address = 0.0.0.0/' /etc/php5/fpm/php.ini
+        mysql -u${MYSQL_ROOT_USER} -p${MYSQL_ROOT_PASS} -e "GRANT ALL PRIVILEGES ON *.* TO root@'%' IDENTIFIED BY '$MYSQL_ROOT_PASS';"
+        mysql -u${MYSQL_ROOT_USER} -p${MYSQL_ROOT_PASS} -e "FLUSH PRIVILEGES;"
+        # Restart service
+        service mysql stop
+        service mysql start
+        # Install PHP 5.6 and all related modules
+        echo ${GREEN}........................................ Installing PHP .........................................${RESET}
         echo -ne '\n' | add-apt-repository ppa:ondrej/php5-5.6
         apt-get update && apt-get upgrade -y
         apt-get install php5 -y
-        apt-get install php5-fpm php-mbstring php-pdo php5-mysql php5-gd php-intl php-opcache php-devel php-xml php-apc php5-mcrypt php5-xdebug -y
-        # php.ini error reporting configuring
+        apt-get install php-pear php5-cli php5-curl php5-gd php5-mcrypt php5-imagick php5-intl php5-memcached php5-memcache php5-json php5-xdebug -y
+        # Install PhpMyAdmin
+        echo ${GREEN}..................................... Installing PhpMyAdmin .....................................${RESET}
+        echo "phpmyadmin phpmyadmin/reconfigure-webserver multiselect apache2" | debconf-set-selections
+        echo "phpmyadmin phpmyadmin/dbconfig-install boolean true" | debconf-set-selections
+        echo "phpmyadmin phpmyadmin/mysql/admin-user string root" | debconf-set-selections
+        echo "phpmyadmin phpmyadmin/mysql/admin-pass password $MYSQL_ROOT_PASS" | debconf-set-selections
+        echo "phpmyadmin phpmyadmin/mysql/app-pass password $MYSQL_ROOT_PASS" | debconf-set-selections
+        echo "phpmyadmin phpmyadmin/app-password-confirm password $PHPMYADMIN_PASS" | debconf-set-selections
+        apt-get install phpmyadmin -y
+        # Disable by default, as this will add to all VirtualHosts; instead, add the following to an Apache VirtualHost:
+        echo "Include /etc/phpmyadmin/apache.conf" >> /etc/apache2/apache2.conf
+        service apache2 reload
+        # php.ini configuration for displaying errors
         for INI in $(find /etc -name 'php.ini')
         do
             sed -i 's/^error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT/error_reporting = E_ALL/' ${INI}
             sed -i 's/^display_errors = Off/display_errors = On/' ${INI}
             sed -i 's/^display_startup_errors = Off/display_startup_errors = On/' ${INI}
             sed -i 's/^html_errors = Off/html_errors = On/' ${INI}
-            sed -i 's/^;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/' ${INI}
             # Change configuration if you planing to load big files
             sed -i 's/^post_max_size = 8M/post_max_size = 200M/' ${INI}
             sed -i 's/^upload_max_filesize = 2M/upload_max_filesize = 200M/' ${INI}
@@ -308,88 +338,16 @@ case $LEMP in
             echo "xdebug.var_display_max_children = 256" >> ${INI}
             echo "xdebug.var_display_max_data = 1024" >> ${INI}
         done
-        # Change settings for unix socket
-        sed -i 's/^listen =  127.0.0.1:9000/listen = \/var\/run\/php5-fpm.sock/' ${WWW_CONF}
-        sed -i '/^listen.allowed_clients/c;listen.allowed_clients =' ${WWW_CONF}
-        sed -i '/^;catch_workers_output/ccatch_workers_output = yes' ${WWW_CONF}
-        # Create phpinfo() file
+        # Restart services
+        service mysql restart
+        service apache2 restart
         cat > ${SITE_PATH}/info.php << EOF
             <?php phpinfo(); ?>
 EOF
-        ### Install nginx
-        echo ${GREEN}.......................................... Installing Nginx .....................................${RESET}
-        echo -ne '\n' | add-apt-repository ppa:nginx/stable
-        apt-get update
-        apt-get upgrade -y
-        apt-get install nginx -y
-        service nginx stop
-        # Backup default settings for nginx.conf
-        cp ${NGINX_CONF} ${NGINX_CONF}.backup
-        # Configure nginx.conf
-        sed -i 's/^worker_processes 4;/worker_processes 1;/' ${NGINX_CONF}
-        # Backup default settings for nginx
-        cp ${DEFAULT_NGINX_CONF} ${DEFAULT_NGINX_CONF}.backup
-        # Configure nginx for http://localhost/
-        cat > ${DEFAULT_NGINX_CONF} << EOF
-            server {
-                listen   80; ## listen for ipv4; this line is default and implied
-                listen   [::]:80 default_server ipv6only=on; ## listen for ipv6
-
-                root /usr/share/nginx/html;
-                index index.php index.html index.htm;
-
-                SERVER_NAME ${SERVER_NAME};
-
-                location / {
-                    try_files \$uri \$uri/ /index.php;
-                }
-
-                error_page 404 /404.html;
-                error_page 500 502 503 504 /50x.html;
-                location = /50x.html {
-                root /usr/share/nginx/html;
-            }
-
-            # pass the PHP scripts to FastCGI server listening on the php-fpm socket
-            location ~ \\.php\$ {
-
-                fastcgi_split_path_info ^(.+\\.php)(/.+)\$;
-                try_files \$uri =404;
-                fastcgi_pass unix:/var/run/php5-fpm.sock;
-                #fastcgi_pass 127.0.0.1:9000;
-                fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
-                fastcgi_index index.php;
-                include fastcgi_params;
-            }
-
-        }
-EOF
-        # Add site name to /etc/hosts
-        echo "127.0.0.1       ${SERVER_NAME}" >> /etc/hosts
-        # Restart services
-        service mysql restart
-        service nginx restart
-        service php5-fpm restart
-        ### Install mysql-server and phpmyadmin
-        echo ${GREEN}................................. Installing MySQL & phpmyadmin .................................${RESET}
-        apt-get update
-        echo -ne '\n' | add-apt-repository ppa:nijel/phpmyadmin
-        echo "mysql-server mysql-server/root_password password $MYSQL_ROOT_PASS" | debconf-set-selections
-        echo "mysql-server mysql-server/root_password_again password $MYSQL_ROOT_PASS" | debconf-set-selections
-        echo "phpmyadmin phpmyadmin/dbconfig-install boolean true" | debconf-set-selections
-        echo "phpmyadmin phpmyadmin/app-password-confirm password $MYSQL_ROOT_PASS" | debconf-set-selections
-        echo "phpmyadmin phpmyadmin/mysql/admin-pass password $MYSQL_ROOT_PASS" | debconf-set-selections
-        echo "phpmyadmin phpmyadmin/mysql/app-pass password $MYSQL_ROOT_PASS"v	 | debconf-set-selections
-        echo "phpmyadmin phpmyadmin/reconfigure-webserver multiselect none" | debconf-set-selections
-        apt-get install mysql-server php5-mysql phpmyadmin -y
-        ln -s /usr/share/phpmyadmin /usr/share/nginx/html
-        # Enable mycrypt and restart service
-        php5enmod mcrypt
-        service php5-fpm restart
         echo ${GREEN}.............................................. Done .............................................${RESET}
         ;;
     *)
-        echo ${RED}................................. Omitting LEMP installation ....................................${RESET}
+        echo ${RED}................................. Omitting LAMP installation ....................................${RESET}
         ;;
 esac
 ### Install Composer https://getcomposer.org/
@@ -496,9 +454,9 @@ case $PHPSTORM in
         echo ${GREEN}............................. Installing and Configuring PHPStopm10 .............................${RESET}
         wget http://download-cf.jetbrains.com/webide/PhpStorm-10.0.3.tar.gz
         tar -xvf PhpStorm-10.0.3.tar.gz
-        # IMPORTANT!: For complete installation, you should execute two commands below from Terminal after finishing this script
-        #cd PhpStorm-*/bin/
-        #./phpstorm.sh || TRUE
+        # TODO: Check this!
+        cd PhpStorm-*/bin/
+        sudo su -c "./phpstorm.sh || TRUE" -s /bin/sh ${ROOT_USER}
         echo ${GREEN}.............................................. Done .............................................${RESET}
         ;;
     *)
@@ -511,7 +469,7 @@ read -r -p "${YELLOW}Do you want to install HipChat? [y/N] ${RESTORE}" HIPCHAT
 case $HIPCHAT in
     [yY][eE][sS]|[yY])
         echo ${GREEN}...................................... Installing HipChat .......................................${RESET}
-        echo osboxes.org | sudo su
+        echo ${ROOT_PASS} | sudo su
         echo "deb http://downloads.hipchat.com/linux/apt stable main" > /etc/apt/sources.list.d/atlassian-hipchat.list
         wget -O - https://www.hipchat.com/keys/hipchat-linux.key | apt-key add -
         apt-get update
