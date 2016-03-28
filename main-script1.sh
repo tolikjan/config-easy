@@ -21,6 +21,7 @@ YELLOW=$(echo '\033[00;33m')
 
 ### Update and Upgrade the system
 echo ${GREEN}................................. Update and Upgrade the system .................................${RESET}
+sleep 5
 apt-get update && apt-get upgrade -y
 # Disable guest session
 echo "allow-guest=false" >> /usr/share/lightdm/lightdm.conf.d/50-ubuntu.conf
@@ -251,6 +252,8 @@ case $LAMP in
     [yY][eE][sS]|[yY])
         echo ${GREEN}............................. Installing and configuring LAMP Server ............................${RESET}
         # Set Up variables
+        # TODO: variables not found
+        # TODO: AH00558: apache2: could not reliably determine the server's ...
         # site folder path
         SITE_PATH="/var/www/html/"
         # server name
@@ -359,7 +362,7 @@ case $COMPOSER in
         apt-get install php5-curl -y
         apt-get install curl php5-cli git -y
         curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-        chmod 777 -R ~/.composer/
+        chmod 777 -R ~/.composer/n
         echo ${GREEN}.............................................. Done .............................................${RESET}
         ;;
     *)
@@ -415,6 +418,24 @@ case $VAGRANT in
         echo ${RED}............................... Omitting Vagrant installation ...................................${RESET}
         ;;
 esac
+### Install Docker https://www.docker.com/
+# TODO: Add Docker
+read -r -p "${YELLOW}Do you want to install Docker? [y/N] ${RESTORE}" DOCKER
+case $DOCKER in
+    [yY][eE][sS]|[yY])
+        echo ${GREEN}....................................... Installing Docker .......................................${RESET}
+        # Get deb, unpack it and remove after installing
+        wget https://releases.hashicorp.com/vagrant/1.8.1/vagrant_1.8.1_x86_64.deb
+        dpkg -i vagrant*.deb
+        apt-get install vagrant -y
+        apt-get install -f -y
+        rm -rf vagrant*.deb
+        echo ${GREEN}.............................................. Done .............................................${RESET}
+        ;;
+    *)
+        echo ${RED}............................... Omitting Docker installation ....................................${RESET}
+        ;;
+esac
 ### Install SublimeText 3 https://www.sublimetext.com/3
 # Just uncomment lines below from "—– BEGIN LICENSE —–" till "—— END LICENSE —"
 # and paste it into license field in editor
@@ -446,25 +467,7 @@ case $SUBLIME in
         echo ${RED}............................. Omitting SublimeText3 installation ................................${RESET}
         ;;
 esac
-### Install PhpStorm 10 https://www.jetbrains.com/phpstorm/download/
-# Licence server here - https://бэкдор.рф/phpstorm-7-8-9-10-product-key/
-read -r -p "${YELLOW}Do you want to install PHPStorm 10? [y/N] ${RESTORE}" PHPSTORM
-case $PHPSTORM in
-    [yY][eE][sS]|[yY])
-        echo ${GREEN}............................. Installing and Configuring PHPStopm10 .............................${RESET}
-        wget http://download-cf.jetbrains.com/webide/PhpStorm-10.0.3.tar.gz
-        tar -xvf PhpStorm-10.0.3.tar.gz
-        # TODO: Check this!
-        cd PhpStorm-*/bin/
-        sudo su -c "./phpstorm.sh || TRUE" -s /bin/sh ${ROOT_USER}
-        echo ${GREEN}.............................................. Done .............................................${RESET}
-        ;;
-    *)
-        echo ${RED}.............................. Omitting PHPStopm10 installation .................................${RESET}
-        ;;
-esac
-### Install PhpStorm 10 https://www.jetbrains.com/phpstorm/download/
-# Licence server here - https://бэкдор.рф/phpstorm-7-8-9-10-product-key/
+### Install HipChat https://www.hipchat.com/
 read -r -p "${YELLOW}Do you want to install HipChat? [y/N] ${RESTORE}" HIPCHAT
 case $HIPCHAT in
     [yY][eE][sS]|[yY])
@@ -478,5 +481,40 @@ case $HIPCHAT in
         ;;
     *)
         echo ${RED}................................ Omitting HipChat installation ..................................${RESET}
+        ;;
+esac
+### Install PhpStorm 10 https://www.jetbrains.com/phpstorm/download/
+# Link, where you can find license-key info - https://бэкдор.рф/phpstorm-10-2016-product-key/
+# For activation, choose License server option and type licence server(without quotes) — "http://idea.qinxi1992.cn"
+read -r -p "${YELLOW}Do you want to install PHPStorm 10? [y/N] ${RESTORE}" PHPSTORM
+case $PHPSTORM in
+    [yY][eE][sS]|[yY])
+        echo ${GREEN}............................. Installing and Configuring PHPStopm10 .............................${RESET}
+        wget http://download-cf.jetbrains.com/webide/PhpStorm-10.0.3.tar.gz
+        tar -xvf PhpStorm-10.0.3.tar.gz
+        # TODO: Check this!
+        cd PhpStorm-*/bin/
+        sudo su -c "./phpstorm.sh || TRUE" -s /bin/sh ${ROOT_USER}
+        echo ${GREEN}.............................................. Done .............................................${RESET}
+        ### Install code sniffer for phpStorm
+        # https://www.drupal.org/node/1419988
+        # TODO: Check the code sniffer installation
+        read -r -p "${YELLOW}Do you want to install Drupal Codesniffer for PHPStorm? [y/N] ${RESTORE}" CODESNIFFER
+        case $CODESNIFFER in
+            [yY][eE][sS]|[yY])
+                echo ${GREEN}.................................... Installing Codesniffer .....................................${RESET}
+                composer global require drupal/coder
+                composer global update drupal/coder --prefer-source
+                export PATH="$PATH:$HOME/.composer/vendor/bin"
+                phpcs --config-set installed_paths ~/.composer/vendor/drupal/coder/coder_sniffer
+                echo ${GREEN}.............................................. Done .............................................${RESET}
+                ;;
+            *)
+                echo ${RED}.............................. Omitting Codesniffer installation ................................${RESET}
+                ;;
+        esac
+        ;;
+    *)
+        echo ${RED}.............................. Omitting PHPStopm10 installation .................................${RESET}
         ;;
 esac
