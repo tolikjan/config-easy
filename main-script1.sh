@@ -9,13 +9,25 @@ ROOT_PASS="osboxes.org"
 #
 # Type your own password below which should be correct for you system
 #ROOT_PASS=""
-# coloured variables
+# coloured variables for script
 RESET=`tput sgr0`
 GREEN=`tput setaf 2`
 RED=`tput setaf 1`
+# coloured variables for y/N prompts
+RESTORE=$(echo '\033[0m')
+YELLOW=$(echo '\033[00;33m')
 
+### Update and Upgrade the system
+echo ${GREEN}................................. Update and Upgrade the system .................................${RESET}
+apt-get update && apt-get upgrade -y
+# Disable guest session
+echo "allow-guest=false" >> /usr/share/lightdm/lightdm.conf.d/50-ubuntu.conf
+# configure system to allow more performance
+# "vm.swappiness=10" — means that you system will use swap when you RAM will be full for 90%
+echo "vm.swappiness=10" >> /etc/sysctl.conf
+echo ${GREEN}.............................................. Done .............................................${RESET}
 ### Install Google Chrome https://www.google.com/chrome/
-read -r -p "Do you want to install Google Chrome Browser? [y/N] " CHROME
+read -r -p "${YELLOW}Do you want to install Google Chrome Browser? [y/N] ${RESTORE}" CHROME
 case $CHROME in
     [yY][eE][sS]|[yY])
         echo ${GREEN}................................... Installing Google Chrome ....................................${RESET}
@@ -31,7 +43,7 @@ case $CHROME in
         ;;
 esac
 ### Install xclip tool — for copy files via terminal
-read -r -p "Do you want to install xclip? [y/N] " XCLIP
+read -r -p "${YELLOW}Do you want to install xclip? [y/N] ${RESTORE}" XCLIP
 case $XCLIP in
     [yY][eE][sS]|[yY])
         echo ${GREEN}........................................ Installing xclip .......................................${RESET}
@@ -45,7 +57,7 @@ case $XCLIP in
         ;;
 esac
 ### Install ccsm http://wiki.compiz.org/CCSM http://help.ubuntu.ru/wiki/ccsm
-read -r -p "Do you want to install ccsm? [y/N] " CCSM
+read -r -p "${YELLOW}Do you want to install ccsm? [y/N] ${RESTORE}" CCSM
 case $CCSM in
     [yY][eE][sS]|[yY])
         echo ${GREEN}........................................ Installing ccsm ........................................${RESET}
@@ -57,7 +69,7 @@ case $CCSM in
         ;;
 esac
 ### Install gparted http://gparted.org/
-read -r -p "Do you want to install gparted? [y/N] " GPARTED
+read -r -p "${YELLOW}Do you want to install Gparted? [y/N] ${RESTORE}" GPARTED
 case $GPARTED in
     [yY][eE][sS]|[yY])
         echo ${GREEN}...................................... Installing gparted .......................................${RESET}
@@ -69,7 +81,7 @@ case $GPARTED in
         ;;
 esac
 ### Install Flash Player for Firefox
-read -r -p "Do you want to install Flash Player for Firefox Browser? [y/N] " FFFP
+read -r -p "${YELLOW}Do you want to install Flash Player for Firefox Browser? [y/N] ${RESTORE}" FFFP
 case $FFFP in
     [yY][eE][sS]|[yY])
         echo ${GREEN}.................................... Installing Flash Player ....................................${RESET}
@@ -81,7 +93,7 @@ case $FFFP in
         ;;
 esac
 ### Install Tweak Tool for Ubuntu additional settings https://launchpad.net/unity-tweak-tool
-read -r -p "Do you want to install Tweak Tool? [y/N] " TWEAK
+read -r -p "${YELLOW}Do you want to install Tweak Tool? [y/N] ${RESTORE}" TWEAK
 case $TWEAK in
     [yY][eE][sS]|[yY])
         echo ${GREEN}..................................... Installing Tweak Tool .....................................${RESET}
@@ -93,7 +105,7 @@ case $TWEAK in
         ;;
 esac
 ### Install utilities for archive manager with 7z and rar support
-read -r -p "Do you want to add 7z and rar support to archive manager? [y/N] " UNRAR
+read -r -p "${YELLOW}Do you want to add unrar and 7z support for archive manager? [y/N] ${RESTORE}" UNRAR
 case $UNRAR in
     [yY][eE][sS]|[yY])
         echo ${GREEN}.................................... Installing 7z and Unrar ....................................${RESET}
@@ -106,7 +118,7 @@ case $UNRAR in
         ;;
 esac
 ### Install Skype http://www.skype.com/
-read -r -p "Do you want to install Skype? [y/N] " SKYPE
+read -r -p "${YELLOW}Do you want to install Skype? [y/N] ${RESTORE}" SKYPE
 case $SKYPE in
     [yY][eE][sS]|[yY])
         # Install dependencies for Skype
@@ -124,7 +136,7 @@ case $SKYPE in
         ;;
 esac
 ### Install Tor Browser https://www.torproject.org/
-read -r -p "Do you want to install Tor Browser? [y/N] " TOR
+read -r -p "${YELLOW}Do you want to install Tor Browser? [y/N] ${RESTORE}" TOR
 case $TOR in
     [yY][eE][sS]|[yY])
         echo ${GREEN}.................................... Installing Tor Browser .....................................${RESET}
@@ -138,7 +150,7 @@ case $TOR in
         ;;
 esac
 ### Install Telegram messenger https://telegram.org/
-read -r -p "Do you want to install Telegram messenger? [y/N] " TELEGRAM
+read -r -p "${YELLOW}Do you want to install Telegram messenger? [y/N] ${RESTORE}" TELEGRAM
 case $TELEGRAM in
     [yY][eE][sS]|[yY])
         echo ${GREEN}...................................... Installing Telegram ......................................${RESET}
@@ -152,7 +164,7 @@ case $TELEGRAM in
         ;;
 esac
 ### Install Shutter http://shutter-project.org/
-read -r -p "Do you want to install Shutter? [y/N] " SHUTTER
+read -r -p "${YELLOW}Do you want to install Shutter? [y/N] ${RESTORE}" SHUTTER
 case $SHUTTER in
     [yY][eE][sS]|[yY])
         echo ${GREEN}...................................... Installing Shutter .......................................${RESET}
@@ -165,7 +177,7 @@ case $SHUTTER in
         ;;
 esac
 ### Install SSH Server http://www.openssh.com/
-read -r -p "Do you want to install SSH Server? [y/N] " SSH
+read -r -p "${YELLOW}Do you want to install SSH Server? [y/N] ${RESTORE}" SSH
 case $SSH in
     [yY][eE][sS]|[yY])
         echo ${GREEN}..................................... Installing SSH Server .....................................${RESET}
@@ -181,7 +193,7 @@ case $SSH in
         ;;
 esac
 ### Install Git https://git-scm.com/
-read -r -p "Do you want to install Flash Player for Firefox Browser? [y/N] " GIT
+read -r -p "${YELLOW}Do you want to install Git(with tig tool)? [y/N] ${RESTORE}" GIT
 case $GIT in
     [yY][eE][sS]|[yY])
         echo ${GREEN}........................................ Installing Git .........................................${RESET}
@@ -196,7 +208,7 @@ case $GIT in
         ;;
 esac
 ### Install Selenium Server http://www.seleniumhq.org/
-read -r -p "Do you want to install Selenium Standalone Server? [y/N] " SELENIUM
+read -r -p "${YELLOW}Do you want to install Selenium Standalone Server? [y/N] ${RESTORE}" SELENIUM
 case $SELENIUM in
     [yY][eE][sS]|[yY])
         echo ${GREEN}.................................. Installing Selenium Server ...................................${RESET}
@@ -234,16 +246,16 @@ esac
 
 
 ### Install LEMP (nginx + MySQL + PHPMyAdmin) and configure it
-read -r -p "Do you want to install LEMP Server? [y/N] " LEMP
+read -r -p "${YELLOW}Do you want to install LEMP Stack? [y/N] ${RESTORE}" LEMP
 case $LEMP in
     [yY][eE][sS]|[yY])
         echo ${GREEN}.............. Installing and Configuring LEMP: Linux + nginx + MySQL + phpmyadmin ..............${RESET}
         # Uninstall/Clear possible extra programs
-        apt-get purge -y apache2* php5* mysql*
-        dpkg -l | grep apache*
-        dpkg -l | grep php5*
-        dpkg -l | grep mysql*
-        apt-get autoremove -y
+        #apt-get purge -y apache2* php5* mysql*
+        #dpkg -l | grep apache*
+        #dpkg -l | grep php5*
+        #dpkg -l | grep mysql*
+        #apt-get autoremove -y
         # Set up variables:
         # site folder path
         SITE_PATH="/usr/share/nginx/html"
@@ -381,7 +393,7 @@ EOF
         ;;
 esac
 ### Install Composer https://getcomposer.org/
-read -r -p "Do you want to install Composer? [y/N] " COMPOSER
+read -r -p "${YELLOW}Do you want to install Composer? [y/N] ${RESTORE}" COMPOSER
 case $COMPOSER in
     [yY][eE][sS]|[yY])
         echo ${GREEN}...................................... Installing Composer ......................................${RESET}
@@ -397,7 +409,7 @@ case $COMPOSER in
         ;;
 esac
 ### Install VirtualBox https://www.virtualbox.org/
-read -r -p "Do you want to install Virtual Box? [y/N] " VIRTUALBOX
+read -r -p "${YELLOW}Do you want to install VirtualBox? [y/N] ${RESTORE}" VIRTUALBOX
 case $VIRTUALBOX in
     [yY][eE][sS]|[yY])
         echo ${GREEN}.................................... Installing VirtualBox  .....................................${RESET}
@@ -429,7 +441,7 @@ case $VIRTUALBOX in
         ;;
 esac
 ### Install Vagrant https://www.vagrantup.com/docs/
-read -r -p "Do you want to install Vagrant? [y/N] " VAGRANT
+read -r -p "${YELLOW}Do you want to install Vagrant? [y/N] ${RESTORE}" VAGRANT
 case $VAGRANT in
     [yY][eE][sS]|[yY])
         echo ${GREEN}....................................... Installing Vagrant ......................................${RESET}
@@ -463,7 +475,7 @@ esac
 #200C25BE DBBC4855 C4CFB774 C5EC138C
 #0FEC1CEF D9DCECEC D3A5DAD1 01316C36
 #—— END LICENSE —
-read -r -p "Do you want to install SublimeText 3? [y/N] " SUBLIME
+read -r -p "${YELLOW}Do you want to install SublimeText 3? [y/N] ${RESTORE}" SUBLIME
 case $SUBLIME in
     [yY][eE][sS]|[yY])
         echo ${GREEN}.................................... Installing SublimeText3 ....................................${RESET}
@@ -478,7 +490,7 @@ case $SUBLIME in
 esac
 ### Install PhpStorm 10 https://www.jetbrains.com/phpstorm/download/
 # Licence server here - https://бэкдор.рф/phpstorm-7-8-9-10-product-key/
-read -r -p "Do you want to install PHPStorm 10? [y/N] " PHPSTORM
+read -r -p "${YELLOW}Do you want to install PHPStorm 10? [y/N] ${RESTORE}" PHPSTORM
 case $PHPSTORM in
     [yY][eE][sS]|[yY])
         echo ${GREEN}............................. Installing and Configuring PHPStopm10 .............................${RESET}
@@ -495,7 +507,7 @@ case $PHPSTORM in
 esac
 ### Install PhpStorm 10 https://www.jetbrains.com/phpstorm/download/
 # Licence server here - https://бэкдор.рф/phpstorm-7-8-9-10-product-key/
-read -r -p "Do you want to install HipChat? [y/N] " HIPCHAT
+read -r -p "${YELLOW}Do you want to install HipChat? [y/N] ${RESTORE}" HIPCHAT
 case $HIPCHAT in
     [yY][eE][sS]|[yY])
         echo ${GREEN}...................................... Installing HipChat .......................................${RESET}
