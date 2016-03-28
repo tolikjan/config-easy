@@ -3,7 +3,7 @@
 # This script will be helpful after reinstalling you operating system
 # Tested on Ubuntu 14.04.4 64x
 # TODO: Change README.md to clarify user's credentials
-# For testing I used vagrant-box
+# For testing, I used vagrant-box
 # https://sourceforge.net/projects/osboxes/files/vms/vbox/Ubuntu/14.04/14.04.4/Ubuntu_14.04.4-64bit.7z/download
 ROOT_USER="osboxes"
 ROOT_PASS="osboxes.org"
@@ -11,6 +11,7 @@ ROOT_PASS="osboxes.org"
 # and uncoment those lines below
 #ROOT_USER=""
 #ROOT_PASS=""
+
 # coloured variables for script
 RESET=`tput sgr0`
 GREEN=`tput setaf 2`
@@ -252,8 +253,8 @@ case $LAMP in
     [yY][eE][sS]|[yY])
         echo ${GREEN}............................. Installing and configuring LAMP Server ............................${RESET}
         # Set Up variables
-        # TODO: variables not found
-        # TODO: AH00558: apache2: could not reliably determine the server's ...
+        # TODO: Check why variables not found
+        # TODO: Check this —> AH00558: apache2: could not reliably determine the server's ...
         # site folder path
         SITE_PATH="/var/www/html/"
         # server name
@@ -268,9 +269,6 @@ case $LAMP in
         echo ${GREEN}....................................... Installing Apache2 ......................................${RESET}
         apt-get install apache2 nstall php5 libapache2-mod-php5 php5-mcrypt -y
         a2enmod rewrite ssl
-        # Config servername
-        echo "ServerName localhost" > /etc/apache2/conf-available/fqdn.conf
-        a2enconf fqdn
         # Setting SSL for default site
         apt-get install ssl-cert -y
         a2ensite default-ssl
@@ -278,6 +276,9 @@ case $LAMP in
         a2enmod rewrite
         # Enable mod_ssl
         a2enmod ssl
+        # Config servername
+        echo "ServerName localhost" >> /etc/apache2/conf-available/fqdn.conf
+        a2enconf fqdn
         # Restart service
         service apache2 restart
         # Install mysql-server
@@ -287,7 +288,6 @@ case $LAMP in
         echo "mysql-server mysql-server/root_password_again password $MYSQL_ROOT_PASS" | debconf-set-selections
         apt-get install mysql-server php5-mysql -y
         # Allow connections to this server from outside
-        #sed -i s/bind-address\s*=\s*127.0.0.1/bind-address = 0.0.0.0/' /etc/php5/fpm/php.ini
         mysql -u${MYSQL_ROOT_USER} -p${MYSQL_ROOT_PASS} -e "GRANT ALL PRIVILEGES ON *.* TO root@'%' IDENTIFIED BY '$MYSQL_ROOT_PASS';"
         mysql -u${MYSQL_ROOT_USER} -p${MYSQL_ROOT_PASS} -e "FLUSH PRIVILEGES;"
         # Restart service
@@ -419,17 +419,17 @@ case $VAGRANT in
         ;;
 esac
 ### Install Docker https://www.docker.com/
-# TODO: Add Docker
 read -r -p "${YELLOW}Do you want to install Docker? [y/N] ${RESTORE}" DOCKER
 case $DOCKER in
     [yY][eE][sS]|[yY])
         echo ${GREEN}....................................... Installing Docker .......................................${RESET}
-        # Get deb, unpack it and remove after installing
-        wget https://releases.hashicorp.com/vagrant/1.8.1/vagrant_1.8.1_x86_64.deb
-        dpkg -i vagrant*.deb
-        apt-get install vagrant -y
-        apt-get install -f -y
-        rm -rf vagrant*.deb
+        # Add the new gpg key
+        apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
+        apt-get update
+        apt-get purge lxc-docker*
+        apt-get install docker-engine
+        #Latest Drupal 7 Docker image — https://github.com/wadmiraal/docker-drupal
+        #docker run -d -p 8080:80 -p 8022:22 -t wadmiraal/drupal:7
         echo ${GREEN}.............................................. Done .............................................${RESET}
         ;;
     *)
@@ -437,23 +437,6 @@ case $DOCKER in
         ;;
 esac
 ### Install SublimeText 3 https://www.sublimetext.com/3
-# Just uncomment lines below from "—– BEGIN LICENSE —–" till "—— END LICENSE —"
-# and paste it into license field in editor
-# or use license from this gist — https://gist.github.com/wayou/3a2d7c1576340f1d3ac8
-###
-#—– BEGIN LICENSE —–
-#Michael Barnes
-#Single User License
-#EA7E-821385
-#8A353C41 872A0D5C DF9B2950 AFF6F667
-#C458EA6D 8EA3C286 98D1D650 131A97AB
-#AA919AEC EF20E143 B361B1E7 4C8B7F04
-#B085E65E 2F5F5360 8489D422 FB8FC1AA
-#93F6323C FD7F7544 3F39C318 D95E6480
-#FCCC7561 8A4A1741 68FA4223 ADCEDE07
-#200C25BE DBBC4855 C4CFB774 C5EC138C
-#0FEC1CEF D9DCECEC D3A5DAD1 01316C36
-#—— END LICENSE —
 read -r -p "${YELLOW}Do you want to install SublimeText 3? [y/N] ${RESTORE}" SUBLIME
 case $SUBLIME in
     [yY][eE][sS]|[yY])
@@ -483,15 +466,13 @@ case $HIPCHAT in
         echo ${RED}................................ Omitting HipChat installation ..................................${RESET}
         ;;
 esac
-### Install PhpStorm 10 https://www.jetbrains.com/phpstorm/download/
-# Link, where you can find license-key info - https://бэкдор.рф/phpstorm-10-2016-product-key/
-# For activation, choose License server option and type licence server(without quotes) — "http://idea.qinxi1992.cn"
-read -r -p "${YELLOW}Do you want to install PHPStorm 10? [y/N] ${RESTORE}" PHPSTORM
+### Install PhpStorm 2016 — https://www.jetbrains.com/phpstorm/download/download-thanks.html?platform=linux
+read -r -p "${YELLOW}Do you want to install PHPStorm 2016? [y/N] ${RESTORE}" PHPSTORM
 case $PHPSTORM in
     [yY][eE][sS]|[yY])
         echo ${GREEN}............................. Installing and Configuring PHPStopm10 .............................${RESET}
-        wget http://download-cf.jetbrains.com/webide/PhpStorm-10.0.3.tar.gz
-        tar -xvf PhpStorm-10.0.3.tar.gz
+        wget http://download-cf.jetbrains.com/webide/PhpStorm-2016.1.tar.gz
+        tar -xvf PhpStorm-2016.1.tar.gz
         # TODO: Check this!
         cd PhpStorm-*/bin/
         sudo su -c "./phpstorm.sh || TRUE" -s /bin/sh ${ROOT_USER}
