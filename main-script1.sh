@@ -132,7 +132,7 @@ case $SKYPE in
         apt-get install skype -y
         # Install sound plugins for fixing problems with sound for Ubuntu
         #apt-get install libasound2-plugins:i386 -y
-        # TODO : Check this
+        # TODO : Check whether Skype works on Ubuntu with this settings
         apt-get install libpulse0:i386 -y
         ;;
     *)
@@ -427,7 +427,7 @@ read -r -p "${YELLOW}Do you want to install Docker? [Y/n] ${RESTORE}" DOCKER
 case $DOCKER in
     [yY][eE][sS]|[yY])
         echo ${GREEN}....................................... Installing Docker .......................................${RESET}
-        # TODO: Check Docker
+        # TODO: Check whether Docker works
         # Add the new gpg key
         apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
         apt-get update
@@ -482,17 +482,16 @@ case $PHPSTORM in
         echo ${GREEN}............................. Installing and Configuring PHPStopm10 .............................${RESET}
         wget http://download-cf.jetbrains.com/webide/PhpStorm-2016.1.tar.gz
         tar -xvf PhpStorm-2016.1.tar.gz
-        # TODO: Check this!
         cd PhpStorm-*/bin/
         sudo su -c "./phpstorm.sh || TRUE" -s /bin/sh ${ROOT_USER}
         echo ${GREEN}.............................................. Done .............................................${RESET}
-        ### Install code sniffer for phpStorm
+        ### Install Drupal code sniffer for phpStorm
         # https://www.drupal.org/node/1419988
-        # TODO: Check the code sniffer installation
-        read -r -p "${YELLOW}Do you want to install Drupal Codesniffer for PHPStorm? [Y/n] ${RESTORE}" CODESNIFFER
+        # phpcs source path — /home/your-user/.composer/vendor/bin/phpcs
+        read -r -p "${YELLOW}Do you want to install Drupal Code Sniffer for PHPStorm? [Y/n] ${RESTORE}" CODESNIFFER
         case $CODESNIFFER in
             [yY][eE][sS]|[yY])
-                echo ${GREEN}.................................... Installing Codesniffer .....................................${RESET}
+                echo ${GREEN}............................ Installing Drupal Code Sniffer .............................${RESET}
                 composer global require drupal/coder
                 composer global update drupal/coder --prefer-source
                 export PATH="$PATH:$HOME/.composer/vendor/bin"
