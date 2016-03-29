@@ -436,6 +436,12 @@ case $DOCKER in
         # Install Docker
         apt-get install docker -y
         apt-get install docker-engine -y
+        # Add user to docker group
+        usermod -aG docker ${ROOT_USER}
+        # Add permission for docker
+        chmod o+rw /var/run/docker.sock
+        # Restart Docker
+        service docker restart
         #Latest Drupal 7 Docker image — https://github.com/wadmiraal/docker-drupal
         # Example of docker-run command(just uncomment it and execute via Terminal):
         #docker run -d -p 8080:80 -p 8022:22 -t wadmiraal/drupal:7
