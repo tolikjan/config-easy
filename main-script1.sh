@@ -431,8 +431,6 @@ case $DOCKER in
         # Add the new gpg key
         apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
         apt-get update
-        # Purge old images if present
-        apt-get purge lxc-docker*
         # Install Docker
         apt-get install docker -y
         apt-get install docker-engine -y
