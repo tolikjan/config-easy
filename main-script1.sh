@@ -57,6 +57,20 @@ case $XCLIP in
         echo ${RED}.................................. Omitting xclip installation ..................................${RESET}
         ;;
 esac
+### Install UNetbootin http://unetbootin.github.io/
+read -r -p "${YELLOW}Do you want to install UNetbootin? [Y/n] ${RESTORE}" UNETBOOTIN
+case $UNETBOOTIN in
+    [yY][eE][sS]|[yY])
+        echo ${GREEN}..................................... Installing Unetbootin .....................................${RESET}
+        echo -ne '\n' | add-apt-repository ppa:gezakovacs/ppa
+        apt-get update
+        apt-get install apt-get install unetbootin -y
+        echo ${GREEN}.............................................. Done .............................................${RESET}
+        ;;
+    *)
+        echo ${RED}.............................. Omitting Unetbootin installation .................................${RESET}
+        ;;
+esac
 ### Install ccsm http://wiki.compiz.org/CCSM http://help.ubuntu.ru/wiki/ccsm
 read -r -p "${YELLOW}Do you want to install ccsm? [Y/n] ${RESTORE}" CCSM
 case $CCSM in
