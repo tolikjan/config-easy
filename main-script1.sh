@@ -197,13 +197,13 @@ case $SSH in
         ;;
 esac
 ### Install Git https://git-scm.com/
-read -r -p "${YELLOW}Do you want to install Git(with tig tool)? [Y/n] ${RESTORE}" GIT
+read -r -p "${YELLOW}Do you want to install Git (with tig tool)? [Y/n] ${RESTORE}" GIT
 case $GIT in
     [yY][eE][sS]|[yY])
         echo ${GREEN}........................................ Installing Git .........................................${RESET}
         apt-get update
         apt-get install git -y
-        # Tig — text-mode interface for git http://jonas.nitro.dk/tig/manual.html
+        # tig — text-mode interface for git http://jonas.nitro.dk/tig/manual.html
         apt-get install tig -y
         echo ${GREEN}.............................................. Done .............................................${RESET}
         ;;
@@ -252,10 +252,7 @@ read -r -p "${YELLOW}Do you want to install LAMP Stack? [Y/n] ${RESTORE}" LAMP
 case $LAMP in
     [yY][eE][sS]|[yY])
         echo ${GREEN}............................. Installing and configuring LAMP Server ............................${RESET}
-        # Set Up variables
-        # TODO: Check why variables not found
-        # TODO: Check this —> AH00558: apache2: could not reliably determine the server's ...
-        # Site's folder path
+        # Site's folder path variable
         SITE_PATH="/var/www/html/"
         # mysql variables
         MYSQL_CONFIG_FILE="/etc/mysql/my.cnf"
@@ -308,8 +305,7 @@ case $LAMP in
         echo "phpmyadmin phpmyadmin/mysql/app-pass password $MYSQL_ROOT_PASS" | debconf-set-selections
         echo "phpmyadmin phpmyadmin/app-password-confirm password $PHPMYADMIN_PASS" | debconf-set-selections
         apt-get install phpmyadmin -y
-        # Disable by default, as this will add to all VirtualHosts; instead, add the following to an Apache VirtualHost:
-        echo "Include /etc/phpmyadmin/apache.conf" >> /etc/apache2/apache2.conf
+        # Reload apache2 service
         service apache2 reload
         # php.ini configuration for displaying errors
         for INI in $(find /etc -name 'php.ini')
@@ -323,11 +319,13 @@ case $LAMP in
             sed -i 's/^upload_max_filesize = 2M/upload_max_filesize = 200M/' ${INI}
         done
         # Set up xdebug variable
+        # TODO: Check whether it works for Composer
         XDEBUG="$(find / -name "xdebug.so" 2> /dev/null)"
         sleep 10
         for INI in $(find /etc -name 'php.ini')
         do
-            echo "zend_extension_ts=\"${XDEBUG}\"" >> ${INI}
+            echo "zend_extension=\"${XDEBUG}\"" >> ${INI}
+            echo "memory_limit=-1" >> ${INI}
             echo "xdebug.remote_autostart=1" >> ${INI}
             echo "xdebug.remote_enable=1" >> ${INI}
             echo "xdebug.remote_connect_back=1" >> ${INI}
@@ -429,11 +427,15 @@ read -r -p "${YELLOW}Do you want to install Docker? [Y/n] ${RESTORE}" DOCKER
 case $DOCKER in
     [yY][eE][sS]|[yY])
         echo ${GREEN}....................................... Installing Docker .......................................${RESET}
+        # TODO: Check Docker
         # Add the new gpg key
         apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
         apt-get update
+        # Purge old images if present
         apt-get purge lxc-docker*
-        apt-get install docker-engine
+        # Install Docker
+        apt-get install docker -y
+        apt-get install docker-engine -y
         #Latest Drupal 7 Docker image — https://github.com/wadmiraal/docker-drupal
         # Example of docker-run command(just uncomment it and execute via Terminal):
         #docker run -d -p 8080:80 -p 8022:22 -t wadmiraal/drupal:7
@@ -506,3 +508,4 @@ case $PHPSTORM in
         echo ${RED}.............................. Omitting PHPStopm10 installation .................................${RESET}
         ;;
 esac
+echo ${GREEN}............................. Programs were installed successfully! .............................${RESET}
