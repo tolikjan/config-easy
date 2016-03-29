@@ -24,7 +24,7 @@ Choice-mode will be running after Updating/Upgrading steps.
 5) start shell with commands below (don't forget about `sudo`):
 
     $ cd /path/to/folder/config-easy
-    $ sudo sh main-script1.sh
+    $ sudo sh main-script.sh
 
 ### 2. Run script via copy/paste script into empty document and saving it on you PC:
 
