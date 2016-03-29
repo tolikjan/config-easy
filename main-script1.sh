@@ -2,21 +2,18 @@
 
 # This script will be helpful after reinstalling you operating system
 # Tested on Ubuntu 14.04.4 64x
-# TODO: Change README.md to clarify user's credentials
 # For testing, I used vagrant-box
 # https://sourceforge.net/projects/osboxes/files/vms/vbox/Ubuntu/14.04/14.04.4/Ubuntu_14.04.4-64bit.7z/download
+# with next credentials:
 ROOT_USER="osboxes"
 ROOT_PASS="osboxes.org"
-# Type your own password below which should be correct for you system, comment appropriate lines above
-# and uncoment those lines below
-#ROOT_USER=""
-#ROOT_PASS=""
+# Remove test credentials above with your own
 
-# coloured variables for script
+# Coloured variables for script
 RESET=`tput sgr0`
 GREEN=`tput setaf 2`
 RED=`tput setaf 1`
-# coloured variables for y/N prompts
+# Coloured variables for y/N prompts
 RESTORE=$(echo '\033[0m')
 YELLOW=$(echo '\033[00;33m')
 
@@ -26,16 +23,16 @@ sleep 5
 apt-get update && apt-get upgrade -y
 # Disable guest session
 echo "allow-guest=false" >> /usr/share/lightdm/lightdm.conf.d/50-ubuntu.conf
-# configure system to allow more performance
+# Configuring system to allow more performance
 # "vm.swappiness=7" — means that you system will start using swap, when RAM will be full for 93%
 echo "vm.swappiness=7" >> /etc/sysctl.conf
 echo ${GREEN}.............................................. Done .............................................${RESET}
 ### Install Google Chrome https://www.google.com/chrome/
-read -r -p "${YELLOW}Do you want to install Google Chrome Browser? [y/N] ${RESTORE}" CHROME
+read -r -p "${YELLOW}Do you want to install Google Chrome Browser? [Y/n] ${RESTORE}" CHROME
 case $CHROME in
     [yY][eE][sS]|[yY])
         echo ${GREEN}................................... Installing Google Chrome ....................................${RESET}
-        # Get deb, unpack it and remove after installing
+        # Get deb. package, unpack and remove it after installing
         wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
         dpkg -i ./google-chrome*.deb
         apt-get install -f -y
@@ -46,8 +43,8 @@ case $CHROME in
         echo ${RED}.............................. Omitting Google Chrome installation ..............................${RESET}
         ;;
 esac
-### Install xclip tool — for copy files via terminal
-read -r -p "${YELLOW}Do you want to install xclip? [y/N] ${RESTORE}" XCLIP
+### Install xclip tool — for easily copying files/ssh keys via terminal
+read -r -p "${YELLOW}Do you want to install xclip? [Y/n] ${RESTORE}" XCLIP
 case $XCLIP in
     [yY][eE][sS]|[yY])
         echo ${GREEN}........................................ Installing xclip .......................................${RESET}
@@ -61,7 +58,7 @@ case $XCLIP in
         ;;
 esac
 ### Install ccsm http://wiki.compiz.org/CCSM http://help.ubuntu.ru/wiki/ccsm
-read -r -p "${YELLOW}Do you want to install ccsm? [y/N] ${RESTORE}" CCSM
+read -r -p "${YELLOW}Do you want to install ccsm? [Y/n] ${RESTORE}" CCSM
 case $CCSM in
     [yY][eE][sS]|[yY])
         echo ${GREEN}........................................ Installing ccsm ........................................${RESET}
@@ -73,7 +70,7 @@ case $CCSM in
         ;;
 esac
 ### Install gparted http://gparted.org/
-read -r -p "${YELLOW}Do you want to install Gparted? [y/N] ${RESTORE}" GPARTED
+read -r -p "${YELLOW}Do you want to install Gparted? [Y/n] ${RESTORE}" GPARTED
 case $GPARTED in
     [yY][eE][sS]|[yY])
         echo ${GREEN}...................................... Installing gparted .......................................${RESET}
@@ -85,7 +82,7 @@ case $GPARTED in
         ;;
 esac
 ### Install Flash Player for Firefox
-read -r -p "${YELLOW}Do you want to install Flash Player for Firefox Browser? [y/N] ${RESTORE}" FFFP
+read -r -p "${YELLOW}Do you want to install Flash Player for Firefox Browser? [Y/n] ${RESTORE}" FFFP
 case $FFFP in
     [yY][eE][sS]|[yY])
         echo ${GREEN}.................................... Installing Flash Player ....................................${RESET}
@@ -97,7 +94,8 @@ case $FFFP in
         ;;
 esac
 ### Install Tweak Tool for Ubuntu additional settings https://launchpad.net/unity-tweak-tool
-read -r -p "${YELLOW}Do you want to install Tweak Tool? [y/N] ${RESTORE}" TWEAK
+# NOTE: Do not use this for Ubuntu Gnome, cause it already enabled there
+read -r -p "${YELLOW}Do you want to install Tweak Tool? [Y/n] ${RESTORE}" TWEAK
 case $TWEAK in
     [yY][eE][sS]|[yY])
         echo ${GREEN}..................................... Installing Tweak Tool .....................................${RESET}
@@ -109,7 +107,7 @@ case $TWEAK in
         ;;
 esac
 ### Install utilities for archive manager with 7z and rar support
-read -r -p "${YELLOW}Do you want to add unrar and 7z support for archive manager? [y/N] ${RESTORE}" UNRAR
+read -r -p "${YELLOW}Do you want to add unrar and 7z support for archive manager? [Y/n] ${RESTORE}" UNRAR
 case $UNRAR in
     [yY][eE][sS]|[yY])
         echo ${GREEN}.................................... Installing 7z and Unrar ....................................${RESET}
@@ -122,7 +120,7 @@ case $UNRAR in
         ;;
 esac
 ### Install Skype http://www.skype.com/
-read -r -p "${YELLOW}Do you want to install Skype? [y/N] ${RESTORE}" SKYPE
+read -r -p "${YELLOW}Do you want to install Skype? [Y/n] ${RESTORE}" SKYPE
 case $SKYPE in
     [yY][eE][sS]|[yY])
         # Install dependencies for Skype
@@ -133,14 +131,16 @@ case $SKYPE in
         apt-get update
         apt-get install skype -y
         # Install sound plugins for fixing problems with sound for Ubuntu
-        apt-get install libasound2-plugins:i386 -y
+        #apt-get install libasound2-plugins:i386 -y
+        # TODO : Check this
+        apt-get install libpulse0:i386 -y
         ;;
     *)
         echo ${RED}................................. Omitting Skype installation ...................................${RESET}
         ;;
 esac
 ### Install Tor Browser https://www.torproject.org/
-read -r -p "${YELLOW}Do you want to install Tor Browser? [y/N] ${RESTORE}" TOR
+read -r -p "${YELLOW}Do you want to install Tor Browser? [Y/n] ${RESTORE}" TOR
 case $TOR in
     [yY][eE][sS]|[yY])
         echo ${GREEN}.................................... Installing Tor Browser .....................................${RESET}
@@ -154,7 +154,7 @@ case $TOR in
         ;;
 esac
 ### Install Telegram messenger https://telegram.org/
-read -r -p "${YELLOW}Do you want to install Telegram messenger? [y/N] ${RESTORE}" TELEGRAM
+read -r -p "${YELLOW}Do you want to install Telegram messenger? [Y/n] ${RESTORE}" TELEGRAM
 case $TELEGRAM in
     [yY][eE][sS]|[yY])
         echo ${GREEN}...................................... Installing Telegram ......................................${RESET}
@@ -168,7 +168,7 @@ case $TELEGRAM in
         ;;
 esac
 ### Install Shutter http://shutter-project.org/
-read -r -p "${YELLOW}Do you want to install Shutter? [y/N] ${RESTORE}" SHUTTER
+read -r -p "${YELLOW}Do you want to install Shutter? [Y/n] ${RESTORE}" SHUTTER
 case $SHUTTER in
     [yY][eE][sS]|[yY])
         echo ${GREEN}...................................... Installing Shutter .......................................${RESET}
@@ -181,7 +181,7 @@ case $SHUTTER in
         ;;
 esac
 ### Install SSH Server http://www.openssh.com/
-read -r -p "${YELLOW}Do you want to install SSH Server? [y/N] ${RESTORE}" SSH
+read -r -p "${YELLOW}Do you want to install SSH Server? [Y/n] ${RESTORE}" SSH
 case $SSH in
     [yY][eE][sS]|[yY])
         echo ${GREEN}..................................... Installing SSH Server .....................................${RESET}
@@ -197,7 +197,7 @@ case $SSH in
         ;;
 esac
 ### Install Git https://git-scm.com/
-read -r -p "${YELLOW}Do you want to install Git(with tig tool)? [y/N] ${RESTORE}" GIT
+read -r -p "${YELLOW}Do you want to install Git(with tig tool)? [Y/n] ${RESTORE}" GIT
 case $GIT in
     [yY][eE][sS]|[yY])
         echo ${GREEN}........................................ Installing Git .........................................${RESET}
@@ -212,7 +212,7 @@ case $GIT in
         ;;
 esac
 ### Install Selenium Server http://www.seleniumhq.org/
-read -r -p "${YELLOW}Do you want to install Selenium Standalone Server? [y/N] ${RESTORE}" SELENIUM
+read -r -p "${YELLOW}Do you want to install Selenium Standalone Server? [Y/n] ${RESTORE}" SELENIUM
 case $SELENIUM in
     [yY][eE][sS]|[yY])
         echo ${GREEN}.................................. Installing Selenium Server ...................................${RESET}
@@ -248,17 +248,15 @@ case $SELENIUM in
         ;;
 esac
 ### Install LAMP (Apache2 + MySQL + PHPMyAdmin) and configure it
-read -r -p "${YELLOW}Do you want to install LAMP Stack? [y/N] ${RESTORE}" LAMP
+read -r -p "${YELLOW}Do you want to install LAMP Stack? [Y/n] ${RESTORE}" LAMP
 case $LAMP in
     [yY][eE][sS]|[yY])
         echo ${GREEN}............................. Installing and configuring LAMP Server ............................${RESET}
         # Set Up variables
         # TODO: Check why variables not found
         # TODO: Check this —> AH00558: apache2: could not reliably determine the server's ...
-        # site folder path
+        # Site's folder path
         SITE_PATH="/var/www/html/"
-        # server name
-        SERVER_NAME="local.com"
         # mysql variables
         MYSQL_CONFIG_FILE="/etc/mysql/my.cnf"
         MYSQL_ROOT_USER="root"
@@ -267,7 +265,11 @@ case $LAMP in
         PHPMYADMIN_PASS="root"
         # Install Apache2 and configure it
         echo ${GREEN}....................................... Installing Apache2 ......................................${RESET}
-        apt-get install apache2 nstall php5 libapache2-mod-php5 php5-mcrypt -y
+        # Add php 5.6 repo and install it
+        echo -ne '\n' | add-apt-repository ppa:ondrej/php5-5.6
+        apt-get update && apt-get upgrade -y
+        # Install Apache2 and all dependencies
+        apt-get install php5 apache2 libapache2-mod-php5 php5-mcrypt -y
         a2enmod rewrite ssl
         # Setting SSL for default site
         apt-get install ssl-cert -y
@@ -295,9 +297,7 @@ case $LAMP in
         service mysql start
         # Install PHP 5.6 and all related modules
         echo ${GREEN}........................................ Installing PHP .........................................${RESET}
-        echo -ne '\n' | add-apt-repository ppa:ondrej/php5-5.6
-        apt-get update && apt-get upgrade -y
-        apt-get install php5 -y
+        # Install php-modules
         apt-get install php-pear php5-cli php5-curl php5-gd php5-mcrypt php5-imagick php5-intl php5-memcached php5-memcache php5-json php5-xdebug -y
         # Install PhpMyAdmin
         echo ${GREEN}..................................... Installing PhpMyAdmin .....................................${RESET}
@@ -344,6 +344,7 @@ case $LAMP in
         # Restart services
         service mysql restart
         service apache2 restart
+        # Add phpinfo file into the site directory
         cat > ${SITE_PATH}/info.php << EOF
             <?php phpinfo(); ?>
 EOF
@@ -351,10 +352,15 @@ EOF
         ;;
     *)
         echo ${RED}................................. Omitting LAMP installation ....................................${RESET}
+        # Add php 5.6 repo and install it
+        echo -ne '\n' | add-apt-repository ppa:ondrej/php5-5.6
+        apt-get update && apt-get upgrade -y
+        # Install php-modules
+        apt-get install php5 php-pear php5-cli php5-curl- y
         ;;
 esac
 ### Install Composer https://getcomposer.org/
-read -r -p "${YELLOW}Do you want to install Composer? [y/N] ${RESTORE}" COMPOSER
+read -r -p "${YELLOW}Do you want to install Composer? [Y/n] ${RESTORE}" COMPOSER
 case $COMPOSER in
     [yY][eE][sS]|[yY])
         echo ${GREEN}...................................... Installing Composer ......................................${RESET}
@@ -370,7 +376,7 @@ case $COMPOSER in
         ;;
 esac
 ### Install VirtualBox https://www.virtualbox.org/
-read -r -p "${YELLOW}Do you want to install VirtualBox? [y/N] ${RESTORE}" VIRTUALBOX
+read -r -p "${YELLOW}Do you want to install VirtualBox? [Y/n] ${RESTORE}" VIRTUALBOX
 case $VIRTUALBOX in
     [yY][eE][sS]|[yY])
         echo ${GREEN}.................................... Installing VirtualBox  .....................................${RESET}
@@ -402,7 +408,7 @@ case $VIRTUALBOX in
         ;;
 esac
 ### Install Vagrant https://www.vagrantup.com/docs/
-read -r -p "${YELLOW}Do you want to install Vagrant? [y/N] ${RESTORE}" VAGRANT
+read -r -p "${YELLOW}Do you want to install Vagrant? [Y/n] ${RESTORE}" VAGRANT
 case $VAGRANT in
     [yY][eE][sS]|[yY])
         echo ${GREEN}....................................... Installing Vagrant ......................................${RESET}
@@ -419,7 +425,7 @@ case $VAGRANT in
         ;;
 esac
 ### Install Docker https://www.docker.com/
-read -r -p "${YELLOW}Do you want to install Docker? [y/N] ${RESTORE}" DOCKER
+read -r -p "${YELLOW}Do you want to install Docker? [Y/n] ${RESTORE}" DOCKER
 case $DOCKER in
     [yY][eE][sS]|[yY])
         echo ${GREEN}....................................... Installing Docker .......................................${RESET}
@@ -429,6 +435,7 @@ case $DOCKER in
         apt-get purge lxc-docker*
         apt-get install docker-engine
         #Latest Drupal 7 Docker image — https://github.com/wadmiraal/docker-drupal
+        # Example of docker-run command(just uncomment it and execute via Terminal):
         #docker run -d -p 8080:80 -p 8022:22 -t wadmiraal/drupal:7
         echo ${GREEN}.............................................. Done .............................................${RESET}
         ;;
@@ -437,7 +444,7 @@ case $DOCKER in
         ;;
 esac
 ### Install SublimeText 3 https://www.sublimetext.com/3
-read -r -p "${YELLOW}Do you want to install SublimeText 3? [y/N] ${RESTORE}" SUBLIME
+read -r -p "${YELLOW}Do you want to install SublimeText 3? [Y/n] ${RESTORE}" SUBLIME
 case $SUBLIME in
     [yY][eE][sS]|[yY])
         echo ${GREEN}.................................... Installing SublimeText3 ....................................${RESET}
@@ -451,7 +458,7 @@ case $SUBLIME in
         ;;
 esac
 ### Install HipChat https://www.hipchat.com/
-read -r -p "${YELLOW}Do you want to install HipChat? [y/N] ${RESTORE}" HIPCHAT
+read -r -p "${YELLOW}Do you want to install HipChat? [Y/n] ${RESTORE}" HIPCHAT
 case $HIPCHAT in
     [yY][eE][sS]|[yY])
         echo ${GREEN}...................................... Installing HipChat .......................................${RESET}
@@ -467,7 +474,7 @@ case $HIPCHAT in
         ;;
 esac
 ### Install PhpStorm 2016 — https://www.jetbrains.com/phpstorm/download/download-thanks.html?platform=linux
-read -r -p "${YELLOW}Do you want to install PHPStorm 2016? [y/N] ${RESTORE}" PHPSTORM
+read -r -p "${YELLOW}Do you want to install PHPStorm 2016? [Y/n] ${RESTORE}" PHPSTORM
 case $PHPSTORM in
     [yY][eE][sS]|[yY])
         echo ${GREEN}............................. Installing and Configuring PHPStopm10 .............................${RESET}
@@ -480,7 +487,7 @@ case $PHPSTORM in
         ### Install code sniffer for phpStorm
         # https://www.drupal.org/node/1419988
         # TODO: Check the code sniffer installation
-        read -r -p "${YELLOW}Do you want to install Drupal Codesniffer for PHPStorm? [y/N] ${RESTORE}" CODESNIFFER
+        read -r -p "${YELLOW}Do you want to install Drupal Codesniffer for PHPStorm? [Y/n] ${RESTORE}" CODESNIFFER
         case $CODESNIFFER in
             [yY][eE][sS]|[yY])
                 echo ${GREEN}.................................... Installing Codesniffer .....................................${RESET}

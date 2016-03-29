@@ -33,7 +33,7 @@ Choice-mode will be running after Updating/Upgrading steps.
     $ cd /path/to/folder
     $ sudo nano name-you-script.sh
 
-2) copy/paste this script and save changes in `nano` editor 
+2) copy/paste this script and save changes in `nano` editor
 
     Ctrl+O
     Ctrl+X
