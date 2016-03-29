@@ -19,7 +19,7 @@ Choice-mode will be running after Updating/Upgrading steps.
 
     $ git clone https://github.com/tolikjan/config-easy.git
 
-4) change `ROOT_USER` and `ROOT_PASS` for yours in `main-script1.sh`
+4) change `ROOT_USER` and `ROOT_PASS` for yours in `config-ubuntu.sh`
 
 5) start shell with commands below (don't forget about `sudo`):
 
