@@ -319,7 +319,6 @@ case $LAMP in
             sed -i 's/^upload_max_filesize = 2M/upload_max_filesize = 200M/' ${INI}
         done
         # Set up xdebug variable
-        # TODO: Check whether it works for Composer
         XDEBUG="$(find / -name "xdebug.so" 2> /dev/null)"
         sleep 10
         for INI in $(find /etc -name 'php.ini')
