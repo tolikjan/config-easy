@@ -45,6 +45,9 @@ Choice-mode will be running after Updating/Upgrading steps.
     $ cd /path/to/folder
     $ sudo sh name-you-script.sh
 
+NOTE: In the end of the script, last step will be PHPStorm installation.
+You need to pass all steps with adding the License code and enabling new settings.
+
 ### Include:
 - Google Chrome (https://www.google.com/chrome/)
 - xclip — for copy files via terminal
