@@ -57,20 +57,6 @@ case $XCLIP in
         echo ${RED}.................................. Omitting xclip installation ..................................${RESET}
         ;;
 esac
-### Install UNetbootin http://unetbootin.github.io/
-read -r -p "${YELLOW}Do you want to install UNetbootin? [Y/n] ${RESTORE}" UNETBOOTIN
-case $UNETBOOTIN in
-    [yY][eE][sS]|[yY])
-        echo ${GREEN}..................................... Installing Unetbootin .....................................${RESET}
-        echo -ne '\n' | add-apt-repository ppa:gezakovacs/ppa
-        apt-get update
-        apt-get install apt-get install unetbootin -y
-        echo ${GREEN}.............................................. Done .............................................${RESET}
-        ;;
-    *)
-        echo ${RED}.............................. Omitting Unetbootin installation .................................${RESET}
-        ;;
-esac
 ### Install ccsm http://wiki.compiz.org/CCSM http://help.ubuntu.ru/wiki/ccsm
 read -r -p "${YELLOW}Do you want to install ccsm? [Y/n] ${RESTORE}" CCSM
 case $CCSM in
@@ -339,14 +325,17 @@ case $LAMP in
         do
             echo "zend_extension=\"${XDEBUG}\"" >> ${INI}
             echo "memory_limit=-1" >> ${INI}
+            echo "xdebug.profiler_enable = 1" >> ${INI}
             echo "xdebug.remote_autostart=1" >> ${INI}
             echo "xdebug.remote_enable=1" >> ${INI}
+            echo "xdebug_enable=1" >> ${INI}
             echo "xdebug.remote_connect_back=1" >> ${INI}
             echo "xdebug.remote_port=9002" >> ${INI}
             echo "xdebug.idekey=PHP_STORM" >> ${INI}
             echo "xdebug.scream=0" >> ${INI}
             echo "xdebug.cli_color=1" >> ${INI}
             echo "xdebug.show_local_vars=1" >> ${INI}
+            echo "xdebug.remote_connect_back = 1" >> ${INI}
             echo ";var_dump display" >> ${INI}
             echo "xdebug.var_display_max_depth = 5" >> ${INI}
             echo "xdebug.var_display_max_children = 256" >> ${INI}
@@ -384,6 +373,23 @@ case $COMPOSER in
         ;;
     *)
         echo ${RED}............................... Omitting Composer installation ..................................${RESET}
+        ;;
+esac
+
+### Install Drush — command line shell and Unix scripting interface for Drupal — http://www.drush.org/en/master/
+# IMPORTANT! You need to install Composer first
+read -r -p "${YELLOW}Do you want to install Drush? [Y/n] ${RESTORE}" DRUSH
+case $DRUSH in
+    [yY][eE][sS]|[yY])
+        echo ${GREEN}........................................ Installing Drush .......................................${RESET}
+        curl -sS https://getcomposer.org/installer | php
+        mv composer.phar /usr/local/bin/composer
+        export PATH="$HOME/.composer/vendor/bin:$PATH"
+        composer global require drush/drush:8.*
+        echo ${GREEN}.............................................. Done .............................................${RESET}
+        ;;
+    *)
+        echo ${RED}................................ Omitting Drush installation ....................................${RESET}
         ;;
 esac
 ### Install VirtualBox https://www.virtualbox.org/
@@ -439,21 +445,25 @@ esac
 read -r -p "${YELLOW}Do you want to install Docker? [Y/n] ${RESTORE}" DOCKER
 case $DOCKER in
     [yY][eE][sS]|[yY])
-        echo ${GREEN}....................................... Installing Docker .......................................${RESET}
-        # TODO: Check whether Docker works
-        # Add the new gpg key
-        apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
-        apt-get update
+        echo ${GREEN}............................... Installing and Configuring Docker ...............................${RESET}
+        # Tutorial — https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-compose-on-ubuntu-14-04
         # Install Docker
-        apt-get install docker -y
-        apt-get install docker-engine -y
+        echo ${ROOT_PASS} | wget -qO- https://get.docker.com/ | sh
+        # Add your user to the docker group
+        usermod -aG docker $(whoami)
+        # Install python-pip as prerequisite for Docker Compose
+        apt-get install python-pip -y
+        pip install docker-compose
+        echo ${GREEN}.............................................. Done .............................................${RESET}
         # Add user to docker group
         usermod -aG docker ${ROOT_USER}
         # Add permission for docker
         chmod o+rw /var/run/docker.sock
         # Restart Docker
         service docker restart
-        #Latest Drupal 7 Docker image — https://github.com/wadmiraal/docker-drupal
+        # NOTE: You need to restart you system too after step above
+        # Drupal 8 Docker image — https://github.com/skilld-labs/docker-php
+        # Latest Drupal 7 Docker image — https://github.com/wadmiraal/docker-drupal
         # Example of docker-run command(just uncomment it and execute via Terminal):
         #docker run -d -p 8080:80 -p 8022:22 -t wadmiraal/drupal:7
         echo ${GREEN}.............................................. Done .............................................${RESET}
