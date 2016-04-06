@@ -69,12 +69,13 @@ You need to pass all steps with adding the License code and enabling new setting
 - LAMP Server (Apache2 + MySQL + PHP 5.6 + phpmyadmin)
 - ONGOING —> LEMP Server (Nginx + MySQL + PHP 5.6 + phpmyadmin)
 - Composer (https://getcomposer.org/)
+- Drush (http://www.drush.org/en/master/)
 - VirtualBox (https://www.virtualbox.org/)
 - Vagrant (https://www.vagrantup.com/docs/)
 - Docker (https://www.docker.com/)
 - SublimeText 3 (https://www.sublimetext.com/3)
 - PHPStopm 10 (https://www.jetbrains.com/phpstorm/whatsnew/)
-- Code Sniffers for Drupal (https://www.drupal.org/node/1419988)
+- Code Sniffer for Drupal (https://www.drupal.org/node/1419988)
 - HipChat (https://www.hipchat.com/)
 
 Checked/tested on Ubuntu 14.04.4 LTS 64x

@@ -372,6 +372,23 @@ case $COMPOSER in
         echo ${RED}............................... Omitting Composer installation ..................................${RESET}
         ;;
 esac
+
+### Install Drush — command line shell and Unix scripting interface for Drupal — http://www.drush.org/en/master/
+# IMPORTANT! You need to install Composer first
+read -r -p "${YELLOW}Do you want to install Drush? [Y/n] ${RESTORE}" DRUSH
+case $DRUSH in
+    [yY][eE][sS]|[yY])
+        echo ${GREEN}........................................ Installing Drush .......................................${RESET}
+        curl -sS https://getcomposer.org/installer | php
+        mv composer.phar /usr/local/bin/composer
+        export PATH="$HOME/.composer/vendor/bin:$PATH"
+        composer global require drush/drush:8.*
+        echo ${GREEN}.............................................. Done .............................................${RESET}
+        ;;
+    *)
+        echo ${RED}................................ Omitting Drush installation ....................................${RESET}
+        ;;
+esac
 ### Install VirtualBox https://www.virtualbox.org/
 read -r -p "${YELLOW}Do you want to install VirtualBox? [Y/n] ${RESTORE}" VIRTUALBOX
 case $VIRTUALBOX in
