@@ -16,19 +16,22 @@ all needed programs after reinstalling your OS.
 
     $ git clone https://github.com/tolikjan/config-easy.git
 
-4) *IMPORTANT!* change `ROOT_USER` and `ROOT_PASS` for yours in `config-ubuntu.sh`
-
-5) start old shell script with commands below (don't forget about `sudo`):
+4) start old shell script with commands below (don't forget about `sudo`):
 
     $ cd /path/to/folder/config-easy
     $ git checkout develop-t
+    
+5) **IMPORTANT!** change `ROOT_USER` and `ROOT_PASS` for yours in `old-script.sh`
+
+6) start old shell script with commands below (don't forget about `sudo`):
+
     $ sudo sh old-script.sh
 
 # config-ubuntu.sh
 
 You could use following shell script for auto-installation all needed 
 programs after reinstalling your OS.
-You could choose which programs your want to install by yes/no prompts.
+You could choose which programs your want to install by using Y/n prompts.
 Choice-mode will be running after Updating/Upgrading steps.
 
 ### 1. Run script via cloning the Git Repo:
@@ -45,12 +48,15 @@ Choice-mode will be running after Updating/Upgrading steps.
 
     $ git clone https://github.com/tolikjan/config-easy.git
 
-4) *IMPORTANT!* change `ROOT_USER` and `ROOT_PASS` for yours in `config-ubuntu.sh`
-
-5) start shell with commands below (don't forget about `sudo`):
+4) start old shell script with commands below (don't forget about `sudo`):
 
     $ cd /path/to/folder/config-easy
-    $ git checkout master
+    $ git checkout develop-t
+    
+5) **IMPORTANT!** change `ROOT_USER` and `ROOT_PASS` for yours in `config-ubuntu.sh`
+
+6) start new shell script with commands below (don't forget about `sudo`):
+
     $ sudo sh config-ubuntu.sh
 
 ### 2. Run script via copy/paste script into empty document and saving it on you PC:
@@ -60,19 +66,19 @@ Choice-mode will be running after Updating/Upgrading steps.
     $ cd /path/to/folder
     $ sudo nano name-you-script.sh
 
-2) copy/paste this script and save changes in `nano` editor
+2) copy/paste script which you chosen and save changes (e.g. in `nano` editor)
 
     Ctrl+O
     Ctrl+X
 
-3) change `ROOT_USER` and `ROOT_PASS` for yours in `name-you-script.sh`
+3) **IMPORTANT!** change `ROOT_USER` and `ROOT_PASS` for yours in `name-you-script.sh`
 
 4) start shell with commands below (don't forget about `sudo`):
 
     $ cd /path/to/folder
     $ sudo sh name-you-script.sh
 
-NOTE: In the end of the script, last step will be PHPStorm installation.
+**NOTE:** In the end of the script, last step will be PHPStorm installation.
 You need to pass all steps with adding the License code and enabling new settings.
 
 ### Include:
