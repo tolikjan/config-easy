@@ -425,21 +425,25 @@ esac
 read -r -p "${YELLOW}Do you want to install Docker? [Y/n] ${RESTORE}" DOCKER
 case $DOCKER in
     [yY][eE][sS]|[yY])
-        echo ${GREEN}....................................... Installing Docker .......................................${RESET}
-        # TODO: Check whether Docker works
-        # Add the new gpg key
-        apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
-        apt-get update
+        echo ${GREEN}............................... Installing and Configuring Docker ...............................${RESET}
+        # Tutorial — https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-compose-on-ubuntu-14-04
         # Install Docker
-        apt-get install docker -y
-        apt-get install docker-engine -y
+        echo ${ROOT_PASS} | wget -qO- https://get.docker.com/ | sh
+        # Add your user to the docker group
+        usermod -aG docker $(whoami)
+        # Install python-pip as prerequisite for Docker Compose
+        apt-get install python-pip -y
+        pip install docker-compose
+        echo ${GREEN}.............................................. Done .............................................${RESET}
         # Add user to docker group
         usermod -aG docker ${ROOT_USER}
         # Add permission for docker
         chmod o+rw /var/run/docker.sock
         # Restart Docker
         service docker restart
-        #Latest Drupal 7 Docker image — https://github.com/wadmiraal/docker-drupal
+        # NOTE: You need to restart you system too after step above
+        # Drupal 8 Docker image — https://github.com/skilld-labs/docker-php
+        # Latest Drupal 7 Docker image — https://github.com/wadmiraal/docker-drupal
         # Example of docker-run command(just uncomment it and execute via Terminal):
         #docker run -d -p 8080:80 -p 8022:22 -t wadmiraal/drupal:7
         echo ${GREEN}.............................................. Done .............................................${RESET}
