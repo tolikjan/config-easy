@@ -1,4 +1,30 @@
-# config-easy
+# old-script.sh
+
+You could use following shell script for auto-installation (without Y/n prompts)
+all needed programs after reinstalling your OS.
+
+1) install `git` if it not installed yet
+
+    $ sudo apt-get update
+    $ sudo apt-get install git -y
+
+2) go to chosen folder in Terminal:
+
+    $ cd /path/to/folder
+    
+3) clone this GitHub Repo with command (use `sudo` if you in protected folder):
+
+    $ git clone https://github.com/tolikjan/config-easy.git
+
+4) *IMPORTANT!* change `ROOT_USER` and `ROOT_PASS` for yours in `config-ubuntu.sh`
+
+5) start old shell script with commands below (don't forget about `sudo`):
+
+    $ cd /path/to/folder/config-easy
+    $ git checkout develop-t
+    $ sudo sh old-script.sh
+
+# config-ubuntu.sh
 
 You could use following shell script for auto-installation all needed 
 programs after reinstalling your OS.
@@ -19,11 +45,12 @@ Choice-mode will be running after Updating/Upgrading steps.
 
     $ git clone https://github.com/tolikjan/config-easy.git
 
-4) change `ROOT_USER` and `ROOT_PASS` for yours in `config-ubuntu.sh`
+4) *IMPORTANT!* change `ROOT_USER` and `ROOT_PASS` for yours in `config-ubuntu.sh`
 
 5) start shell with commands below (don't forget about `sudo`):
 
     $ cd /path/to/folder/config-easy
+    $ git checkout master
     $ sudo sh config-ubuntu.sh
 
 ### 2. Run script via copy/paste script into empty document and saving it on you PC:
