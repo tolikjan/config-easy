@@ -111,6 +111,14 @@ apt-get install curl php5-cli git -y
 curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 chmod 777 -R ~/.composer/
 echo ${GREEN}.............................................. Done .............................................${RESET}
+### Install Drush — command line shell and Unix scripting interface for Drupal — http://www.drush.org/en/master/
+# IMPORTANT! You need to install Composer first
+echo ${GREEN}........................................ Installing Drush .......................................${RESET}
+curl -sS https://getcomposer.org/installer | php
+mv composer.phar /usr/local/bin/composer
+export PATH="$HOME/.composer/vendor/bin:$PATH"
+composer global require drush/drush:8.*
+echo ${GREEN}.............................................. Done .............................................${RESET}
 ### Install Code Sniffer
 echo ${GREEN}................................... Installing Code Sniffer .....................................${RESET}
 ### Install code sniffer for phpStorm
