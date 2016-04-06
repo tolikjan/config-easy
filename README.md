@@ -51,7 +51,7 @@ Choice-mode will be running after Updating/Upgrading steps.
 4) start old shell script with commands below (don't forget about `sudo`):
 
     $ cd /path/to/folder/config-easy
-    $ git checkout develop-t
+    $ git checkout master
     
 5) **IMPORTANT!** change `ROOT_USER` and `ROOT_PASS` for yours in `config-ubuntu.sh`
 
