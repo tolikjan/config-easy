@@ -138,7 +138,7 @@ cd ~/selenium
 # Install xvfb - display server which implementing the X11 display server protocol
 apt-get install xvfb -y
 # Get Selenium and install headless Java runtime (you should check newest release on http://www.seleniumhq.org/download/)
-wget http://selenium-release.storage.googleapis.com/2.52/selenium-server-standalone-2.52.0.jar
+wget http://selenium-release.storage.googleapis.com/2.53/selenium-server-standalone-2.53.0.jar
 apt-get install openjdk-7-jre-headless -y
 # Install headless GUI for firefox. Xvfb is a display server that performs graphical operations in memory
 #apt-get install xvfb -y
