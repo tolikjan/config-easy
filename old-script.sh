@@ -231,14 +231,17 @@ for INI in $(find /etc -name 'php.ini')
 do
     echo "zend_extension=\"${XDEBUG}\"" >> ${INI}
     echo "memory_limit=-1" >> ${INI}
+    echo "xdebug.profiler_enable = 1" >> ${INI}
     echo "xdebug.remote_autostart=1" >> ${INI}
     echo "xdebug.remote_enable=1" >> ${INI}
+    echo "xdebug_enable=1" >> ${INI}
     echo "xdebug.remote_connect_back=1" >> ${INI}
     echo "xdebug.remote_port=9002" >> ${INI}
     echo "xdebug.idekey=PHP_STORM" >> ${INI}
     echo "xdebug.scream=0" >> ${INI}
     echo "xdebug.cli_color=1" >> ${INI}
     echo "xdebug.show_local_vars=1" >> ${INI}
+    echo "xdebug.remote_connect_back = 1" >> ${INI}
     echo ";var_dump display" >> ${INI}
     echo "xdebug.var_display_max_depth = 5" >> ${INI}
     echo "xdebug.var_display_max_children = 256" >> ${INI}
