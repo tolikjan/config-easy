@@ -168,6 +168,15 @@ MYSQL_ROOT_PASS="root"
 PHPMYADMIN_PASS="root"
 # Install Apache2 and configure it
 echo ${GREEN}....................................... Installing Apache2 ......................................${RESET}
+# Check whether Nginx installed and remove it
+OUTPUT=$(/etc/init.d/nginx status)
+if [ "$OUTPUT" = " * nginx is running" ]; then
+	apt-get purge nginx nginx-common -y
+	rm -rf /etc/nginx
+	sudo apt-get autoremove -y
+else
+	echo "Nginx is not installed"
+fi
 # Add php 5.6 repo and install it
 echo -ne '\n' | add-apt-repository ppa:ondrej/php5-5.6
 apt-get update && apt-get upgrade -y
