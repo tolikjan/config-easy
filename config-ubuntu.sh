@@ -260,6 +260,15 @@ case $LAMP in
         MYSQL_ROOT_PASS="root"
         # PHPMyAdmin
         PHPMYADMIN_PASS="root"
+        # Check whether Nginx installed and remove it
+        OUTPUT=$(/etc/init.d/nginx status)
+        if [ "$OUTPUT" = " * nginx is running" ]; then
+          apt-get purge nginx nginx-common -y
+          rm -rf /etc/nginx
+          sudo apt-get autoremove -y
+        else
+          echo "Nginx is not installed"
+        fi
         # Install Apache2 and configure it
         echo ${GREEN}....................................... Installing Apache2 ......................................${RESET}
         # Add php 5.6 repo and install it
