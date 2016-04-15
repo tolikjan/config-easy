@@ -139,8 +139,6 @@ case $SKYPE in
         apt-get update
         apt-get install skype -y
         # Install sound plugins for fixing problems with sound for Ubuntu
-        #apt-get install libasound2-plugins:i386 -y
-        # TODO : Check whether Skype works on Ubuntu with this settings
         apt-get install libpulse0:i386 -y
         ;;
     *)
