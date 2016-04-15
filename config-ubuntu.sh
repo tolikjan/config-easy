@@ -20,7 +20,8 @@ YELLOW=$(echo '\033[00;33m')
 # Entering root user
 echo "Type the ROOT USER that you have on this PC, followed by [ENTER]:"
 read ROOT_USER
-if (($ROOT_USER == $(whoami) )); then
+CURRENT_USER="$(whoami)"
+if (($ROOT_USER == $CURRENT_USER)); then
     # Entering root password
     echo "Type the ROOT PASSWORD that you have on this PC, followed by [ENTER]:"
     read ROOT_PASS
