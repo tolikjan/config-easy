@@ -554,8 +554,9 @@ read -r -p "${YELLOW}Do you want to restart your PC? [Y/n] ${RESTORE}" RESTART
 case $RESTART in
     [yY][eE][sS]|[yY])
         echo ${GREEN}............................................ Restart ............................................${RESET}
-        shutdown -r now
-        echo ${GREEN}.............................................. Done .............................................${RESET}
+	echo ${GREEN}............................. Programs were installed successfully! .............................${RESET}
+	sleep 5
+        shutdown -h now
         ;;
     *)
         echo ${RED}.......................... You should restart your system manually ..............................${RESET}
