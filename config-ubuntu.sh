@@ -2,12 +2,12 @@
 
 # This script will be helpful after reinstalling you operating system
 # Tested on Ubuntu 14.04.4 64x
+
 # For testing, I used vagrant-box
 # https://sourceforge.net/projects/osboxes/files/vms/vbox/Ubuntu/14.04/14.04.4/Ubuntu_14.04.4-64bit.7z/download
 # with next credentials:
-ROOT_USER="osboxes"
-ROOT_PASS="osboxes.org"
-# Remove test credentials above with your own
+#ROOT_USER="osboxes"
+#ROOT_PASS="osboxes.org"
 
 # Coloured variables for script
 RESET=`tput sgr0`
@@ -16,6 +16,18 @@ RED=`tput setaf 1`
 # Coloured variables for y/N prompts
 RESTORE=$(echo '\033[0m')
 YELLOW=$(echo '\033[00;33m')
+
+# Entering root user
+echo "Type the ROOT USER that you have on this PC, followed by [ENTER]:"
+read ROOT_USER
+if (($ROOT_USER == $(whoami) )); then
+    # Entering root password
+    echo "Type the ROOT PASSWORD that you have on this PC, followed by [ENTER]:"
+    read ROOT_PASS
+else
+  "You typed incorrect username with root privileges. The script will be aborted"
+  exit
+fi
 
 ### Update and Upgrade the system
 echo ${GREEN}................................. Update and Upgrade the system .................................${RESET}
@@ -334,7 +346,7 @@ case $LAMP in
         do
             echo "zend_extension=\"${XDEBUG}\"" >> ${INI}
             echo "memory_limit=-1" >> ${INI}
-            echo "xdebug.profiler_enable = 1" >> ${INI}
+            echo "xdebug.profiler_enable=1" >> ${INI}
             echo "xdebug.remote_autostart=1" >> ${INI}
             echo "xdebug.remote_enable=1" >> ${INI}
             echo "xdebug_enable=1" >> ${INI}
@@ -541,6 +553,18 @@ case $PHPSTORM in
         ;;
     *)
         echo ${RED}.............................. Omitting PHPStopm10 installation .................................${RESET}
+        ;;
+esac
+### Restarting your machine
+read -r -p "${YELLOW}Do you want to restart your PC? [Y/n] ${RESTORE}" RESTART
+case $RESTART in
+    [yY][eE][sS]|[yY])
+        echo ${GREEN}............................................ Restart ............................................${RESET}
+        shutdown -r now
+        echo ${GREEN}.............................................. Done .............................................${RESET}
+        ;;
+    *)
+        echo ${RED}.......................... You should restart your system manually ..............................${RESET}
         ;;
 esac
 echo ${GREEN}............................. Programs were installed successfully! .............................${RESET}
