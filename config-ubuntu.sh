@@ -17,17 +17,17 @@ RED=`tput setaf 1`
 RESTORE=$(echo '\033[0m')
 YELLOW=$(echo '\033[00;33m')
 
+WHOAMI="$(id -u -n)"
 # Entering root user
 echo "Type the ROOT USER that you have on this PC, followed by [ENTER]:"
 read ROOT_USER
-WHOAMI="$(id -u -n)"
-if (( $WHOAMI == $ROOT_USER )); then
+if [ "$ROOT_USER" == "$WHOAMI" ]; then
     # Entering root password
     echo "Type the ROOT PASSWORD that you have on this PC, followed by [ENTER]:"
     read ROOT_PASS
 else
-  "You typed incorrect username with root privileges. The script will be aborted"
-  exit
+    echo "You typed incorrect username with root privileges. The script will be aborted"
+    exit
 fi
 
 ### Update and Upgrade the system
