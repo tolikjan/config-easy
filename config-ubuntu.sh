@@ -20,7 +20,7 @@ YELLOW=$(echo '\033[00;33m')
 # Entering root user
 echo "Type the ROOT USER that you have on this PC, followed by [ENTER]:"
 read ROOT_USER
-terminal -e whoami >> ${WHOAMI}
+WHOAMI="$(id -u -n)"
 if (( $WHOAMI == $ROOT_USER )); then
     # Entering root password
     echo "Type the ROOT PASSWORD that you have on this PC, followed by [ENTER]:"
