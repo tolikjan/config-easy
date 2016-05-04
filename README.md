@@ -64,6 +64,7 @@ You need to pass all steps with adding the License code and enabling new setting
 - Tor Browser (https://www.torproject.org/)
 - Telegram Messenger (https://telegram.org/)
 - Shutter (http://shutter-project.org/)
+- ScreenCloud (https://screencloud.net/)
 - SSH Server (http://www.openssh.com/)
 - Selenium Standalone Server (http://www.seleniumhq.org/)
 - LAMP Server (Apache2 + MySQL + PHP 5.6 + phpmyadmin)

@@ -186,6 +186,21 @@ case $SHUTTER in
         echo ${RED}............................... Omitting Shutter installation ...................................${RESET}
         ;;
 esac
+### Install ScreenCloud https://screencloud.net/
+read -r -p "${YELLOW}Do you want to install ScreenCloud? [Y/n] ${RESTORE}" SCREENCLOUD
+case $SCREENCLOUD in
+    [yY][eE][sS]|[yY])
+        echo ${GREEN}.................................... Installing ScreenCloud .....................................${RESET}
+        wget http://download.opensuse.org/repositories/home:/olav-st/xUbuntu_14.04/amd64/screencloud_1.2.0-1_amd64.deb
+        ln -s /usr/lib/x86_64-linux-gnu/libquazip.so.1.0.0 /usr/lib/x86_64-linux-gnu/libquazip.so.0
+        dpkg -i -force-depends screencloud_1.2.0-1_amd64.deb
+        apt-get install -f -y
+        echo ${GREEN}.............................................. Done .............................................${RESET}
+        ;;
+    *)
+        echo ${RED}............................. Omitting ScreenCloud installation .................................${RESET}
+        ;;
+esac
 ### Install SSH Server http://www.openssh.com/
 read -r -p "${YELLOW}Do you want to install SSH Server? [Y/n] ${RESTORE}" SSH
 case $SSH in
