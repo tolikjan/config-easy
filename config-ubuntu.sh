@@ -433,18 +433,18 @@ case $VIRTUALBOX in
         apt-get purge "^virtualbox-.*" -y
         apt-get update
         # Clean up
-        apt-get autoremove -y | apt-get autoclean - y | apt-get clean -y
+        apt-get autoremove -y && apt-get autoclean - y && apt-get clean -y
         # add the official Virtualbox repository for Linux
         sh -c 'echo "deb http://download.virtualbox.org/virtualbox/debian $(lsb_release -cs) contrib" >> /etc/apt/sources.list.d/virtualbox.list'
         # Now, download and register the ORACLE public key
         wget -q https://www.virtualbox.org/download/oracle_vbox.asc -O- | sudo apt-key add -
         # Update and install Virtualbox
         apt-get update
-        apt-get install dkms virtualbox-5.0 -y
+        apt-get install dkms virtualbox -y
         # Install Extension Pack for VirtualBox
         # You can check latest extension pack version here - https://www.virtualbox.org/wiki/Downloads
-        EXT_PACK="Oracle_VM_VirtualBox_Extension_Pack-5.0.16.vbox-extpack"
-        wget http://download.virtualbox.org/virtualbox/5.0.16/${EXT_PACK}
+        EXT_PACK="Oracle_VM_VirtualBox_Extension_Pack-5.0.18.vbox-extpack"
+        wget http://download.virtualbox.org/virtualbox/5.0.18/${EXT_PACK}
         echo ${ROOT_PASS} | VBoxManage extpack install ${EXT_PACK}
         rm -rf ${EXT_PACK}
         rm -rf virtualbox*.deb
