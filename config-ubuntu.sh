@@ -191,10 +191,10 @@ read -r -p "${YELLOW}Do you want to install ScreenCloud? [Y/n] ${RESTORE}" SCREE
 case $SCREENCLOUD in
     [yY][eE][sS]|[yY])
         echo ${GREEN}.................................... Installing ScreenCloud .....................................${RESET}
-        wget http://download.opensuse.org/repositories/home:/olav-st/xUbuntu_14.04/amd64/screencloud_1.2.0-1_amd64.deb
+        wget http://de.archive.ubuntu.com/ubuntu/pool/universe/q/qtmobility/libqtmultimediakit1_1.2.0-1ubuntu2_amd64.deb
         ln -s /usr/lib/x86_64-linux-gnu/libquazip.so.1.0.0 /usr/lib/x86_64-linux-gnu/libquazip.so.0
-        dpkg -i -force-depends screencloud_1.2.0-1_amd64.deb
-        apt-get install -f -y
+        dpkg -i libqtmultimediakit1_1.2.0-1ubuntu2_amd64.deb
+        apt-get install -f
         echo ${GREEN}.............................................. Done .............................................${RESET}
         ;;
     *)
