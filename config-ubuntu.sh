@@ -173,28 +173,14 @@ case $TELEGRAM in
         echo ${RED}............................... Omitting Telegram installation ..................................${RESET}
         ;;
 esac
-### Install Shutter http://shutter-project.org/
-read -r -p "${YELLOW}Do you want to install Shutter? [Y/n] ${RESTORE}" SHUTTER
-case $SHUTTER in
-    [yY][eE][sS]|[yY])
-        echo ${GREEN}...................................... Installing Shutter .......................................${RESET}
-        echo -ne '\n' | add-apt-repository ppa:shutter/ppa
-        apt-get install shutter -y
-        echo ${GREEN}.............................................. Done .............................................${RESET}
-        ;;
-    *)
-        echo ${RED}............................... Omitting Shutter installation ...................................${RESET}
-        ;;
-esac
 ### Install ScreenCloud https://screencloud.net/
 read -r -p "${YELLOW}Do you want to install ScreenCloud? [Y/n] ${RESTORE}" SCREENCLOUD
 case $SCREENCLOUD in
     [yY][eE][sS]|[yY])
         echo ${GREEN}.................................... Installing ScreenCloud .....................................${RESET}
-        wget http://de.archive.ubuntu.com/ubuntu/pool/universe/q/qtmobility/libqtmultimediakit1_1.2.0-1ubuntu2_amd64.deb
-        ln -s /usr/lib/x86_64-linux-gnu/libquazip.so.1.0.0 /usr/lib/x86_64-linux-gnu/libquazip.so.0
-        dpkg -i libqtmultimediakit1_1.2.0-1ubuntu2_amd64.deb
-        apt-get install -f
+        sh -c "echo 'deb http://download.opensuse.org/repositories/home:/olav-st/xUbuntu_15.10/ /' >> /etc/apt/sources.list.d/screencloud.list"
+        apt-get update
+        apt-get install screencloud -y
         echo ${GREEN}.............................................. Done .............................................${RESET}
         ;;
     *)
