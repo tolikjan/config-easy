@@ -178,6 +178,9 @@ read -r -p "${YELLOW}Do you want to install ScreenCloud? [Y/n] ${RESTORE}" SCREE
 case $SCREENCLOUD in
     [yY][eE][sS]|[yY])
         echo ${GREEN}.................................... Installing ScreenCloud .....................................${RESET}
+        wget http://de.archive.ubuntu.com/ubuntu/pool/universe/q/qtmobility/libqtmultimediakit1_1.2.0-1ubuntu2_amd64.deb
+        dpkg -i libqtmultimediakit1_1.2.0-1ubuntu2_amd64.deb
+        apt-get install -f
         sh -c "echo 'deb http://download.opensuse.org/repositories/home:/olav-st/xUbuntu_15.10/ /' >> /etc/apt/sources.list.d/screencloud.list"
         apt-get update
         apt-get install screencloud -y
