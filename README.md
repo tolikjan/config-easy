@@ -79,3 +79,5 @@ You need to pass all steps with adding the License code and enabling new setting
 - HipChat (https://www.hipchat.com/)
 
 Checked/tested on Ubuntu 14.04.4 LTS 64x
+
+ONGOING: Ubuntu 16.04 LTS 64x
